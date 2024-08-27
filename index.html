@@ -14,12 +14,6 @@
         <label for="triggerValue">Trigger Value:</label>
         <input type="number" id="triggerValue" name="triggerValue" step="0.01" required><br><br>
 
-        <label for="alertType">Alert Type:</label>
-        <select id="alertType" name="alertType" required>
-            <option value="higher">Higher</option>
-            <option value="lower">Lower</option>
-        </select><br><br>
-
         <button type="submit">Submit</button>
     </form>
 
@@ -31,7 +25,6 @@
            
             const data = {
                 triggerValue: parseFloat(formData.get('triggerValue')),
-                alertType: formData.get('alertType'),
                 symbol: formData.get('symbol')
             };
             console.log('data: ', data);

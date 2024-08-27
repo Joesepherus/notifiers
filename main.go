@@ -183,14 +183,25 @@ func api_addAlert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Example validation
-	if alert.Symbol == "" || alert.TriggerValue <= 0 || (alert.AlertType != "higher" && alert.AlertType != "lower") {
+	if alert.Symbol == "" || alert.TriggerValue <= 0 {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		response = map[string]string{"error": "Invalid alert data"}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-	err := addAlert(alert.Symbol, alert.TriggerValue, alert.AlertType)
+	stockData, err := getStockCurrentValue(alert.Symbol)
+	if err != nil {
+		log.Printf("Failed to get stock value for %s: %v", alert.Symbol, err)
+	}
+	currentPrice := stockData.Chart.Result[0].Meta.RegularMarketPrice
+	var alertType string
+	if currentPrice > alert.TriggerValue {
+		alertType = "lower"
+	} else {
+		alertType = "higher"
+	}
+	err = addAlert(alert.Symbol, alert.TriggerValue, alertType)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
