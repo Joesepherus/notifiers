@@ -1,15 +1,16 @@
 package mail
 
 import (
+	"fmt"
 	"net/smtp"
 	"os"
 )
 
 // sendEmail sends an email notification using Hostinger's SMTP server.
 func SendEmail(to, subject, body string) error {
-	from := os.Getenv("email") // Replace with your Hostinger email address
-	fromName := os.Getenv("name")
-	password := os.Getenv("password") // Replace with your Hostinger email password
+	from := os.Getenv("EMAIL") // Replace with your Hostinger email address
+	fromName := os.Getenv("NAME")
+	password := os.Getenv("PASSWORD") // Replace with your Hostinger email password
 
 	// Hostinger SMTP server configuration.
 	smtpHost := "smtp.hostinger.com" // Hostinger's SMTP server address
@@ -30,6 +31,7 @@ func SendEmail(to, subject, body string) error {
 	// Sending email.
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{to}, message)
 	if err != nil {
+		fmt.Printf("Error sending email: ", err)
 		return err
 	}
 	return nil

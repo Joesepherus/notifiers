@@ -14,6 +14,7 @@ import (
 
 	"notifiers/mail"
 
+	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -72,7 +73,7 @@ type Alert struct {
 	Symbol       string  `json:"symbol"`
 }
 
-func getAlerts(symbol string) ([]Alert, error) {
+func getAlertsBySymbol(symbol string) ([]Alert, error) {
 	var alerts []Alert
 
 	// Query to fetch rows from the database
@@ -99,8 +100,35 @@ func getAlerts(symbol string) ([]Alert, error) {
 	return alerts, nil
 }
 
+func getAlerts() ([]Alert, error) {
+	var alerts []Alert
+
+	// Query to fetch rows from the database
+	rows, err := db.Query("SELECT id, symbol, trigger_value, alert_type FROM alerts WHERE triggered = FALSE")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query alerts: %v", err)
+	}
+	defer rows.Close()
+
+	// Iterate over rows and scan into struct
+	for rows.Next() {
+		var alert Alert
+		if err := rows.Scan(&alert.ID, &alert.Symbol, &alert.TriggerValue, &alert.AlertType); err != nil {
+			return nil, fmt.Errorf("failed to scan row: %v", err)
+		}
+		alerts = append(alerts, alert)
+	}
+
+	// Check for errors from iterating over rows
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %v", err)
+	}
+
+	return alerts, nil
+}
+
 func checkAlerts(symbol string, currentPrice float64) {
-	alerts, err := getAlerts(symbol)
+	alerts, err := getAlertsBySymbol(symbol)
 	if err != nil {
 		log.Fatalf("Error fetching alerts: %v", err)
 	}
@@ -198,8 +226,14 @@ func restApp() {
 }
 
 func main() {
-	go restApp()
 	var err error
+
+	// Load .env file
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
+	go restApp()
 	db, err = sql.Open("sqlite3", "./alerts.db")
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
@@ -217,34 +251,33 @@ func main() {
 		log.Fatalf("Failed to create alerts table: %v", err)
 	}
 
-	symbol := "MXN=X"
-	symbol2 := "USDJPY=X"
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
 	for {
 		select {
 		case <-ticker.C:
-			stockData, err := getStockCurrentValue(symbol)
+			untriggeredAlerts, err := getAlerts()
 			if err != nil {
-				log.Printf("Failed to get stock value: %v", err)
+				log.Printf("Failed to fetch untriggered alerts: %v", err)
 				continue
 			}
 
-			currentPrice := stockData.Chart.Result[0].Meta.RegularMarketPrice
-			fmt.Printf("Current price of %s: %.4f %s\n", stockData.Chart.Result[0].Meta.Symbol, currentPrice, stockData.Chart.Result[0].Meta.Currency)
+			// Track each symbol
+			for _, alert := range untriggeredAlerts {
 
-			checkAlerts(symbol, currentPrice)
+				stockData, err := getStockCurrentValue(alert.Symbol)
+				if err != nil {
+					log.Printf("Failed to get stock value for %s: %v", alert.Symbol, err)
+					continue
+				}
 
-			stockData2, err := getStockCurrentValue(symbol2)
-			if err != nil {
-				log.Printf("Failed to get stock value: %v", err)
-				continue
+				currentPrice := stockData.Chart.Result[0].Meta.RegularMarketPrice
+				fmt.Printf("Current price of %s: %.4f %s\n", stockData.Chart.Result[0].Meta.Symbol, currentPrice, stockData.Chart.Result[0].Meta.Currency)
+
+				// Check and process alerts
+				checkAlerts(alert.Symbol, currentPrice)
 			}
-
-			currentPrice2 := stockData2.Chart.Result[0].Meta.RegularMarketPrice
-			fmt.Printf("Current price of %s: %.4f %s\n", stockData2.Chart.Result[0].Meta.Symbol, currentPrice2, stockData2.Chart.Result[0].Meta.Currency)
-			checkAlerts(symbol2, currentPrice2)
 		}
 	}
 }
