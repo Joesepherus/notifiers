@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"sort"
 
 	"io/ioutil"
 	"log"
@@ -104,7 +105,7 @@ func getAlerts() ([]Alert, error) {
 	var alerts []Alert
 
 	// Query to fetch rows from the database
-	rows, err := db.Query("SELECT id, symbol, trigger_value, alert_type FROM alerts WHERE triggered = FALSE")
+	rows, err := db.Query("SELECT id, symbol, trigger_value, alert_type FROM alerts WHERE triggered = FALSE ORDER BY symbol")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query alerts: %v", err)
 	}
@@ -263,12 +264,26 @@ func main() {
 				continue
 			}
 
-			// Track each symbol
-			for _, alert := range untriggeredAlerts {
+			// Create a map to group alerts by symbol
+			alertsBySymbol := make(map[string][]Alert)
 
-				stockData, err := getStockCurrentValue(alert.Symbol)
+			for _, alert := range untriggeredAlerts {
+				alertsBySymbol[alert.Symbol] = append(alertsBySymbol[alert.Symbol], alert)
+			}
+
+			// Extract the symbols and sort them
+			var symbols []string
+			for symbol := range alertsBySymbol {
+				symbols = append(symbols, symbol)
+			}
+			sort.Strings(symbols) // Sort symbols alphabetically
+
+			// Track each symbol
+			for _, symbol := range symbols {
+
+				stockData, err := getStockCurrentValue(symbol)
 				if err != nil {
-					log.Printf("Failed to get stock value for %s: %v", alert.Symbol, err)
+					log.Printf("Failed to get stock value for %s: %v", symbol, err)
 					continue
 				}
 
@@ -276,8 +291,9 @@ func main() {
 				fmt.Printf("Current price of %s: %.4f %s\n", stockData.Chart.Result[0].Meta.Symbol, currentPrice, stockData.Chart.Result[0].Meta.Currency)
 
 				// Check and process alerts
-				checkAlerts(alert.Symbol, currentPrice)
+				checkAlerts(symbol, currentPrice)
 			}
 		}
+		fmt.Println("\n\n")
 	}
 }
