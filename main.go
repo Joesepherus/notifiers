@@ -6,55 +6,22 @@ import (
 	"fmt"
 	"sort"
 
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
+	database "notifiers/db"
 	"notifiers/mail"
+	"notifiers/services/alertsService"
+	"notifiers/services/yahooService"
 
 	"github.com/joho/godotenv"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type StockResponse struct {
-	Chart struct {
-		Result []struct {
-			Meta struct {
-				Currency           string  `json:"currency"`
-				Symbol             string  `json:"symbol"`
-				RegularMarketPrice float64 `json:"regularMarketPrice"`
-			} `json:"meta"`
-		} `json:"result"`
-	} `json:"chart"`
-}
-
 var db *sql.DB
-
-func getStockCurrentValue(symbol string) (*StockResponse, error) {
-	yahooFinanceUrl := fmt.Sprintf("https://query1.finance.yahoo.com/v8/finance/chart/%s?region=US&lang=en-US&includePrePost=false&interval=2m&useYfid=true&range=1d&corsDomain=finance.yahoo.com&.tsrc=finance", symbol)
-
-	resp, err := http.Get(yahooFinanceUrl)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching stock price: %v", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("error reading response body: %v", err)
-	}
-
-	var stockData StockResponse
-	err = json.Unmarshal(body, &stockData)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing JSON: %v", err)
-	}
-
-	return &stockData, nil
-}
 
 func addAlert(symbol string, triggerValue float64, alertType string) error {
 	_, err := db.Exec("INSERT INTO alerts (symbol, trigger_value, alert_type) VALUES (?, ?, ?)", symbol, triggerValue, alertType)
@@ -106,6 +73,7 @@ func getAlerts() ([]Alert, error) {
 
 	// Query to fetch rows from the database
 	rows, err := db.Query("SELECT id, symbol, trigger_value, alert_type FROM alerts WHERE triggered = FALSE ORDER BY symbol")
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to query alerts: %v", err)
 	}
@@ -190,7 +158,7 @@ func api_addAlert(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-	stockData, err := getStockCurrentValue(alert.Symbol)
+	stockData, err := yahooService.GetStockCurrentValue(alert.Symbol)
 	if err != nil {
 		log.Printf("Failed to get stock value for %s: %v", alert.Symbol, err)
 	}
@@ -246,11 +214,11 @@ func main() {
 		log.Fatalf("Error loading .env file")
 	}
 	go restApp()
-	db, err = sql.Open("sqlite3", "./alerts.db")
-	if err != nil {
-		log.Fatalf("Failed to connect to the database: %v", err)
-	}
-	db.SetMaxOpenConns(1)
+	db = database.InitDB("./alerts.db")
+	defer database.DB.Close()
+	// Pass the db connection to alertsService
+	alertsService.SetDB(db)
+
 	statement, _ := db.Prepare(`CREATE TABLE IF NOT EXISTS alerts (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		symbol TEXT NOT NULL,
@@ -270,6 +238,7 @@ func main() {
 		select {
 		case <-ticker.C:
 			untriggeredAlerts, err := getAlerts()
+
 			if err != nil {
 				log.Printf("Failed to fetch untriggered alerts: %v", err)
 				continue
@@ -292,7 +261,7 @@ func main() {
 			// Track each symbol
 			for _, symbol := range symbols {
 
-				stockData, err := getStockCurrentValue(symbol)
+				stockData, err := yahooService.GetStockCurrentValue(symbol)
 				if err != nil {
 					log.Printf("Failed to get stock value for %s: %v", symbol, err)
 					continue
