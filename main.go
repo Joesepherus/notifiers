@@ -23,17 +23,6 @@ import (
 
 var db *sql.DB
 
-func addAlert(symbol string, triggerValue float64, alertType string) error {
-	_, err := db.Exec("INSERT INTO alerts (symbol, trigger_value, alert_type) VALUES (?, ?, ?)", symbol, triggerValue, alertType)
-	if err == nil {
-		return nil
-	}
-	if err.Error() == "database is locked" {
-		fmt.Printf("error inserting alerts: %v", err)
-	}
-	return err
-}
-
 func restApp() {
 	port := 8089
 	if envPort := os.Getenv("PORT"); envPort != "" {
