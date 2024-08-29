@@ -56,3 +56,14 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 	response = map[string]string{"message": "Alert added successfully"}
 	json.NewEncoder(w).Encode(response)
 }
+
+func GetAlerts(w http.ResponseWriter, r *http.Request) {
+	alerts, err := alertsService.GetAlerts()
+	if err != nil {
+		http.Error(w, "Failed to fetch alerts", http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(alerts); err != nil {
+		http.Error(w, "Failed to encode alerts", http.StatusInternalServerError)
+	}
+}

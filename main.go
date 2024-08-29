@@ -6,12 +6,9 @@ import (
 	"sort"
 
 	"log"
-	"net/http"
-	"os"
-	"strconv"
 	"time"
 
-	"notifiers/controllers/alertsController"
+	"notifiers/controllers"
 	database "notifiers/db"
 	"notifiers/services/alertsService"
 	"notifiers/services/yahooService"
@@ -23,35 +20,13 @@ import (
 
 var db *sql.DB
 
-func restApp() {
-	port := 8089
-	if envPort := os.Getenv("PORT"); envPort != "" {
-		if p, err := strconv.Atoi(envPort); err == nil {
-			port = p
-		}
-	}
-	// Serve the static HTML file
-	http.Handle("/", http.FileServer(http.Dir(".")))
-	http.HandleFunc("/add-alert", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			alertsController.AddAlert(w, r)
-		} else {
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		}
-	})
-	log.Printf("Starting server on :%d...\n", port)
-	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), nil))
-}
-
 func main() {
-	var err error
-
-	// Load .env file
-	err = godotenv.Load()
+	var err error = godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
-	go restApp()
+	// start a new goroutine for the rest api endpoints
+	go controllers.RestApi()
 	db = database.InitDB("./alerts.db")
 	defer database.DB.Close()
 	// Pass the db connection to alertsService
