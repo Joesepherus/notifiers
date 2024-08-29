@@ -1,15 +1,22 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"notifiers/controllers/alertsController"
 	"notifiers/controllers/authController"
+	"notifiers/middlewares/authMiddleware"
 	"notifiers/services/alertsService"
 	"os"
 	"strconv"
 	"text/template"
 )
+
+func ProtectedHandler(w http.ResponseWriter, r *http.Request) {
+	// This handler will only be called if the token is valid
+	fmt.Fprintf(w, "Welcome to the protected area!")
+}
 
 func RestApi() {
 	port := 8089
@@ -18,6 +25,8 @@ func RestApi() {
 			port = p
 		}
 	}
+
+	http.Handle("/protected", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(ProtectedHandler)))
 
 	// Serve the static HTML file
 	http.Handle("/", http.FileServer(http.Dir(".")))
@@ -32,22 +41,9 @@ func RestApi() {
 	})
 
 	// Define the route for getting untriggered alerts
-	http.HandleFunc("/api/alerts", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			alertsController.GetAlerts(w, r)
-		} else {
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	http.Handle("/api/alerts", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(alertsController.GetAlerts)))
 
-	// Define the route for rendering the alerts page
-	http.HandleFunc("/alerts", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodGet {
-			GetAlertsPage(w, r)
-		} else {
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	http.Handle("/alerts", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(GetAlertsPage)))
 
 	// Define the route for serving the signup page
 	http.HandleFunc("/sign-up", func(w http.ResponseWriter, r *http.Request) {
@@ -76,6 +72,9 @@ func RestApi() {
 }
 
 func GetAlertsPage(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	}
 	alerts, err := alertsService.GetAlerts()
 	if err != nil {
 		http.Error(w, "Failed to fetch alerts", http.StatusInternalServerError)

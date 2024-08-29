@@ -58,6 +58,9 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAlerts(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	}
 	alerts, err := alertsService.GetAlerts()
 	if err != nil {
 		http.Error(w, "Failed to fetch alerts", http.StatusInternalServerError)
