@@ -14,8 +14,8 @@ func SetDB(database *sql.DB) {
 	db = database
 }
 
-func AddAlert(symbol string, triggerValue float64, alertType string) error {
-	_, err := db.Exec("INSERT INTO alerts (symbol, trigger_value, alert_type) VALUES (?, ?, ?)", symbol, triggerValue, alertType)
+func AddAlert(userID int, symbol string, triggerValue float64, alertType string) error {
+	_, err := db.Exec("INSERT INTO alerts (user_id, symbol, trigger_value, alert_type) VALUES (?, ?, ?, ?)", userID, symbol, triggerValue, alertType)
 	if err == nil {
 		return nil
 	}
@@ -60,7 +60,7 @@ func CheckAlerts(symbol string, currentPrice float64) {
 	}
 
 	for _, alert := range alerts {
-		fmt.Printf("ID: %d, Trigger Value: %.4f, Alert Type: %s\n", alert.ID, alert.TriggerValue, alert.AlertType)
+		// fmt.Printf("ID: %d, Symbol: %s, Trigger Value: %.4f, Alert Type: %s\n", alert.ID, alert.Symbol, alert.TriggerValue, alert.AlertType)
 		var shouldTrigger bool
 		if alert.AlertType == "higher" && currentPrice >= alert.TriggerValue {
 			shouldTrigger = true
@@ -86,7 +86,7 @@ func CheckAlerts(symbol string, currentPrice float64) {
 
 				fmt.Printf("Updated\n")
 			}
-			mail.SendEmail("joes@joesexperiences.com", "Alert Triggered", fmt.Sprintf(
+			go mail.SendEmail("joes@joesexperiences.com", "Alert Triggered", fmt.Sprintf(
 				"Alert triggered for %s: current price %.4f has reached the trigger value %.4f (%s)",
 				symbol, currentPrice, alert.TriggerValue, alert.AlertType,
 			))
@@ -98,7 +98,7 @@ func GetAlertsBySymbol(symbol string) ([]alertsTypes.Alert, error) {
 	var alerts []alertsTypes.Alert
 
 	// Query to fetch rows from the database
-	rows, err := db.Query("SELECT id, trigger_value, alert_type FROM alerts WHERE symbol = ? AND triggered = FALSE", symbol)
+	rows, err := db.Query("SELECT id, symbol, trigger_value, alert_type FROM alerts WHERE symbol = ? AND triggered = FALSE", symbol)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query alerts: %v", err)
 	}
@@ -107,7 +107,7 @@ func GetAlertsBySymbol(symbol string) ([]alertsTypes.Alert, error) {
 	// Iterate over rows and scan into struct
 	for rows.Next() {
 		var alert alertsTypes.Alert
-		if err := rows.Scan(&alert.ID, &alert.TriggerValue, &alert.AlertType); err != nil {
+		if err := rows.Scan(&alert.ID, &alert.Symbol, &alert.TriggerValue, &alert.AlertType); err != nil {
 			return nil, fmt.Errorf("failed to scan row: %v", err)
 		}
 		alerts = append(alerts, alert)

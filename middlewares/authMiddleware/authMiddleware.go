@@ -1,10 +1,17 @@
 package authMiddleware
 
 import (
+	"context"
 	"net/http"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+)
+
+type contextKey string
+
+const (
+	UserEmailKey contextKey = "userEmail"
 )
 
 func TokenAuthMiddleware(next http.Handler) http.Handler {
@@ -33,6 +40,11 @@ func TokenAuthMiddleware(next http.Handler) http.Handler {
 				return
 			}
 		}
+
+		// Extract email from claims
+		email := claims["email"].(string)
+		ctx := context.WithValue(r.Context(), UserEmailKey, email)
+		r = r.WithContext(ctx)
 
 		// Token is valid, pass the request to the next handler
 		next.ServeHTTP(w, r)

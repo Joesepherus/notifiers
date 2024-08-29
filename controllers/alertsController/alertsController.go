@@ -4,12 +4,19 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"notifiers/middlewares/authMiddleware"
 	"notifiers/services/alertsService"
+	"notifiers/services/userService"
 	"notifiers/services/yahooService"
 	"notifiers/types/alertsTypes"
 )
 
 func AddAlert(w http.ResponseWriter, r *http.Request) {
+	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
+	user, err := userService.GetUserByEmail(email)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	}
 	var response map[string]string
 
 	// Decode the JSON body into an Alert struct
@@ -41,7 +48,7 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 	} else {
 		alertType = "higher"
 	}
-	err = alertsService.AddAlert(alert.Symbol, alert.TriggerValue, alertType)
+	err = alertsService.AddAlert(user.ID, alert.Symbol, alert.TriggerValue, alertType)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)

@@ -22,7 +22,9 @@ func InitDB(dataSourceName string) *sql.DB {
 		symbol TEXT NOT NULL,
 		trigger_value REAL NOT NULL,
 		alert_type TEXT CHECK(alert_type IN ('lower', 'higher')) NOT NULL,
-		triggered BOOLEAN DEFAULT FALSE
+		triggered BOOLEAN DEFAULT FALSE,
+		user_id INTEGER NOT NULL,
+		FOREIGN KEY (user_id) REFERENCES users(id)
 	);`)
 	statement.Exec()
 	statement, _ = DB.Prepare(`CREATE TABLE IF NOT EXISTS users (

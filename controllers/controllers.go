@@ -31,14 +31,7 @@ func RestApi() {
 	// Serve the static HTML file
 	http.Handle("/", http.FileServer(http.Dir(".")))
 
-	// Define the route and its handler
-	http.HandleFunc("/api/add-alert", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == http.MethodPost {
-			alertsController.AddAlert(w, r) // Assuming AddAlert is in the same package
-		} else {
-			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		}
-	})
+	http.Handle("/api/add-alert", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(alertsController.AddAlert)))
 
 	// Define the route for getting untriggered alerts
 	http.Handle("/api/alerts", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(alertsController.GetAlerts)))
