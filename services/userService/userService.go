@@ -2,6 +2,7 @@ package userService
 
 import (
 	"database/sql"
+	"log"
 	"notifiers/types/userTypes"
 
 	"golang.org/x/crypto/bcrypt"
@@ -26,6 +27,7 @@ func CreateUser(email, password string) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	log.Printf("User created with ID: %d and email: %s", userID, email)
 	return int(userID), nil
 }
 
