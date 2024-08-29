@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"sort"
+	"sync"
 
 	"log"
 	"time"
@@ -63,21 +64,31 @@ func main() {
 			}
 			sort.Strings(symbols) // Sort symbols alphabetically
 
+			// Create a wait group to wait for all goroutines to complete
+			var wg sync.WaitGroup
+
 			// Track each symbol
 			for _, symbol := range symbols {
+				wg.Add(1) // Increment the wait group counter
+				go func(symbol string) {
+					defer wg.Done() // Decrement the wait group counter when the goroutine completes
 
-				stockData, err := yahooService.GetStockCurrentValue(symbol)
-				if err != nil {
-					log.Printf("Failed to get stock value for %s: %v", symbol, err)
-					continue
-				}
+					stockData, err := yahooService.GetStockCurrentValue(symbol)
+					if err != nil {
+						log.Printf("Failed to get stock value for %s: %v", symbol, err)
+						return
+					}
 
-				currentPrice := stockData.Chart.Result[0].Meta.RegularMarketPrice
-				fmt.Printf("Current price of %s: %.4f %s\n", stockData.Chart.Result[0].Meta.Symbol, currentPrice, stockData.Chart.Result[0].Meta.Currency)
+					currentPrice := stockData.Chart.Result[0].Meta.RegularMarketPrice
+					fmt.Printf("Current price of %s: %.4f %s\n", stockData.Chart.Result[0].Meta.Symbol, currentPrice, stockData.Chart.Result[0].Meta.Currency)
 
-				// Check and process alerts
-				go alertsService.CheckAlerts(symbol, currentPrice)
+					// Check and process alerts
+					alertsService.CheckAlerts(symbol, currentPrice)
+				}(symbol)
 			}
+
+			// Wait for all goroutines to finish
+			wg.Wait()
 		}
 		fmt.Println("\n\n")
 	}
