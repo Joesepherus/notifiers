@@ -57,18 +57,6 @@ func main() {
 	// Pass the db connection to alertsService
 	alertsService.SetDB(db)
 
-	statement, _ := db.Prepare(`CREATE TABLE IF NOT EXISTS alerts (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		symbol TEXT NOT NULL,
-		trigger_value REAL NOT NULL,
-		alert_type TEXT CHECK(alert_type IN ('lower', 'higher')) NOT NULL,
-		triggered BOOLEAN DEFAULT FALSE
-	);`)
-	statement.Exec()
-	if err != nil {
-		log.Fatalf("Failed to create alerts table: %v", err)
-	}
-
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
