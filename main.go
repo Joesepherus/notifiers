@@ -16,7 +16,6 @@ import (
 	"notifiers/types/alertsTypes"
 
 	"github.com/joho/godotenv"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 var db *sql.DB
