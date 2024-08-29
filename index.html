@@ -27,7 +27,6 @@
                 triggerValue: parseFloat(formData.get('triggerValue')),
                 symbol: formData.get('symbol')
             };
-            console.log('data: ', data);
 
             fetch('/api/add-alert', {
                 method: 'POST',
