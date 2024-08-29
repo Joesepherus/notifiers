@@ -11,6 +11,7 @@ import (
 	"notifiers/controllers"
 	database "notifiers/db"
 	"notifiers/services/alertsService"
+	"notifiers/services/userService"
 	"notifiers/services/yahooService"
 	"notifiers/types/alertsTypes"
 
@@ -31,6 +32,7 @@ func main() {
 	defer database.DB.Close()
 	// Pass the db connection to alertsService
 	alertsService.SetDB(db)
+	userService.SetDB(db)
 
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()

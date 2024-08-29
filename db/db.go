@@ -25,6 +25,13 @@ func InitDB(dataSourceName string) *sql.DB {
 		triggered BOOLEAN DEFAULT FALSE
 	);`)
 	statement.Exec()
+	statement, _ = DB.Prepare(`CREATE TABLE IF NOT EXISTS users (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		email TEXT UNIQUE NOT NULL,
+		password TEXT NOT NULL
+	);`)
+	statement.Exec()
+
 	if err != nil {
 		log.Fatalf("Failed to create alerts table: %v", err)
 	}

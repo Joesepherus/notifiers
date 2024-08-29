@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"notifiers/controllers/alertsController"
+	"notifiers/controllers/authController"
 	"notifiers/services/alertsService"
 	"os"
 	"strconv"
@@ -47,6 +48,28 @@ func RestApi() {
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		}
 	})
+
+	// Define the route for serving the signup page
+	http.HandleFunc("/sign-up", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			http.ServeFile(w, r, "templates/signup.html")
+		} else {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	// Define the route for serving the login page
+	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			http.ServeFile(w, r, "templates/login.html")
+		} else {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
+	// Authentication routes
+	http.HandleFunc("/api/sign-up", authController.SignUp)
+	http.HandleFunc("/api/login", authController.Login)
 
 	log.Printf("Starting server on :%d...\n", port)
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), nil))
