@@ -34,6 +34,8 @@ func main() {
 	alertsService.SetDB(db)
 	userService.SetDB(db)
 
+	// loadTest.SetupDbWithLotsOfAlerts()
+
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 
@@ -41,7 +43,6 @@ func main() {
 		select {
 		case <-ticker.C:
 			untriggeredAlerts, err := alertsService.GetAlerts()
-
 			if err != nil {
 				log.Printf("Failed to fetch untriggered alerts: %v", err)
 				continue
