@@ -76,7 +76,7 @@ func main() {
 				fmt.Printf("Current price of %s: %.4f %s\n", stockData.Chart.Result[0].Meta.Symbol, currentPrice, stockData.Chart.Result[0].Meta.Currency)
 
 				// Check and process alerts
-				alertsService.CheckAlerts(symbol, currentPrice)
+				go alertsService.CheckAlerts(symbol, currentPrice)
 			}
 		}
 		fmt.Println("\n\n")
