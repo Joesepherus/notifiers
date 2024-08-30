@@ -13,6 +13,7 @@ import (
 	database "notifiers/db"
 
 	// "notifiers/loadTest"
+	"notifiers/payments/payments"
 	"notifiers/services/alertsService"
 	"notifiers/services/userService"
 	"notifiers/services/yahooService"
@@ -37,6 +38,7 @@ func main() {
 	userService.SetDB(db)
 
 	// loadTest.SetupDbWithLotsOfAlerts()
+	payments.Setup()
 
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()

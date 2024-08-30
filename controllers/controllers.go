@@ -7,6 +7,7 @@ import (
 	"notifiers/controllers/alertsController"
 	"notifiers/controllers/authController"
 	"notifiers/middlewares/authMiddleware"
+	"notifiers/payments/payments"
 	"notifiers/services/alertsService"
 	"os"
 	"strconv"
@@ -59,6 +60,10 @@ func RestApi() {
 	// Authentication routes
 	http.HandleFunc("/api/sign-up", authController.SignUp)
 	http.HandleFunc("/api/login", authController.Login)
+
+	// Stripe routes
+	http.HandleFunc("/create-checkout-session", payments.CreateCheckoutSession)
+	http.HandleFunc("/webhook", payments.HandleWebhook)
 
 	log.Printf("Starting server on :%d...\n", port)
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), nil))
