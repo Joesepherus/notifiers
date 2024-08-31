@@ -24,6 +24,11 @@ func landingPageHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, nil)
 }
 
+func pricingPageHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/pricing.html"))
+	tmpl.Execute(w, nil)
+}
+
 func RestApi() {
 	port := 8089
 	if envPort := os.Getenv("PORT"); envPort != "" {
@@ -68,6 +73,7 @@ func RestApi() {
 	http.HandleFunc("/webhook", payments.HandleWebhook)
 
 	http.HandleFunc("/", landingPageHandler)
+	http.HandleFunc("/pricing", pricingPageHandler)
 
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))

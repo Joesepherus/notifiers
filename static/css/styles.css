@@ -96,14 +96,14 @@ form button {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
-    background-color: #5cb85c;
+    background-color: #232ED7;
     color: #fff;
     font-size: 16px;
     cursor: pointer;
 }
 
 form button:hover {
-    background-color: #4cae4c;
+    background-color: #3944d6;
 }
 
 .modal {
@@ -149,4 +149,127 @@ form button:hover {
 .navigation {
     display: flex;
     align-items: center;
+}
+.pricing-page {
+    text-align: center;
+    padding: 40px 0;
+    font-family: Arial, sans-serif;
+}
+
+.pricing-cards {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 280px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    text-align: left;
+    overflow: hidden;
+}
+
+.card .most-popular {
+    position: absolute;
+    top: -10px;
+    right: -63px;
+    transform: rotate(45deg);
+    color: #fff;
+    background-color: rgb(215, 64, 47);
+    padding: 50px 40px 6px 40px;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card h2 {
+    margin-bottom: 15px;
+    color: #fff;
+    font-size: 24px;
+    text-align: center;
+}
+
+.card .price {
+    font-size: 28px;
+    color: #fff;
+    margin: 15px 0 60px 0px;
+    text-align: center;
+}
+
+.card .price span {
+    font-size: 18px;
+    color: #fff;
+}
+
+.card p {
+    color: #fff;
+    margin: 0px 0px 10px 0px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.card .perks {
+    margin-bottom: 40px;
+}
+
+.card button {
+    width: 60%;
+    padding: 12px;
+    background-color: #232ED7;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+}
+
+.card button:hover {
+    background-color: #3944d6;
+}
+
+.card ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+}
+
+.card ul li {
+    padding: 8px 0;
+    border-top: 1px solid #ddd;
+}
+
+.card ul li:first-child {
+    border-top: none;
+}
+
+.card ul li:last-child {
+    border-bottom: none;
+}
+
+.silver-card {
+    background: linear-gradient(to bottom right, #9e9c9c, #9e9c9c, #c3c3c3);
+}
+
+.gold-card {
+    background: linear-gradient(to bottom right, #e7c402, #e7c402, #ffe862);
+    border: 3px solid rgb(215, 64, 47);
+}
+
+.diamond-card {
+    background: linear-gradient(to bottom right, #003366, #003366, #31559c);
 }
