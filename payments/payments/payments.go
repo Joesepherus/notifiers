@@ -154,5 +154,5 @@ func Setup() {
 	stripe.Key = os.Getenv("STRIPE_SECRET")
 
 	// test_createCustomer()
-	test_getSubscriptionByUserEmail()
+	// test_getSubscriptionByUserEmail()
 }
