@@ -1,280 +1,379 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-    min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
 }
 
 .sticky-header {
-    position: sticky;
-    top: 0;
-    background-color: #000;
-    z-index: 1000;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: sticky;
+  top: 0;
+  background-color: #000;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+  width: 100%;
+  z-index: 1000;
+}
+
+.sticky-header .navigation {
+  width: 768px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.spacer {
+  flex-grow: 1; /* Pushes items to the right */
 }
 
 .sticky-header nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    text-align: center;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
 }
 
 .sticky-header nav ul li {
-    display: inline;
-    margin: 0 15px;
+  display: inline;
+  margin: 0 15px;
 }
 
 .sticky-header nav ul li a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
 }
 
 .sticky-header nav ul li a:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .content {
-    margin: 0 auto;
-    height: calc(100vh - 120px);
-    background-color: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  min-height: calc(100vh - 120px);
+  background-color: #fff;
+  max-width: 768px;
 }
 
 footer {
-    text-align: center;
-    color: #fff;
-    background-color: #000;
-    color: white;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+  text-align: center;
+  color: #fff;
+  background-color: #000;
+  color: white;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+footer .footer-content {
+  max-width: 768px;
 }
 
 footer p {
-    margin: 0px;
+  margin: 0px;
 }
 
 .landing-page {
-    padding: 20px;
-
+  padding: 20px;
 }
 
-.landing-page h1, .about-page h1, .pricing-page h1 {
-    text-align: center;
-    color: #333;
+.landing-page h1,
+.pricing-page h1 {
+  text-align: center;
+  color: #333;
 }
 
-.landing-page p, .about-page p, .pricing-page p {
-    text-align: center;
-    color: #666;
+.landing-page p,
+.pricing-page p {
+  text-align: center;
+  color: #666;
 }
 
 form {
-    margin-top: 20px;
-    text-align: center;
+  margin-top: 20px;
+  text-align: center;
 }
 
 form label {
-    display: block;
-    margin-bottom: 10px;
-    font-weight: bold;
-    color: #333;
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
 }
 
-form input[type="text"], form input[type="number"], form input[type="email"] {
-    width: 80%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+form input[type="text"],
+form input[type="number"],
+form input[type="email"] {
+  width: 80%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 form button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #232ED7;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #232ed7;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 form button:hover {
-    background-color: #3944d6;
+  background-color: #3944d6;
 }
 
 .modal {
-    display: none;
-    position: fixed;
-    z-index: 1001;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  position: fixed;
+  z-index: 1001;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-content {
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
+  background-color: #fff;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
 }
 
 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
 }
 
 .close:hover,
 .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 
-#alert-form {
-    width: 500px;
-    margin: auto;
-}
 
-.navigation {
-    display: flex;
-    align-items: center;
-}
 .pricing-page {
-    text-align: center;
-    padding: 40px 0;
-    font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 40px 0;
+  font-family: Arial, sans-serif;
 }
 
 .pricing-cards {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
-    margin-top: 40px;
+  display: flex;
+  gap: 20px;
+  margin-top: 40px;
 }
 
 .card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    background-color: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    width: 280px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
-    text-align: left;
-    overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-align: left;
+  overflow: hidden;
 }
 
 .card .most-popular {
-    position: absolute;
-    top: -10px;
-    right: -63px;
-    transform: rotate(45deg);
-    color: #fff;
-    background-color: rgb(215, 64, 47);
-    padding: 50px 40px 6px 40px;
+  position: absolute;
+  top: -10px;
+  right: -63px;
+  transform: rotate(45deg);
+  color: #fff;
+  background-color: rgb(215, 64, 47);
+  padding: 50px 40px 6px 40px;
 }
 
 .card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-10px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .card h2 {
-    margin-bottom: 15px;
-    color: #fff;
-    font-size: 24px;
-    text-align: center;
+  margin-bottom: 15px;
+  color: #fff;
+  font-size: 24px;
+  text-align: center;
 }
 
 .card .price {
-    font-size: 28px;
-    color: #fff;
-    margin: 15px 0 60px 0px;
-    text-align: center;
+  font-size: 28px;
+  color: #fff;
+  margin: 15px 0 60px 0px;
+  text-align: center;
 }
 
 .card .price span {
-    font-size: 18px;
-    color: #fff;
+  font-size: 18px;
+  color: #fff;
 }
 
 .card p {
-    color: #fff;
-    margin: 0px 0px 10px 0px;
-    text-align: center;
-    font-size: 16px;
+  color: #fff;
+  margin: 0px 0px 10px 0px;
+  text-align: center;
+  font-size: 16px;
 }
 
 .card .perks {
-    margin-bottom: 40px;
+  margin-bottom: 40px;
 }
 
 .card button {
-    width: 60%;
-    padding: 12px;
-    background-color: #232ED7;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 18px;
-    text-transform: uppercase;
-    transition: background-color 0.3s;
+  padding: 12px;
+  background-color: #232ed7;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px;
+  text-transform: uppercase;
+  transition: background-color 0.3s;
 }
 
 .card button:hover {
-    background-color: #3944d6;
+  background-color: #3944d6;
 }
 
 .card ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    font-size: 16px;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  font-size: 16px;
 }
 
 .card ul li {
-    padding: 8px 0;
-    border-top: 1px solid #ddd;
+  padding: 8px 0;
+  border-top: 1px solid #ddd;
 }
 
 .card ul li:first-child {
-    border-top: none;
+  border-top: none;
 }
 
 .card ul li:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .silver-card {
-    background: linear-gradient(to bottom right, #9e9c9c, #9e9c9c, #c3c3c3);
+  background: linear-gradient(to bottom right, #9e9c9c, #9e9c9c, #c3c3c3);
 }
 
 .gold-card {
-    background: linear-gradient(to bottom right, #e7c402, #e7c402, #ffe862);
-    border: 3px solid rgb(215, 64, 47);
+  background: linear-gradient(to bottom right, #e7c402, #e7c402, #ffe862);
+  border: 3px solid rgb(215, 64, 47);
 }
 
 .diamond-card {
-    background: linear-gradient(to bottom right, #003366, #003366, #31559c);
+  background: linear-gradient(to bottom right, #003366, #003366, #31559c);
+}
+
+.about-page {
+  padding: 40px 0;
+  font-family: Arial, sans-serif;
+}
+
+.logo {
+  margin-right: 15px;
+}
+
+.logo img {
+  vertical-align: middle;
+}
+
+.menu-toggle {
+  display: none; /* Hide the menu toggle button by default */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.menu-icon {
+  width: 25px;
+  height: 3px;
+  background: #fff;
+  margin: 5px 0;
+  display: block;
+}
+
+.navigation-list {
+  display: flex;
+  list-style: none;
+  width: 100%;
+  align-items: center;
+}
+
+.navigation-list li {
+  margin: 0 10px;
+}
+
+.navigation-list a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+@media only screen and (max-width: 600px) {
+  .sticky-header .navigation {
+    width: 100%;
+    padding: 0px 20px;
+  }
+
+  .pricing-cards {
+    flex-direction: column;
+  }
+
+  .content {
+    padding: 0px 20px;
+  }
+
+  .navigation-list {
+    display: none; /* Hide navigation list by default */
+    flex-direction: column;
+    width: 100%;
+    background-color: #000;
+    position: absolute;
+    top: 60px; /* Adjust based on header height */
+    left: 0;
+    padding: 10px 0;
+  }
+
+  .navigation-list.active {
+    display: flex; /* Show navigation list when active */
+  }
+
+  .menu-toggle {
+    display: block; /* Show the menu toggle button */
+  }
+
+  .right-links {
+    margin-top: 10px; /* Add space between left and right groups */
+  }
 }
