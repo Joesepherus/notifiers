@@ -30,6 +30,9 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	case "/pricing":
 		templateLocation = "./templates/pricing.html"
 		pageTitle = "Pricing - Trading Alerts"
+	case "/about":
+		templateLocation = "./templates/about.html"
+		pageTitle = "About - Trading Alerts"
 	default:
 		templateLocation = "./templates/404.html"
 		pageTitle = "Page not found"

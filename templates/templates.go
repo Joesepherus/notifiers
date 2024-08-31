@@ -24,6 +24,7 @@ func InitTemplates() {
 	pageTemplates := []string{
 		"./templates/index.html",
 		"./templates/pricing.html",
+		"./templates/about.html",
 		"./templates/404.html",
 	}
 
