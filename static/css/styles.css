@@ -3,14 +3,18 @@ body {
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+    min-height: 100vh;
 }
 
 .sticky-header {
     position: sticky;
     top: 0;
     background-color: #333;
-    padding: 10px 0;
     z-index: 1000;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sticky-header nav ul {
@@ -36,20 +40,26 @@ body {
 }
 
 .content {
-    max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    height: calc(100vh - 120px);
     background-color: #fff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 footer {
     text-align: center;
-    margin-top: 40px;
     color: #666;
-    padding: 20px;
     background-color: #333;
     color: white;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.landing-page {
+    padding: 20px;
+
 }
 
 .landing-page h1, .about-page h1, .pricing-page h1 {
@@ -129,4 +139,9 @@ form button:hover {
     color: black;
     text-decoration: none;
     cursor: pointer;
+}
+
+#alert-form {
+    width: 500px;
+    margin: auto;
 }
