@@ -145,3 +145,8 @@ form button:hover {
     width: 500px;
     margin: auto;
 }
+
+.navigation {
+    display: flex;
+    align-items: center;
+}
