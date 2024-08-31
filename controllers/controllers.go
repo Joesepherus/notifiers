@@ -19,6 +19,11 @@ func ProtectedHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the protected area!")
 }
 
+func landingPageHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("templates/index.html"))
+	tmpl.Execute(w, nil)
+}
+
 func RestApi() {
 	port := 8089
 	if envPort := os.Getenv("PORT"); envPort != "" {
@@ -28,9 +33,6 @@ func RestApi() {
 	}
 
 	http.Handle("/protected", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(ProtectedHandler)))
-
-	// Serve the static HTML file
-	http.Handle("/", http.FileServer(http.Dir(".")))
 
 	http.Handle("/api/add-alert", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(alertsController.AddAlert)))
 
@@ -64,6 +66,11 @@ func RestApi() {
 	// Stripe routes
 	http.HandleFunc("/create-checkout-session", payments.CreateCheckoutSession)
 	http.HandleFunc("/webhook", payments.HandleWebhook)
+
+	http.HandleFunc("/", landingPageHandler)
+
+	// Serve static files (CSS)
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	log.Printf("Starting server on :%d...\n", port)
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), nil))

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Alerts</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="/static/js/main.js" defer></script>
+</head>
+<body>
+    <header class="sticky-header">
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/pricing">Pricing</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="content">
+        <div class="landing-page">
+            <h1>Set Your Trading Alerts</h1>
+            <p>Stay ahead of the market with real-time alerts on support and resistance levels.</p>
+        
+            <form id="alert-form">
+                <label for="symbol">Symbol</label>
+                <input type="text" id="symbol" name="symbol" placeholder="e.g., AAPL" required>
+        
+                <label for="price">Price</label>
+                <input type="number" id="price" name="price" placeholder="e.g., 150.00" required>
+        
+                <button type="button" onclick="showSignUpForm()">Set Alert</button>
+            </form>
+        
+            <div id="signup-modal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="closeSignUpForm()">&times;</span>
+                    <h2>Sign Up</h2>
+                    <form action="/subscribe" method="post">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                        <button type="submit">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <footer>
+        <p>Contact us: support@tradingalerts.com</p>
+        <p><a href="/faq">FAQ</a></p>
+    </footer>
+</body>
+</html>
