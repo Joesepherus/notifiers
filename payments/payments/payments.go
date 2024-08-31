@@ -2,6 +2,7 @@ package payments
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -10,21 +11,9 @@ import (
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/checkout/session"
 	"github.com/stripe/stripe-go/v74/customer"
+	sub "github.com/stripe/stripe-go/v74/subscription"
 	"github.com/stripe/stripe-go/v74/webhook"
 )
-
-func Setup() {
-	// Set your Stripe secret key
-	stripe.Key = os.Getenv("STRIPE_SECRET")
-
-	// newCustomer, err := createCustomer("test@gmail.com")
-	// if err != nil {
-	// 	log.Fatalf("Failed to create customer: %v", err)
-	// }
-
-	// // Print the customer ID
-	// log.Println("Customer ID:", newCustomer.ID)
-}
 
 func createCustomer(email string) (*stripe.Customer, error) {
 	params := &stripe.CustomerParams{
@@ -101,4 +90,69 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func getCustomerByEmail(email string) (*stripe.Customer, error) {
+	params := &stripe.CustomerListParams{
+		Email: stripe.String(email),
+	}
+	i := customer.List(params)
+	for i.Next() {
+		return i.Customer(), nil
+	}
+	return nil, fmt.Errorf("no customer found with email: %s", email)
+}
+
+func getSubscriptionByCustomerAndProduct(customerID string, productID string) (*stripe.Subscription, error) {
+	params := &stripe.SubscriptionListParams{
+		Customer: stripe.String(customerID),
+	}
+	i := sub.List(params)
+
+	for i.Next() {
+		subscription := i.Subscription()
+		for _, item := range subscription.Items.Data {
+			if item.Price.Product.ID == productID {
+				return subscription, nil
+			}
+		}
+	}
+
+	return nil, fmt.Errorf("no subscription found for customer with product ID: %s", productID)
+}
+
+func test_createCustomer() {
+	newCustomer, err := createCustomer("test@gmail.com")
+	if err != nil {
+		log.Fatalf("Failed to create customer: %v", err)
+	}
+
+	// Print the customer ID
+	log.Println("Customer ID:", newCustomer.ID)
+}
+
+func test_getSubscriptionByUserEmail() {
+	customerEmail := "test@gmail.com" // Replace with the actual user's email
+	cust, err := getCustomerByEmail(customerEmail)
+	if err != nil {
+		log.Printf("Error retrieving customer: %v", err)
+	} else {
+		log.Printf("Customer ID: %s\n", cust.ID)
+	}
+	productID := "prod_QkzhvwCenEWmDY"
+	// Then, get the subscription for the specific product
+	subscription, err := getSubscriptionByCustomerAndProduct(cust.ID, productID)
+	if err != nil {
+		log.Fatalf("Error retrieving subscription: %v", err)
+	}
+
+	fmt.Printf("Subscription ID: %s, Status: %s\n", subscription.ID, subscription.Status)
+}
+
+func Setup() {
+	// Set your Stripe secret key
+	stripe.Key = os.Getenv("STRIPE_SECRET")
+
+	// test_createCustomer()
+	test_getSubscriptionByUserEmail()
 }
