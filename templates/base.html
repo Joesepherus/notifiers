@@ -5,25 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trading Alerts</title>
     <link rel="stylesheet" href="/static/css/styles.css" />
-    <link rel="icon" href="/static/img/logo.ico" type="image/x-icon">
+    <link rel="icon" href="/static/img/logo.ico" type="image/x-icon" />
     <script src="/static/js/main.js" defer></script>
   </head>
   <body>
     <header class="sticky-header">
-      <nav>
-        <ul class="navigation">
-          <li><a href="/"><img src="/static/img/logo.png" width="30"/></a></li>
-          <li><a href="/about">About</a></li>
-          <li><a href="/pricing">Pricing</a></li>
-        </ul>
+      <nav class="navigation">
+        <div class="logo">
+          <a href="/"
+            ><img src="/static/img/logo.png" width="30" alt="Logo"
+          /></a>
+        </div>
+        <div class="nav-container">
+          <ul class="navigation-list">
+            <li><a href="/about">About</a></li>
+            <li><a href="/pricing">Pricing</a></li>
+            <div class="spacer"></div>
+            <li><a href="/login">Login</a></li>
+            <li><a href="/sign-up">Signup</a></li>
+          </ul>
+        </div>
+        <button class="menu-toggle" aria-label="Toggle navigation">
+          <span class="menu-icon"></span>
+          <span class="menu-icon"></span>
+          <span class="menu-icon"></span>
+        </button>
       </nav>
     </header>
 
     {{ block "content" . }}{{ end }}
 
-<footer>
-    <p>&copy; 2024 Trading Alets. All rights reserved.</p>
-    <p>Contact us: support@tradingalerts.com</p>
-  </footer>
-</body>
+    <footer>
+      <div class="footer-content">
+        <p>&copy; 2024 Trading Alets. All rights reserved.</p>
+        <p>Contact us: support@tradingalerts.com</p>
+      </div>
+    </footer>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const menuToggle = document.querySelector(".menu-toggle");
+      const navigationList = document.querySelector(".navigation-list");
+
+      menuToggle.addEventListener("click", function () {
+        navigationList.classList.toggle("active");
+      });
+    });
+  </script>
 </html>
