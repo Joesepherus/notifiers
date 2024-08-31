@@ -9,6 +9,7 @@ import (
 	"notifiers/middlewares/authMiddleware"
 	"notifiers/payments/payments"
 	"notifiers/services/alertsService"
+	"notifiers/templates"
 	"os"
 	"strconv"
 	"text/template"
@@ -19,14 +20,22 @@ func ProtectedHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the protected area!")
 }
 
-func landingPageHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("templates/index.html"))
-	tmpl.Execute(w, nil)
-}
+func pageHandler(w http.ResponseWriter, r *http.Request) {
+	var templateLocation, pageTitle string
 
-func pricingPageHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("templates/pricing.html"))
-	tmpl.Execute(w, nil)
+	switch r.URL.Path {
+	case "/":
+		templateLocation = "./templates/index.html"
+		pageTitle = "Trading Alerts"
+	case "/pricing":
+		templateLocation = "./templates/pricing.html"
+		pageTitle = "Pricing - Trading Alerts"
+	default:
+		templateLocation = "./templates/404.html"
+		pageTitle = "Page not found"
+	}
+
+	templates.RenderTemplate(w, templateLocation, pageTitle)
 }
 
 func RestApi() {
@@ -72,8 +81,7 @@ func RestApi() {
 	http.HandleFunc("/create-checkout-session", payments.CreateCheckoutSession)
 	http.HandleFunc("/webhook", payments.HandleWebhook)
 
-	http.HandleFunc("/", landingPageHandler)
-	http.HandleFunc("/pricing", pricingPageHandler)
+	http.HandleFunc("/", pageHandler)
 
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))

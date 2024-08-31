@@ -19,6 +19,8 @@ import (
 	"notifiers/services/yahooService"
 	"notifiers/types/alertsTypes"
 
+	"notifiers/templates"
+
 	"github.com/joho/godotenv"
 )
 
@@ -29,6 +31,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
+	templates.InitTemplates()
 	// start a new goroutine for the rest api endpoints
 	go controllers.RestApi()
 	db = database.InitDB("./alerts.db")

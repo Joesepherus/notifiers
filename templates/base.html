@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trading Alerts</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <link rel="icon" href="/static/img/logo.ico" type="image/x-icon">
+    <script src="/static/js/main.js" defer></script>
+  </head>
+  <body>
+    <header class="sticky-header">
+      <nav>
+        <ul class="navigation">
+          <li><a href="/"><img src="/static/img/logo.png" width="30"/></a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/pricing">Pricing</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    {{ block "content" . }}{{ end }}
+
+<footer>
+    <p>&copy; 2024 Trading Alets. All rights reserved.</p>
+    <p>Contact us: support@tradingalerts.com</p>
+  </footer>
+</body>
+</html>
