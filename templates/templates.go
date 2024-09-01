@@ -7,7 +7,7 @@ import (
 )
 
 // Define a global template map
-var templates = map[string]*template.Template{}
+var Templates = map[string]*template.Template{}
 
 // Initialize templates
 func InitTemplates() {
@@ -18,13 +18,14 @@ func InitTemplates() {
 	if err != nil {
 		log.Fatalf("Failed to parse base template: %v", err)
 	}
-	templates["base"] = baseTemplate
+	Templates["base"] = baseTemplate
 
 	// Parse page-specific templates
 	pageTemplates := []string{
 		"./templates/index.html",
 		"./templates/pricing.html",
 		"./templates/about.html",
+		"./templates/alerts.html",
 		"./templates/404.html",
 	}
 
@@ -33,24 +34,19 @@ func InitTemplates() {
 		if err != nil {
 			log.Fatalf("Failed to parse page template %s: %v", file, err)
 		}
-		templates[file] = tmpl
+		Templates[file] = tmpl
 	}
-	log.Printf("templates:", templates)
+	log.Printf("templates:", Templates)
 }
 
-// Render the specified page template within the base layout
-func RenderTemplate(w http.ResponseWriter, templateName string, title string, email string) {
-	tmpl, ok := templates[templateName]
+func RenderTemplate(w http.ResponseWriter, templateName string, data map[string]interface{}) {
+	tmpl, ok := Templates[templateName]
 	if !ok {
 		http.Error(w, "Template not found", http.StatusNotFound)
 		return
 	}
 
-	err := tmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
-		"Title":   title,
-		"Content": templateName,
-		"Email":   email,
-	})
+	err := tmpl.ExecuteTemplate(w, "base.html", data)
 	if err != nil {
 		log.Printf("Failed to execute template: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

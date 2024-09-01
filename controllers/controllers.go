@@ -23,6 +23,11 @@ func ProtectedHandler(w http.ResponseWriter, r *http.Request) {
 func pageHandler(w http.ResponseWriter, r *http.Request) {
 	var templateLocation, pageTitle string
 
+	data := map[string]interface{}{
+		"Email": "",
+		// Add other default data here if needed
+	}
+
 	switch r.URL.Path {
 	case "/":
 		templateLocation = "./templates/index.html"
@@ -33,14 +38,29 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	case "/about":
 		templateLocation = "./templates/about.html"
 		pageTitle = "About - Trading Alerts"
+	case "/alerts":
+		// Fetch alerts and add to data
+		alerts, err := alertsService.GetAlerts()
+		if err != nil {
+			http.Error(w, "Failed to fetch alerts", http.StatusInternalServerError)
+			return
+		}
+		data["Alerts"] = alerts
+		templateLocation = "./templates/alerts.html"
+		pageTitle = "Alerts - Trading Alerts"
 	default:
 		templateLocation = "./templates/404.html"
 		pageTitle = "Page not found"
 	}
 
-	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
+	if email, ok := r.Context().Value(authMiddleware.UserEmailKey).(string); ok {
+		data["Email"] = email
+	}
 
-	templates.RenderTemplate(w, templateLocation, pageTitle, email)
+	data["Title"] = pageTitle
+	data["Content"] = templateLocation
+
+	templates.RenderTemplate(w, templateLocation, data)
 }
 
 func RestApi() {
@@ -57,8 +77,6 @@ func RestApi() {
 
 	// Define the route for getting untriggered alerts
 	http.Handle("/api/alerts", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(alertsController.GetAlerts)))
-
-	http.Handle("/alerts", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(GetAlertsPage)))
 
 	// Define the route for serving the signup page
 	http.HandleFunc("/sign-up", func(w http.ResponseWriter, r *http.Request) {
