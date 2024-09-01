@@ -39,7 +39,7 @@ func InitTemplates() {
 }
 
 // Render the specified page template within the base layout
-func RenderTemplate(w http.ResponseWriter, templateName string, title string) {
+func RenderTemplate(w http.ResponseWriter, templateName string, title string, email string) {
 	tmpl, ok := templates[templateName]
 	if !ok {
 		http.Error(w, "Template not found", http.StatusNotFound)
@@ -49,6 +49,7 @@ func RenderTemplate(w http.ResponseWriter, templateName string, title string) {
 	err := tmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
 		"Title":   title,
 		"Content": templateName,
+		"Email":   email,
 	})
 	if err != nil {
 		log.Printf("Failed to execute template: %v", err)

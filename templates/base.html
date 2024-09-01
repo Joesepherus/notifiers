@@ -11,27 +11,30 @@
   <body>
     <header class="sticky-header">
       <nav class="navigation">
-        <div class="logo">
-          <a href="/"
-            ><img src="/static/img/logo.png" width="30" alt="Logo"
-          /></a>
-        </div>
-        <div class="nav-container">
-          <ul class="navigation-list">
-              <li><a href="/pricing">Pricing</a></li>
-              <li><a href="/about">About</a></li>
-            <div class="spacer"></div>
-            <li><a onclick="openModalShowLoginForm()">Login</a></li>
-            <li><a onclick="openModalShowSignUpForm()">Signup</a></li>
-          </ul>
-        </div>
-        <button class="menu-toggle" aria-label="Toggle navigation">
-          <span class="menu-icon"></span>
-          <span class="menu-icon"></span>
-          <span class="menu-icon"></span>
-        </button>
+          <div class="logo">
+              <a href="/"><img src="/static/img/logo.png" width="30" alt="Logo"></a>
+          </div>
+          <div class="nav-container">
+              <ul class="navigation-list">
+                  <li><a href="/pricing">Pricing</a></li>
+                  <li><a href="/about">About</a></li>
+                  <div class="spacer"></div>
+                  {{ if .Email }}
+                      <li><a href="/profile">{{ .Email }}</a></li>
+                      <li><a href="/logout">Logout</a></li>
+                  {{ else }}
+                      <li><a href="#" onclick="openModalShowLoginForm()">Login</a></li>
+                      <li><a href="#" onclick="openModalShowSignUpForm()">Signup</a></li>
+                  {{ end }}
+              </ul>
+          </div>
+          <button class="menu-toggle" aria-label="Toggle navigation">
+              <span class="menu-icon"></span>
+              <span class="menu-icon"></span>
+              <span class="menu-icon"></span>
+          </button>
       </nav>
-    </header>
+  </header>
 
     {{ block "content" . }}{{ end }}
 
@@ -87,7 +90,7 @@
           <!-- Login Form -->
           <div id="login-form">
             <h2>Log In</h2>
-            <form action="/login" method="post">
+            <form action="/api/login" method="post">
               <div class="form-group">
                 <label for="login-email">Email</label>
                 <input

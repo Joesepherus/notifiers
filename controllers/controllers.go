@@ -38,7 +38,9 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		pageTitle = "Page not found"
 	}
 
-	templates.RenderTemplate(w, templateLocation, pageTitle)
+	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
+
+	templates.RenderTemplate(w, templateLocation, pageTitle, email)
 }
 
 func RestApi() {
@@ -84,7 +86,7 @@ func RestApi() {
 	http.HandleFunc("/create-checkout-session", payments.CreateCheckoutSession)
 	http.HandleFunc("/webhook", payments.HandleWebhook)
 
-	http.HandleFunc("/", pageHandler)
+	http.Handle("/", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(pageHandler)))
 
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
