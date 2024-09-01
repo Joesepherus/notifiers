@@ -485,8 +485,27 @@ footer p {
   text-decoration: none;
 }
 
-.login-link {
-    display: block;
-    margin-top: 8px;
-    text-align: center;
-}
+
+ /* Hidden forms */
+ #signup-form,
+ #login-form {
+   display: none;
+ }
+
+ /* Show active form */
+ .active-form {
+   display: block!important;
+ }
+
+ /* Switch links */
+ .switch-link {
+   display: block;
+   margin-top: 8px;
+   text-align: center;
+   cursor: pointer;
+   color: #232ed7;
+ }
+
+ .switch-link:hover {
+   text-decoration: underline;
+ }
