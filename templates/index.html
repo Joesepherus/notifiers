@@ -1,43 +1,43 @@
 {{ define "content" }}
 
 <div class="content">
-  <div class="landing-page">
-    <h1>Set Your Trading Alerts</h1>
-    <p>
-      Stay ahead of the market with real-time alerts on support and resistance
-      levels.
-    </p>
+  <div class="page">
+    <div class="landing-page">
+      <h1>Set Your Trading Alerts</h1>
+      <p>
+        Stay ahead of the market with real-time alerts on support and resistance
+        levels.
+      </p>
 
-    <div class="form-container">
-      <form id="alert-form" action="/api/add-alert" method="post">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="symbol">Symbol</label>
-            <input
-              type="text"
-              id="symbol"
-              name="symbol"
-              placeholder="NVDA"
-              required
-            />
+      <div class="form-container">
+        <form id="alert-form" action="/api/add-alert" method="post">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="symbol">Symbol</label>
+              <input
+                type="text"
+                id="symbol"
+                name="symbol"
+                placeholder="NVDA"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="triggerValue">Trigger Value</label>
+              <input
+                type="number"
+                id="triggerValue"
+                name="triggerValue"
+                placeholder="120.45"
+                required
+              />
+            </div>
           </div>
-          <div class="form-group">
-            <label for="triggerValue">Trigger Value</label>
-            <input
-              type="number"
-              id="triggerValue"
-              name="triggerValue"
-              placeholder="120.45"
-              required
-            />
+          <div class="form-row">
+            <button type="submit">Set Alert</button>
           </div>
-        </div>
-        <div class="form-row">
-          <button type="submit">
-            Set Alert
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 </div>
