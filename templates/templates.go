@@ -26,6 +26,7 @@ func InitTemplates() {
 		"./templates/pricing.html",
 		"./templates/about.html",
 		"./templates/alerts.html",
+		"./templates/profile.html",
 		"./templates/404.html",
 	}
 

@@ -65,6 +65,13 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		templateLocation = "./templates/alerts.html"
 		pageTitle = "Alerts - Trading Alerts"
+	case "/profile":
+		UserSubscription := alertsController.UserSubscription[email]
+		data["CanAddAlert"] = UserSubscription.CanAddAlert
+		data["SubscriptionType"] = UserSubscription.SubscriptionType
+		data["MaxAlerts"] = alertsController.SUBSCRIPTION_LIMITS[UserSubscription.SubscriptionType]
+		templateLocation = "./templates/profile.html"
+		pageTitle = "Profile - Trading Alerts"
 	default:
 		templateLocation = "./templates/404.html"
 		pageTitle = "Page not found"

@@ -24,8 +24,11 @@ type UserAlertInfo struct {
 
 var UserSubscription = make(map[string]UserAlertInfo)
 
-const GOLD_SUBSCRIPTION_TOTAL = 100
-const DIAMOND_SUBSCRIPTION_TOTAL = 1000
+var SUBSCRIPTION_LIMITS = map[string]int{
+	"silver":  10,
+	"gold":    100,
+	"diamond": 1000,
+}
 
 func CheckToAddAlert(userID int, email string) (bool, string) {
 	alerts, _ := alertsService.GetAlertsByUserID(userID)
@@ -37,10 +40,11 @@ func CheckToAddAlert(userID int, email string) (bool, string) {
 	}
 	gold_subscription, err := payments.GetSubscriptionByCustomerAndProduct(cust.ID, gold_productID)
 	diamond_subscription, err2 := payments.GetSubscriptionByCustomerAndProduct(cust.ID, diamond_productID)
+
 	log.Printf("gold_subscription", gold_subscription)
 	log.Printf("diamond_subscription", diamond_subscription)
 	if err == nil && gold_subscription.Status == "active" {
-		if len(alerts) > GOLD_SUBSCRIPTION_TOTAL-1 {
+		if len(alerts) > SUBSCRIPTION_LIMITS["gold"]-1 {
 			return false, ""
 		} else {
 			return true, "gold"
@@ -48,7 +52,7 @@ func CheckToAddAlert(userID int, email string) (bool, string) {
 	}
 
 	if err2 == nil && diamond_subscription.Status == "active" {
-		if len(alerts) > DIAMOND_SUBSCRIPTION_TOTAL-1 {
+		if len(alerts) > SUBSCRIPTION_LIMITS["diamond"]-1 {
 			return false, ""
 		} else {
 			return true, "diamond"
@@ -149,6 +153,7 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Success response
+	http.Redirect(w, r, "/alerts", http.StatusSeeOther)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	response = map[string]string{"message": "Alert added successfully"}

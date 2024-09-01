@@ -1,0 +1,33 @@
+<!-- templates/404.html -->
+{{ define "content" }}
+<div class="content">
+  <div class="page">
+    <section class="about">
+      <h1>Profile</h1>
+      <p>Welcome to our platform. Here’s a bit more about your account:</p>
+      
+      <div class="account-info">
+          <h2>Account Information</h2>
+          <p><strong>Email:</strong> {{ .Email }}</p>
+          <p><strong>Subscription Plan:</strong> {{ .SubscriptionType }}</p>
+      </div>
+
+      <div class="description">
+          <h2>Our Service</h2>
+          <p>Our service offers a variety of features to help you monitor and manage your alerts effectively. Depending on your subscription plan, you may have access to more advanced features.</p>
+      </div>
+
+      <div class="subscription-details">
+          <h2>Your Subscription</h2>
+          <p>You are currently on the <strong>{{ .SubscriptionType }}</strong> plan. This plan allows you to set up to <strong>{{ .MaxAlerts }}</strong> alerts.</p>
+          <p>If you wish to upgrade your plan, please visit the <a href="/pricing">Pricing</a> page.</p>
+      </div>
+      
+      <div class="contact-info">
+          <h2>Contact Us</h2>
+          <p>If you have any questions or need support, feel free to <a href="/contact">contact us</a>.</p>
+      </div>
+  </section>
+  </div>
+</div>
+{{ end }}
