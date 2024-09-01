@@ -92,6 +92,35 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+type GetCustomerByEmailRequest struct {
+	Email string `json:"email"`
+}
+
+func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
+	var req GetCustomerByEmailRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	email := req.Email
+	log.Printf("email", email)
+	// Fetch customer details
+	customer, err := GetCustomerByEmail(email)
+	if err != nil {
+		http.Error(w, "Customer not found", http.StatusNotFound)
+		return
+	}
+
+	// Set the content type to JSON
+	w.Header().Set("Content-Type", "application/json")
+
+	// Return the customer details as JSON
+	if err := json.NewEncoder(w).Encode(customer); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
+}
+
 func GetCustomerByEmail(email string) (*stripe.Customer, error) {
 	params := &stripe.CustomerListParams{
 		Email: stripe.String(email),

@@ -12,14 +12,12 @@
             <p>Email notifications</p>
             <p class="hidden">none</p>
           </div>
-          {{ if .Email }} 
-          {{ if eq .SubscriptionType "silver" }} 
+          {{ if .Email }} {{ if eq .SubscriptionType "silver" }}
           <div class="activeSubscription">Active Plan</div>
           {{ else }}
-          <button onclick="selectPlan('Silver Alerts')">Select</button>
-          {{ end }}
-          {{ else }}
-          <button type="button" onclick="showSubscribeModal()">
+          <button>Select</button>
+          {{ end }} {{ else }}
+          <button type="button" onclick="showSubscribeModal()">Select</button>
           {{ end }}
         </div>
 
@@ -32,10 +30,14 @@
             <p>Email notifications</p>
             <p>Basic Support</p>
           </div>
-          {{ if .Email }} 
-          <button onclick="selectPlan('gold')">Select</button>
+          {{ if .Email }} {{ if eq .SubscriptionType "gold" }}
+          <div class="activeSubscription">Active Plan</div>
           {{ else }}
-          <button type="button" onclick="showSubscribeModal()">
+          <button onclick="selectPlan('gold', '{{ .Email }}')">
+            Select
+          </button>
+          {{ end }} {{ else }}
+          <button type="button" onclick="showSubscribeModal()">Select</button>
           {{ end }}
         </div>
 
@@ -47,10 +49,14 @@
             <p>Email notifications</p>
             <p>Priority Support</p>
           </div>
-          {{ if .Email }} 
-          <button onclick="selectPlan('diamond')">Select</button>
+          {{ if .Email }} {{ if eq .SubscriptionType "diamond" }}
+          <div class="activeSubscription">Active Plan</div>
           {{ else }}
-          <button type="button" onclick="showSubscribeModal()">
+          <button onclick="selectPlan('diamond','{{ .Email }}')">
+            Select
+          </button>
+          {{ end }} {{ else }}
+          <button type="button" onclick="showSubscribeModal()">Select</button>
           {{ end }}
         </div>
       </div>

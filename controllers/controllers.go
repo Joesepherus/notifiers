@@ -102,6 +102,7 @@ func RestApi() {
 	// Stripe routes
 	http.HandleFunc("/create-checkout-session", payments.CreateCheckoutSession)
 	http.HandleFunc("/webhook", payments.HandleWebhook)
+	http.HandleFunc("/customer-by-email", payments.HandleGetCustomerByEmail)
 
 	http.Handle("/", authMiddleware.TokenCheckMiddleware(http.HandlerFunc(pageHandler)))
 
