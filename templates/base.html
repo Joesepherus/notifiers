@@ -11,30 +11,35 @@
   <body>
     <header class="sticky-header">
       <nav class="navigation">
-          <div class="logo">
-              <a href="/"><img src="/static/img/logo.png" width="30" alt="Logo"></a>
-          </div>
-          <div class="nav-container">
-              <ul class="navigation-list">
-                  <li><a href="/pricing">Pricing</a></li>
-                  <li><a href="/about">About</a></li>
-                  <div class="spacer"></div>
-                  {{ if .Email }}
-                      <li><a href="/profile">{{ .Email }}</a></li>
-                      <li><a href="/api/logout">Logout</a></li>
-                  {{ else }}
-                      <li><a href="#" onclick="openModalShowLoginForm()">Login</a></li>
-                      <li><a href="#" onclick="openModalShowSignUpForm()">Signup</a></li>
-                  {{ end }}
-              </ul>
-          </div>
-          <button class="menu-toggle" aria-label="Toggle navigation">
-              <span class="menu-icon"></span>
-              <span class="menu-icon"></span>
-              <span class="menu-icon"></span>
-          </button>
+        <div class="logo">
+          <a href="/"
+            ><img src="/static/img/logo.png" width="30" alt="Logo"
+          /></a>
+        </div>
+        <div class="nav-container">
+          <ul class="navigation-list">
+            <li><a href="/pricing">Pricing</a></li>
+            {{ if .Email }}
+            <li><a href="/alerts">Alerts</a></li>
+            {{ end }}
+            <li><a href="/about">About</a></li>
+            <div class="spacer"></div>
+            {{ if .Email }}
+            <li><a href="/profile">{{ .Email }}</a></li>
+            <li><a href="/api/logout">Logout</a></li>
+            {{ else }}
+            <li><a href="#" onclick="openModalShowLoginForm()">Login</a></li>
+            <li><a href="#" onclick="openModalShowSignUpForm()">Signup</a></li>
+            {{ end }}
+          </ul>
+        </div>
+        <button class="menu-toggle" aria-label="Toggle navigation">
+          <span class="menu-icon"></span>
+          <span class="menu-icon"></span>
+          <span class="menu-icon"></span>
+        </button>
       </nav>
-  </header>
+    </header>
 
     {{ block "content" . }}{{ end }}
 
@@ -45,80 +50,80 @@
     </footer>
 
     <div id="signup-modal" class="modal">
-        <div class="modal-content">
-          <span class="close" onclick="closeSignUpForm()">&times;</span>
-          <!-- Sign Up Form -->
-          <div id="signup-form" class="active-form">
-            <h2>Sign Up</h2>
-            <form action="/api/sign-up" method="post">
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label for="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="Enter your password"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label for="confirm-password">Confirm Password</label>
-                <input
-                  type="password"
-                  id="confirm-password"
-                  name="confirm-password"
-                  placeholder="Confirm your password"
-                  required
-                />
-              </div>
-              <button type="submit" class="submit-btn">Sign up</button>
-            </form>
-            <a class="switch-link" onclick="showLoginForm()"
-              >Already have an account? Log in</a
+      <div class="modal-content">
+        <span class="close" onclick="closeSignUpForm()">&times;</span>
+        <!-- Sign Up Form -->
+        <div id="signup-form" class="active-form">
+          <h2>Sign Up</h2>
+          <form action="/api/sign-up" method="post">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="confirm-password">Confirm Password</label>
+              <input
+                type="password"
+                id="confirm-password"
+                name="confirm-password"
+                placeholder="Confirm your password"
+                required
+              />
+            </div>
+            <button type="submit" class="submit-btn">Sign up</button>
+          </form>
+          <a class="switch-link" onclick="showLoginForm()"
+            >Already have an account? Log in</a
+          >
+        </div>
+        <!-- Login Form -->
+        <div id="login-form">
+          <h2>Log In</h2>
+          <form action="/api/login" method="post">
+            <div class="form-group">
+              <label for="login-email">Email</label>
+              <input
+                type="email"
+                id="login-email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="login-password">Password</label>
+              <input
+                type="password"
+                id="login-password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <button type="submit" class="submit-btn">Log In</button>
+            <a class="switch-link" onclick="showSignUpForm()"
+              >Don't have an account? Sign up</a
             >
-          </div>
-          <!-- Login Form -->
-          <div id="login-form">
-            <h2>Log In</h2>
-            <form action="/api/login" method="post">
-              <div class="form-group">
-                <label for="login-email">Email</label>
-                <input
-                  type="email"
-                  id="login-email"
-                  name="email"
-                  placeholder="Enter your email"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label for="login-password">Password</label>
-                <input
-                  type="password"
-                  id="login-password"
-                  name="password"
-                  placeholder="Enter your password"
-                  required
-                />
-              </div>
-              <button type="submit" class="submit-btn">Log In</button>
-              <a class="switch-link" onclick="showSignUpForm()"
-                >Don't have an account? Sign up</a
-              >
-            </form>
-          </div>
+          </form>
         </div>
       </div>
+    </div>
   </body>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
