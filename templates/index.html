@@ -34,7 +34,15 @@
             </div>
           </div>
           <div class="form-row">
+            {{ if .Email }} {{ if gt .AlertsNum 4 }}
+            <button type="button" onclick="showSubscribeModal()">
+              Set Alert
+            </button>
+            {{ else }}
             <button type="submit">Set Alert</button>
+            {{ end }} {{ else }}
+            <button type="button" onclick="openModalShowSignUpForm()">Set Alert</button>
+            {{ end }}
           </div>
         </form>
       </div>

@@ -9,6 +9,7 @@ import (
 	"notifiers/middlewares/authMiddleware"
 	"notifiers/payments/payments"
 	"notifiers/services/alertsService"
+	"notifiers/services/userService"
 	"notifiers/templates"
 	"os"
 	"strconv"
@@ -27,8 +28,19 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		// Add other default data here if needed
 	}
 
+	email, ok := r.Context().Value(authMiddleware.UserEmailKey).(string)
+	user, err := userService.GetUserByEmail(email)
+
 	switch r.URL.Path {
 	case "/":
+		// Fetch alerts and add to data
+		data["AlertsNum"] = 0
+		if err == nil {
+			alerts, err2 := alertsService.GetAlertsByUserID(user.ID)
+			if err2 == nil {
+			}
+			data["AlertsNum"] = len(alerts)
+		}
 		templateLocation = "./templates/index.html"
 		pageTitle = "Trading Alerts"
 	case "/pricing":
@@ -39,12 +51,10 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		pageTitle = "About - Trading Alerts"
 	case "/alerts":
 		// Fetch alerts and add to data
-		alerts, err := alertsService.GetAlerts()
-		if err != nil {
-			http.Error(w, "Failed to fetch alerts", http.StatusInternalServerError)
-			return
+		alerts, err := alertsService.GetAlertsByUserID(user.ID)
+		if err == nil {
+			data["Alerts"] = alerts
 		}
-		data["Alerts"] = alerts
 		templateLocation = "./templates/alerts.html"
 		pageTitle = "Alerts - Trading Alerts"
 	default:
@@ -52,10 +62,9 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		pageTitle = "Page not found"
 	}
 
-	if email, ok := r.Context().Value(authMiddleware.UserEmailKey).(string); ok {
+	if ok {
 		data["Email"] = email
 	}
-
 	data["Title"] = pageTitle
 	data["Content"] = templateLocation
 

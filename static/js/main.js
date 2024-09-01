@@ -36,3 +36,19 @@ function openModalShowSignUpForm() {
   showModal();
   showSignUpForm();
 }
+
+function closeSubscribeForm() {
+  const modal = document.getElementById("subscribe-modal");
+  modal.classList.remove("show");
+}
+
+
+function showSubscribeModal() {
+  const modal = document.getElementById("subscribe-modal");
+  modal.classList.add("show");
+  window.onclick = function (event) {
+    if (event.target.classList.contains("modal")) {
+      closeSubscribeForm();
+    }
+  };
+}

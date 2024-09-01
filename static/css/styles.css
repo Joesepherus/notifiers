@@ -254,7 +254,7 @@ footer p {
   margin-bottom: 40px;
 }
 
-.card button {
+button {
   padding: 12px;
   background-color: #232ed7;
   color: #fff;
@@ -266,7 +266,7 @@ footer p {
   transition: background-color 0.3s;
 }
 
-.card button:hover {
+button:hover {
   background-color: #3944d6;
 }
 
@@ -510,4 +510,14 @@ footer p {
 
 .page {
   padding: 20px 0px;
+}
+
+.subscribe-modal-text {
+  text-align: center;
+}
+
+.subscribe-modal-link {
+  display: flex;
+  justify-content: center;
+  text-decoration: unset;
 }

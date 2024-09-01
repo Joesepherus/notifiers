@@ -11,11 +11,18 @@ import (
 	"strconv"
 )
 
+// TODO: add logic for when user is subscribed, so he can have
+// more than 5 active alerts
 func AddAlert(w http.ResponseWriter, r *http.Request) {
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
 		http.Error(w, "User not found", http.StatusInternalServerError)
+		return
+	}
+	alerts, _ := alertsService.GetAlertsByUserID(user.ID)
+	if len(alerts) > 4 {
+		http.Error(w, "You have hit limit of 5 active alerts for free tier.", http.StatusInternalServerError)
 		return
 	}
 
