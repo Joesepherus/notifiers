@@ -9,7 +9,7 @@
     </p>
 
     <div class="form-container">
-      <form id="alert-form">
+      <form id="alert-form" action="/api/add-alert" method="post">
         <div class="form-row">
           <div class="form-group">
             <label for="symbol">Symbol</label>
@@ -22,22 +22,23 @@
             />
           </div>
           <div class="form-group">
-            <label for="price">Price</label>
+            <label for="triggerValue">Trigger Value</label>
             <input
               type="number"
-              id="price"
-              name="price"
+              id="triggerValue"
+              name="triggerValue"
               placeholder="120.45"
               required
             />
           </div>
         </div>
         <div class="form-row">
-          <button type="button" onclick="openModalShowSignUpForm()">Set Alert</button>
+          <button type="submit">
+            Set Alert
+          </button>
         </div>
       </form>
     </div>
-
   </div>
 </div>
 {{ end }}

@@ -8,47 +8,78 @@ import (
 	"notifiers/services/alertsService"
 	"notifiers/services/userService"
 	"notifiers/services/yahooService"
-	"notifiers/types/alertsTypes"
+	"strconv"
 )
 
 func AddAlert(w http.ResponseWriter, r *http.Request) {
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	user, err := userService.GetUserByEmail(email)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusInternalServerError)
+		return
+	}
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
 	}
+
 	var response map[string]string
 
-	// Decode the JSON body into an Alert struct
-	var alert alertsTypes.Alert
-	if err := json.NewDecoder(r.Body).Decode(&alert); err != nil {
+	// Parse form values
+	err = r.ParseForm()
+	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
-		response = map[string]string{"error": "Invalid request body"}
+		response = map[string]string{"error": "Failed to parse form data"}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	// Extract form values
+	symbol := r.FormValue("symbol")
+	triggerValueStr := r.FormValue("triggerValue")
+
+	// Convert triggerValue to float64
+	triggerValue, err := strconv.ParseFloat(triggerValueStr, 64)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		response = map[string]string{"error": "Invalid trigger value"}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
 	// Example validation
-	if alert.Symbol == "" || alert.TriggerValue <= 0 {
+	if symbol == "" || triggerValue <= 0 {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		response = map[string]string{"error": "Invalid alert data"}
 		json.NewEncoder(w).Encode(response)
 		return
 	}
-	stockData, err := yahooService.GetStockCurrentValue(alert.Symbol)
+
+	// Fetch stock data
+	stockData, err := yahooService.GetStockCurrentValue(symbol)
 	if err != nil {
-		log.Printf("Failed to get stock value for %s: %v", alert.Symbol, err)
+		log.Printf("Failed to get stock value for %s: %v", symbol, err)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		response = map[string]string{"error": "Failed to get stock data"}
+		json.NewEncoder(w).Encode(response)
+		return
 	}
+
 	currentPrice := stockData.Chart.Result[0].Meta.RegularMarketPrice
 	var alertType string
-	if currentPrice > alert.TriggerValue {
+	if currentPrice > triggerValue {
 		alertType = "lower"
 	} else {
 		alertType = "higher"
 	}
-	err = alertsService.AddAlert(user.ID, alert.Symbol, alert.TriggerValue, alertType)
+
+	// Add alert to the database
+	err = alertsService.AddAlert(user.ID, symbol, triggerValue, alertType)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)

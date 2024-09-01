@@ -11,7 +11,7 @@
   </ul>
 
   <h1>Add Alert</h1>
-  <form id="alertForm">
+  <form action="/api/add-alert" method="post">
     <label for="symbol">Symbol:</label>
     <input type="text" id="symbol" name="symbol" required /><br /><br />
 
@@ -28,35 +28,4 @@
   </form>
 </div>
 
-<script>
-  document
-    .getElementById("alertForm")
-    .addEventListener("submit", function (event) {
-      event.preventDefault(); // Prevent default form submission
-
-      const formData = new FormData(event.target);
-
-      const data = {
-        triggerValue: parseFloat(formData.get("triggerValue")),
-        symbol: formData.get("symbol"),
-      };
-
-      fetch("/api/add-alert", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
-        .then((response) => response.json())
-        .then((result) => {
-          console.log("Success:", result);
-          alert("Alert added successfully!");
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-          alert("Error adding alert.");
-        });
-    });
-</script>
 {{ end }}
