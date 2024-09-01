@@ -509,3 +509,7 @@ footer p {
  .switch-link:hover {
    text-decoration: underline;
  }
+
+ a {
+    cursor: pointer
+  }
