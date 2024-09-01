@@ -14,13 +14,13 @@ import (
 
 // TODO: add logic for when user is subscribed, so he can have
 // more than 5 active alerts
-var silver_productID string = "prod_QkzhvwCenEWmDY"
-var gold_productID string = "prod_QlltE9sAx7aY9z"
+var gold_productID string = "prod_QkzhvwCenEWmDY"
+var diamond_productID string = "prod_QlltE9sAx7aY9z"
 
 var CanAddAlert = make(map[string]bool)
 
-const SILVER_SUBSCRIPTION_TOTAL = 100
-const GOLD_SUBSCRIPTION_TOTAL = 1000
+const GOLD_SUBSCRIPTION_TOTAL = 100
+const DIAMOND_SUBSCRIPTION_TOTAL = 1000
 
 func CheckToAddAlert(userID int, email string) bool {
 	alerts, _ := alertsService.GetAlertsByUserID(userID)
@@ -30,20 +30,20 @@ func CheckToAddAlert(userID int, email string) bool {
 		log.Printf("Error retrieving customer: %v", err)
 		return false
 	}
-	silver_subscription, err := payments.GetSubscriptionByCustomerAndProduct(cust.ID, silver_productID)
-	gold_subscription, err2 := payments.GetSubscriptionByCustomerAndProduct(cust.ID, gold_productID)
-	log.Printf("silver_subscription", silver_subscription)
+	gold_subscription, err := payments.GetSubscriptionByCustomerAndProduct(cust.ID, gold_productID)
+	diamond_subscription, err2 := payments.GetSubscriptionByCustomerAndProduct(cust.ID, diamond_productID)
 	log.Printf("gold_subscription", gold_subscription)
-	if err == nil && silver_subscription.Status == "active" {
-		if len(alerts) > SILVER_SUBSCRIPTION_TOTAL-1 {
+	log.Printf("diamond_subscription", diamond_subscription)
+	if err == nil && gold_subscription.Status == "active" {
+		if len(alerts) > GOLD_SUBSCRIPTION_TOTAL-1 {
 			return false
 		} else {
 			return true
 		}
 	}
 
-	if err2 == nil && gold_subscription.Status == "active" {
-		if len(alerts) > GOLD_SUBSCRIPTION_TOTAL-1 {
+	if err2 == nil && diamond_subscription.Status == "active" {
+		if len(alerts) > DIAMOND_SUBSCRIPTION_TOTAL-1 {
 			return false
 		} else {
 			return true
