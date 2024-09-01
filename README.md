@@ -28,18 +28,28 @@
 </p>
 <p></p>
 <h4>Pricing Page</h4>
-<p><strong>Free tier</strong></p>
+<p><strong>Silver tier - Free </strong></p>
 <ul>
-  <li><p>10 alerts</p></li>
+  <li><p>5 alerts</p></li>
   <li><p>any stock</p></li>
   <li><p>email alert</p></li>
 </ul>
 <p></p>
-<p><strong>Paid tier - $2.99</strong></p>
+<p><strong>Gold tier - $4.99</strong></p>
 <ul>
   <li><p>100 alerts</p></li>
   <li><p>any stock</p></li>
   <li><p>email alert</p></li>
+</ul>
+<p></p>
+<p><strong>Diamond tier - $9.99</strong></p>
+<ul>
+  <li><p>1000 alerts</p></li>
+  <li><p>any stock</p></li>
+  <li>
+    <p>email alert</p>
+    <p></p>
+  </li>
 </ul>
 <p></p>
 <h4>Login/SignUp</h4>
