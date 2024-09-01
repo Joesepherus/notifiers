@@ -92,7 +92,7 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func getCustomerByEmail(email string) (*stripe.Customer, error) {
+func GetCustomerByEmail(email string) (*stripe.Customer, error) {
 	params := &stripe.CustomerListParams{
 		Email: stripe.String(email),
 	}
@@ -103,7 +103,7 @@ func getCustomerByEmail(email string) (*stripe.Customer, error) {
 	return nil, fmt.Errorf("no customer found with email: %s", email)
 }
 
-func getSubscriptionByCustomerAndProduct(customerID string, productID string) (*stripe.Subscription, error) {
+func GetSubscriptionByCustomerAndProduct(customerID string, productID string) (*stripe.Subscription, error) {
 	params := &stripe.SubscriptionListParams{
 		Customer: stripe.String(customerID),
 	}
@@ -133,7 +133,7 @@ func test_createCustomer() {
 
 func test_getSubscriptionByUserEmail() {
 	customerEmail := "test@gmail.com" // Replace with the actual user's email
-	cust, err := getCustomerByEmail(customerEmail)
+	cust, err := GetCustomerByEmail(customerEmail)
 	if err != nil {
 		log.Printf("Error retrieving customer: %v", err)
 	} else {
@@ -141,7 +141,7 @@ func test_getSubscriptionByUserEmail() {
 	}
 	productID := "prod_QkzhvwCenEWmDY"
 	// Then, get the subscription for the specific product
-	subscription, err := getSubscriptionByCustomerAndProduct(cust.ID, productID)
+	subscription, err := GetSubscriptionByCustomerAndProduct(cust.ID, productID)
 	if err != nil {
 		log.Fatalf("Error retrieving subscription: %v", err)
 	}
@@ -152,7 +152,6 @@ func test_getSubscriptionByUserEmail() {
 func Setup() {
 	// Set your Stripe secret key
 	stripe.Key = os.Getenv("STRIPE_SECRET")
-
 	// test_createCustomer()
 	// test_getSubscriptionByUserEmail()
 }

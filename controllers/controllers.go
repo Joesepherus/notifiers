@@ -33,13 +33,13 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 
 	switch r.URL.Path {
 	case "/":
-		// Fetch alerts and add to data
-		data["AlertsNum"] = 0
+		data["CanAddAlert"] = false
+
 		if err == nil {
-			alerts, err2 := alertsService.GetAlertsByUserID(user.ID)
-			if err2 == nil {
-			}
-			data["AlertsNum"] = len(alerts)
+			canAddAlert := alertsController.CanAddAlert[email]
+			data["CanAddAlert"] = canAddAlert
+			log.Printf("canAddAlert", alertsController.CanAddAlert)
+			log.Printf("canAddAlert[email]", canAddAlert)
 		}
 		templateLocation = "./templates/index.html"
 		pageTitle = "Trading Alerts"

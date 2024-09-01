@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"notifiers/middlewares/authMiddleware"
+	"notifiers/payments/payments"
 	"notifiers/services/alertsService"
 	"notifiers/services/userService"
 	"notifiers/services/yahooService"
@@ -13,6 +14,47 @@ import (
 
 // TODO: add logic for when user is subscribed, so he can have
 // more than 5 active alerts
+var silver_productID string = "prod_QkzhvwCenEWmDY"
+var gold_productID string = "prod_QlltE9sAx7aY9z"
+
+var CanAddAlert = make(map[string]bool)
+
+const SILVER_SUBSCRIPTION_TOTAL = 100
+const GOLD_SUBSCRIPTION_TOTAL = 1000
+
+func CheckToAddAlert(userID int, email string) bool {
+	alerts, _ := alertsService.GetAlertsByUserID(userID)
+
+	cust, err := payments.GetCustomerByEmail(email)
+	if err != nil {
+		log.Printf("Error retrieving customer: %v", err)
+		return false
+	}
+	silver_subscription, err := payments.GetSubscriptionByCustomerAndProduct(cust.ID, silver_productID)
+	gold_subscription, err2 := payments.GetSubscriptionByCustomerAndProduct(cust.ID, gold_productID)
+	log.Printf("silver_subscription", silver_subscription)
+	log.Printf("gold_subscription", gold_subscription)
+	if err == nil && silver_subscription.Status == "active" {
+		if len(alerts) > SILVER_SUBSCRIPTION_TOTAL-1 {
+			return false
+		} else {
+			return true
+		}
+	}
+
+	if err2 == nil && gold_subscription.Status == "active" {
+		if len(alerts) > GOLD_SUBSCRIPTION_TOTAL-1 {
+			return false
+		} else {
+			return true
+		}
+	}
+	if len(alerts) > 4 {
+		return false
+	}
+	return true
+}
+
 func AddAlert(w http.ResponseWriter, r *http.Request) {
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	user, err := userService.GetUserByEmail(email)
@@ -20,8 +62,8 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "User not found", http.StatusInternalServerError)
 		return
 	}
-	alerts, _ := alertsService.GetAlertsByUserID(user.ID)
-	if len(alerts) > 4 {
+
+	if !CanAddAlert[email] {
 		http.Error(w, "You have hit limit of 5 active alerts for free tier.", http.StatusInternalServerError)
 		return
 	}
@@ -95,6 +137,9 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	canAddAlert := CheckToAddAlert(user.ID, email)
+	CanAddAlert[email] = canAddAlert
+
 	// Success response
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -113,5 +158,16 @@ func GetAlerts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(alerts); err != nil {
 		http.Error(w, "Failed to encode alerts", http.StatusInternalServerError)
+	}
+}
+
+func Setup() {
+	emails := map[string]int{
+		"joes@joesexperiences.com": 1,
+		"test@gmail.com":           2,
+	}
+
+	for email, userID := range emails {
+		CanAddAlert[email] = CheckToAddAlert(userID, email)
 	}
 }
