@@ -36,14 +36,22 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		data["CanAddAlert"] = false
 
 		if err == nil {
-			canAddAlert := alertsController.CanAddAlert[email]
-			data["CanAddAlert"] = canAddAlert
-			log.Printf("canAddAlert", alertsController.CanAddAlert)
-			log.Printf("canAddAlert[email]", canAddAlert)
+			UserSubscription := alertsController.UserSubscription[email]
+			data["CanAddAlert"] = UserSubscription.CanAddAlert
+			data["SubscirptionType"] = UserSubscription.SubscriptionType
+			log.Printf("canAddAlert", alertsController.UserSubscription)
+			log.Printf("SubscirptionType", UserSubscription.SubscriptionType)
+			log.Printf("canAddAlert[email]", UserSubscription.CanAddAlert)
 		}
 		templateLocation = "./templates/index.html"
 		pageTitle = "Trading Alerts"
 	case "/pricing":
+		UserSubscription := alertsController.UserSubscription[email]
+		data["CanAddAlert"] = UserSubscription.CanAddAlert
+		data["SubscriptionType"] = UserSubscription.SubscriptionType
+		log.Printf("canAddAlert", alertsController.UserSubscription)
+		log.Printf("SubscriptionType", UserSubscription.SubscriptionType)
+		log.Printf("canAddAlert[email]", UserSubscription.CanAddAlert)
 		templateLocation = "./templates/pricing.html"
 		pageTitle = "Pricing - Trading Alerts"
 	case "/about":

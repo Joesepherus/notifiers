@@ -12,8 +12,15 @@
             <p>Email notifications</p>
             <p class="hidden">none</p>
           </div>
-
+          {{ if .Email }} 
+          {{ if eq .SubscriptionType "silver" }} 
+          <div class="activeSubscription">Active Plan</div>
+          {{ else }}
           <button onclick="selectPlan('Silver Alerts')">Select</button>
+          {{ end }}
+          {{ else }}
+          <button type="button" onclick="showSubscribeModal()">
+          {{ end }}
         </div>
 
         <div class="card gold-card preselected-card">
@@ -25,8 +32,11 @@
             <p>Email notifications</p>
             <p>Basic Support</p>
           </div>
-
-          <button onclick="selectPlan('Gold Alerts')">Select</button>
+          {{ if .Email }} 
+          <button onclick="selectPlan('gold')">Select</button>
+          {{ else }}
+          <button type="button" onclick="showSubscribeModal()">
+          {{ end }}
         </div>
 
         <div class="card diamond-card">
@@ -37,7 +47,11 @@
             <p>Email notifications</p>
             <p>Priority Support</p>
           </div>
-          <button onclick="selectPlan('Platinum Alerts')">Select</button>
+          {{ if .Email }} 
+          <button onclick="selectPlan('diamond')">Select</button>
+          {{ else }}
+          <button type="button" onclick="showSubscribeModal()">
+          {{ end }}
         </div>
       </div>
     </div>

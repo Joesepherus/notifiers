@@ -525,3 +525,10 @@ button:hover {
 .hidden {
   visibility: hidden;
 }
+
+.activeSubscription {
+  color: #fff;
+  height: 45px;
+  display: flex;
+  align-items: center;
+}

@@ -17,18 +17,23 @@ import (
 var gold_productID string = "prod_QkzhvwCenEWmDY"
 var diamond_productID string = "prod_QlltE9sAx7aY9z"
 
-var CanAddAlert = make(map[string]bool)
+type UserAlertInfo struct {
+	CanAddAlert      bool
+	SubscriptionType string
+}
+
+var UserSubscription = make(map[string]UserAlertInfo)
 
 const GOLD_SUBSCRIPTION_TOTAL = 100
 const DIAMOND_SUBSCRIPTION_TOTAL = 1000
 
-func CheckToAddAlert(userID int, email string) bool {
+func CheckToAddAlert(userID int, email string) (bool, string) {
 	alerts, _ := alertsService.GetAlertsByUserID(userID)
 
 	cust, err := payments.GetCustomerByEmail(email)
 	if err != nil {
 		log.Printf("Error retrieving customer: %v", err)
-		return false
+		return false, ""
 	}
 	gold_subscription, err := payments.GetSubscriptionByCustomerAndProduct(cust.ID, gold_productID)
 	diamond_subscription, err2 := payments.GetSubscriptionByCustomerAndProduct(cust.ID, diamond_productID)
@@ -36,23 +41,23 @@ func CheckToAddAlert(userID int, email string) bool {
 	log.Printf("diamond_subscription", diamond_subscription)
 	if err == nil && gold_subscription.Status == "active" {
 		if len(alerts) > GOLD_SUBSCRIPTION_TOTAL-1 {
-			return false
+			return false, ""
 		} else {
-			return true
+			return true, "gold"
 		}
 	}
 
 	if err2 == nil && diamond_subscription.Status == "active" {
 		if len(alerts) > DIAMOND_SUBSCRIPTION_TOTAL-1 {
-			return false
+			return false, ""
 		} else {
-			return true
+			return true, "diamond"
 		}
 	}
 	if len(alerts) > 4 {
-		return false
+		return false, "silver"
 	}
-	return true
+	return true, "silver"
 }
 
 func AddAlert(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +68,7 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !CanAddAlert[email] {
+	if !UserSubscription[email].CanAddAlert {
 		http.Error(w, "You have hit limit of 5 active alerts for free tier.", http.StatusInternalServerError)
 		return
 	}
@@ -137,8 +142,11 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	canAddAlert := CheckToAddAlert(user.ID, email)
-	CanAddAlert[email] = canAddAlert
+	canAddAlert, subscriptionType := CheckToAddAlert(user.ID, email)
+	UserSubscription[email] = UserAlertInfo{
+		CanAddAlert:      canAddAlert,
+		SubscriptionType: subscriptionType,
+	}
 
 	// Success response
 	w.Header().Set("Content-Type", "application/json")
@@ -168,6 +176,10 @@ func Setup() {
 	}
 
 	for email, userID := range emails {
-		CanAddAlert[email] = CheckToAddAlert(userID, email)
+		canAddAlert, subscriptionType := CheckToAddAlert(userID, email)
+		UserSubscription[email] = UserAlertInfo{
+			CanAddAlert:      canAddAlert,
+			SubscriptionType: subscriptionType,
+		}
 	}
 }
