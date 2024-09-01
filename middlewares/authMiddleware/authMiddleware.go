@@ -54,6 +54,9 @@ func TokenAuthMiddleware(next http.Handler) http.Handler {
 func TokenCheckMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("token")
+		// just set it up as empty string for start
+		ctx := context.WithValue(r.Context(), UserEmailKey, "")
+		r = r.WithContext(ctx)
 		if err != nil {
 			next.ServeHTTP(w, r)
 			return
@@ -79,7 +82,7 @@ func TokenCheckMiddleware(next http.Handler) http.Handler {
 
 		// Extract email from claims
 		email := claims["email"].(string)
-		ctx := context.WithValue(r.Context(), UserEmailKey, email)
+		ctx = context.WithValue(r.Context(), UserEmailKey, email)
 		r = r.WithContext(ctx)
 
 		// Token is valid, pass the request to the next handler

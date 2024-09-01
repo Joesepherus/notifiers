@@ -81,12 +81,13 @@ func RestApi() {
 	// Authentication routes
 	http.HandleFunc("/api/sign-up", authController.SignUp)
 	http.HandleFunc("/api/login", authController.Login)
+	http.HandleFunc("/api/logout", authController.Logout)
 
 	// Stripe routes
 	http.HandleFunc("/create-checkout-session", payments.CreateCheckoutSession)
 	http.HandleFunc("/webhook", payments.HandleWebhook)
 
-	http.Handle("/", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(pageHandler)))
+	http.Handle("/", authMiddleware.TokenCheckMiddleware(http.HandlerFunc(pageHandler)))
 
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))

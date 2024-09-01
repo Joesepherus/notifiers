@@ -84,3 +84,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 }
+
+func Logout(w http.ResponseWriter, r *http.Request) {
+	// Clear the authentication token by setting an expired cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:   "token",
+		Value:  "",
+		Path:   "/",
+		MaxAge: -1, // Setting MaxAge to -1 deletes the cookie
+	})
+
+	// Optionally, you can also invalidate the session or token on the server-side
+
+	// Redirect to the homepage or login page
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}

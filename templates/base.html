@@ -21,7 +21,7 @@
                   <div class="spacer"></div>
                   {{ if .Email }}
                       <li><a href="/profile">{{ .Email }}</a></li>
-                      <li><a href="/logout">Logout</a></li>
+                      <li><a href="/api/logout">Logout</a></li>
                   {{ else }}
                       <li><a href="#" onclick="openModalShowLoginForm()">Login</a></li>
                       <li><a href="#" onclick="openModalShowSignUpForm()">Signup</a></li>
