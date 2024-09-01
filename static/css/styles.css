@@ -521,3 +521,7 @@ button:hover {
   justify-content: center;
   text-decoration: unset;
 }
+
+.hidden {
+  visibility: hidden;
+}
