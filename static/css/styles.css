@@ -96,61 +96,60 @@ footer p {
   color: #666;
 }
 
-
 .form-container {
-    width: 100%;
-    max-width: 400px; /* Adjust this as needed */
-    margin: 30px auto;
-    padding: 20px;
-    background-color: #f7f7f7;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+  width: 100%;
+  max-width: 400px; /* Adjust this as needed */
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
 
 #alert-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .form-row {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
-    flex: 1; /* Ensure equal width of the form groups */
+  display: flex;
+  flex-direction: column;
+  flex: 1; /* Ensure equal width of the form groups */
 }
 
 .form-group label {
-    margin-bottom: 5px;
-    font-size: 14px;
-    color: #333;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #333;
 }
 
 .form-group input[type="text"],
 .form-group input[type="number"] {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
 .form-row button {
-    width: 100%;
-    padding: 10px;
-    background-color: #232ed7;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
+  width: 100%;
+  padding: 10px;
+  background-color: #232ed7;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 .form-row button:hover {
-    background-color: #3944d6; /* Darker shade on hover */
+  background-color: #3944d6; /* Darker shade on hover */
 }
 
 .modal {
@@ -187,7 +186,6 @@ footer p {
   text-decoration: none;
   cursor: pointer;
 }
-
 
 .pricing-page {
   text-align: center;
@@ -397,4 +395,98 @@ footer p {
   .right-links {
     margin-top: 10px; /* Add space between left and right groups */
   }
+}
+
+.modal {
+  display: block;
+  visibility: hidden; /* Make the modal initially hidden */
+  opacity: 0; /* Start with the modal being invisible */
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  transition: opacity 0.25s ease, visibility 0.25s ease; /* Fade-in and fade-out effects */
+}
+
+.modal.show {
+  visibility: visible; /* Make the modal visible */
+  opacity: 1; /* When visible, the modal will be fully opaque */
+}
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 300px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-group input:focus {
+  border-color: #3944d6;
+  outline: none;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+.modal-content h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #3944d6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #232ed7;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+}
+
+.login-link {
+    display: block;
+    margin-top: 8px;
+    text-align: center;
 }
