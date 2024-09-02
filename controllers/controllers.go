@@ -8,6 +8,8 @@ import (
 	"notifiers/controllers/authController"
 	"notifiers/middlewares/authMiddleware"
 	"notifiers/payments/payments"
+	subscriptionUtils "notifiers/utils/subscription"
+
 	"notifiers/services/alertsService"
 	"notifiers/services/userService"
 	"notifiers/templates"
@@ -36,20 +38,20 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		data["CanAddAlert"] = false
 
 		if err == nil {
-			UserSubscription := alertsController.UserSubscription[email]
+			UserSubscription := subscriptionUtils.UserSubscription[email]
 			data["CanAddAlert"] = UserSubscription.CanAddAlert
 			data["SubscirptionType"] = UserSubscription.SubscriptionType
-			log.Printf("canAddAlert", alertsController.UserSubscription)
+			log.Printf("canAddAlert", subscriptionUtils.UserSubscription)
 			log.Printf("SubscirptionType", UserSubscription.SubscriptionType)
 			log.Printf("canAddAlert[email]", UserSubscription.CanAddAlert)
 		}
 		templateLocation = "./templates/index.html"
 		pageTitle = "Trading Alerts"
 	case "/pricing":
-		UserSubscription := alertsController.UserSubscription[email]
+		UserSubscription := subscriptionUtils.UserSubscription[email]
 		data["CanAddAlert"] = UserSubscription.CanAddAlert
 		data["SubscriptionType"] = UserSubscription.SubscriptionType
-		log.Printf("canAddAlert", alertsController.UserSubscription)
+		log.Printf("canAddAlert", subscriptionUtils.UserSubscription)
 		log.Printf("SubscriptionType", UserSubscription.SubscriptionType)
 		log.Printf("canAddAlert[email]", UserSubscription.CanAddAlert)
 		templateLocation = "./templates/pricing.html"
@@ -68,17 +70,17 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		if err2 == nil {
 			data["CompletedAlerts"] = completed_alerts
 		}
-		UserSubscription := alertsController.UserSubscription[email]
+		UserSubscription := subscriptionUtils.UserSubscription[email]
 		data["CanAddAlert"] = UserSubscription.CanAddAlert
 		data["SubscriptionType"] = UserSubscription.SubscriptionType
 
 		templateLocation = "./templates/alerts.html"
 		pageTitle = "Alerts - Trading Alerts"
 	case "/profile":
-		UserSubscription := alertsController.UserSubscription[email]
+		UserSubscription := subscriptionUtils.UserSubscription[email]
 		data["CanAddAlert"] = UserSubscription.CanAddAlert
 		data["SubscriptionType"] = UserSubscription.SubscriptionType
-		data["MaxAlerts"] = alertsController.SUBSCRIPTION_LIMITS[UserSubscription.SubscriptionType]
+		data["MaxAlerts"] = subscriptionUtils.SUBSCRIPTION_LIMITS[UserSubscription.SubscriptionType]
 		templateLocation = "./templates/profile.html"
 		pageTitle = "Profile - Trading Alerts"
 	case "/reset-password-sent":
@@ -126,8 +128,9 @@ func RestApi() {
 
 	// Stripe routes
 	http.HandleFunc("/create-checkout-session", payments.CreateCheckoutSession)
-	http.HandleFunc("/webhook", payments.HandleWebhook)
 	http.HandleFunc("/customer-by-email", payments.HandleGetCustomerByEmail)
+	http.HandleFunc("/webhook", payments.HandleWebhook)
+	http.Handle("/api/cancel-subscription", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(payments.CancelSubscription)))
 
 	http.Handle("/", authMiddleware.TokenCheckMiddleware(http.HandlerFunc(pageHandler)))
 

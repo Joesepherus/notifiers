@@ -5,64 +5,12 @@ import (
 	"log"
 	"net/http"
 	"notifiers/middlewares/authMiddleware"
-	"notifiers/payments/payments"
 	"notifiers/services/alertsService"
 	"notifiers/services/userService"
 	"notifiers/services/yahooService"
+	subscriptionUtils "notifiers/utils/subscription"
 	"strconv"
 )
-
-// TODO: add logic for when user is subscribed, so he can have
-// more than 5 active alerts
-var gold_productID string = "prod_QkzhvwCenEWmDY"
-var diamond_productID string = "prod_QlltE9sAx7aY9z"
-
-type UserAlertInfo struct {
-	CanAddAlert      bool
-	SubscriptionType string
-}
-
-var UserSubscription = make(map[string]UserAlertInfo)
-
-var SUBSCRIPTION_LIMITS = map[string]int{
-	"silver":  10,
-	"gold":    100,
-	"diamond": 1000,
-}
-
-func CheckToAddAlert(userID int, email string) (bool, string) {
-	alerts, _ := alertsService.GetAlertsByUserID(userID)
-
-	cust, err := payments.GetCustomerByEmail(email)
-	if err != nil {
-		log.Printf("Error retrieving customer: %v", err)
-		return false, ""
-	}
-	gold_subscription, err := payments.GetSubscriptionByCustomerAndProduct(cust.ID, gold_productID)
-	diamond_subscription, err2 := payments.GetSubscriptionByCustomerAndProduct(cust.ID, diamond_productID)
-
-	log.Printf("gold_subscription", gold_subscription)
-	log.Printf("diamond_subscription", diamond_subscription)
-	if err == nil && gold_subscription.Status == "active" {
-		if len(alerts) > SUBSCRIPTION_LIMITS["gold"]-1 {
-			return false, ""
-		} else {
-			return true, "gold"
-		}
-	}
-
-	if err2 == nil && diamond_subscription.Status == "active" {
-		if len(alerts) > SUBSCRIPTION_LIMITS["diamond"]-1 {
-			return false, ""
-		} else {
-			return true, "diamond"
-		}
-	}
-	if len(alerts) > 4 {
-		return false, "silver"
-	}
-	return true, "silver"
-}
 
 func AddAlert(w http.ResponseWriter, r *http.Request) {
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
@@ -72,7 +20,7 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !UserSubscription[email].CanAddAlert {
+	if !subscriptionUtils.UserSubscription[email].CanAddAlert {
 		http.Error(w, "You have hit limit of 5 active alerts for free tier.", http.StatusInternalServerError)
 		return
 	}
@@ -146,8 +94,8 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	canAddAlert, subscriptionType := CheckToAddAlert(user.ID, email)
-	UserSubscription[email] = UserAlertInfo{
+	canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(user.ID, email)
+	subscriptionUtils.UserSubscription[email] = subscriptionUtils.UserAlertInfo{
 		CanAddAlert:      canAddAlert,
 		SubscriptionType: subscriptionType,
 	}
@@ -204,8 +152,8 @@ func Setup() {
 	}
 
 	for email, userID := range emails {
-		canAddAlert, subscriptionType := CheckToAddAlert(userID, email)
-		UserSubscription[email] = UserAlertInfo{
+		canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(userID, email)
+		subscriptionUtils.UserSubscription[email] = subscriptionUtils.UserAlertInfo{
 			CanAddAlert:      canAddAlert,
 			SubscriptionType: subscriptionType,
 		}

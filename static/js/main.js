@@ -22,7 +22,6 @@ function showSignUpForm() {
   loginForm.classList.remove("active-form");
   resetPasswordForm.classList.remove("active-form");
   setPasswordForm.classList.remove("active-form");
-  
 }
 
 function showLoginForm() {
@@ -201,10 +200,29 @@ window.onload = function () {
   // Check if the token exists
   if (token) {
     console.log("Token:", token);
-    document.getElementById('tokenInput').value = token;
-    openModalShowSetPasswordForm()
+    document.getElementById("tokenInput").value = token;
+    openModalShowSetPasswordForm();
     // Perform actions with the token, like sending it to the server
   } else {
     console.log("No token found in the URL");
   }
 };
+
+async function cancelSubscription() {
+  try {
+    const response = await fetch(`/api/cancel-subscription?subscription_id`, {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to cancel subscription: ${response.statusText}`);
+    }
+
+    const result = await response.text();
+    console.log(result); // You can display this result in the UI or handle it as needed
+    alert("Subscription canceled successfully.");
+  } catch (error) {
+    console.error("Error:", error);
+    alert(`Error canceling subscription: ${error.message}`);
+  }
+}

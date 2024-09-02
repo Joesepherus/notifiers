@@ -6,6 +6,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"notifiers/controllers/alertsController"
+	"notifiers/middlewares/authMiddleware"
+	"notifiers/services/userService"
+	subscriptionUtils "notifiers/utils/subscription"
+
 	"os"
 
 	"github.com/stripe/stripe-go/v74"
@@ -64,6 +69,7 @@ func CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 
 // handleWebhook processes Stripe webhook events
 func HandleWebhook(w http.ResponseWriter, r *http.Request) {
+	log.Printf("kokot")
 	const MaxBodyBytes = int64(65536)
 	r.Body = http.MaxBytesReader(w, r.Body, MaxBodyBytes)
 	payload, err := ioutil.ReadAll(r.Body)
@@ -72,15 +78,18 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), "whsec_YourWebhookSecret")
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	event, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), "whsec_df27cdea0a382282ba590e627ddb527358a1be26da6cbbe7819588df7f40e573")
+	log.Printf("event", event)
+
+	// if err != nil {
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	return
+	// }
 
 	switch event.Type {
 	case "invoice.payment_succeeded":
 		log.Println("Payment succeeded")
+		alertsController.Setup()
 		// Handle successful payment
 	case "customer.subscription.deleted":
 		log.Println("Subscription canceled")
@@ -88,6 +97,7 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	default:
 		log.Printf("Unhandled event type: %s\n", event.Type)
 	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 
 	w.WriteHeader(http.StatusOK)
 }
@@ -106,7 +116,7 @@ func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 	email := req.Email
 	log.Printf("email", email)
 	// Fetch customer details
-	customer, err := GetCustomerByEmail(email)
+	customer, err := subscriptionUtils.GetCustomerByEmail(email)
 	if err != nil {
 		http.Error(w, "Customer not found", http.StatusNotFound)
 		return
@@ -121,35 +131,6 @@ func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetCustomerByEmail(email string) (*stripe.Customer, error) {
-	params := &stripe.CustomerListParams{
-		Email: stripe.String(email),
-	}
-	i := customer.List(params)
-	for i.Next() {
-		return i.Customer(), nil
-	}
-	return nil, fmt.Errorf("no customer found with email: %s", email)
-}
-
-func GetSubscriptionByCustomerAndProduct(customerID string, productID string) (*stripe.Subscription, error) {
-	params := &stripe.SubscriptionListParams{
-		Customer: stripe.String(customerID),
-	}
-	i := sub.List(params)
-
-	for i.Next() {
-		subscription := i.Subscription()
-		for _, item := range subscription.Items.Data {
-			if item.Price.Product.ID == productID {
-				return subscription, nil
-			}
-		}
-	}
-
-	return nil, fmt.Errorf("no subscription found for customer with product ID: %s", productID)
-}
-
 func test_createCustomer() {
 	newCustomer, err := createCustomer("test@gmail.com")
 	if err != nil {
@@ -162,7 +143,7 @@ func test_createCustomer() {
 
 func test_getSubscriptionByUserEmail() {
 	customerEmail := "test@gmail.com" // Replace with the actual user's email
-	cust, err := GetCustomerByEmail(customerEmail)
+	cust, err := subscriptionUtils.GetCustomerByEmail(customerEmail)
 	if err != nil {
 		log.Printf("Error retrieving customer: %v", err)
 	} else {
@@ -170,12 +151,59 @@ func test_getSubscriptionByUserEmail() {
 	}
 	productID := "prod_QkzhvwCenEWmDY"
 	// Then, get the subscription for the specific product
-	subscription, err := GetSubscriptionByCustomerAndProduct(cust.ID, productID)
+	subscription, err := subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, productID)
 	if err != nil {
 		log.Fatalf("Error retrieving subscription: %v", err)
 	}
 
 	fmt.Printf("Subscription ID: %s, Status: %s\n", subscription.ID, subscription.Status)
+}
+
+func CancelSubscription(w http.ResponseWriter, r *http.Request) {
+	email, _ := r.Context().Value(authMiddleware.UserEmailKey).(string)
+	cust, err := subscriptionUtils.GetCustomerByEmail(email)
+	if err != nil {
+		log.Printf("Error retrieving customer: %v", err)
+	}
+	UserSubscription := subscriptionUtils.UserSubscription[email]
+	var subscription *stripe.Subscription
+	if UserSubscription.SubscriptionType == "gold" {
+		subscription, err = subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, subscriptionUtils.Gold_productID)
+		if err != nil {
+			log.Fatalf("Error retrieving subscription: %v", err)
+		}
+	} else if UserSubscription.SubscriptionType == "diamond" {
+		subscription, err = subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, subscriptionUtils.Diamond_productID)
+		if err != nil {
+			log.Fatalf("Error retrieving subscription: %v", err)
+		}
+	}
+
+	// Assuming the subscription ID is passed as a URL parameter
+	subscriptionID := subscription.ID
+	if subscriptionID == "" {
+		http.Error(w, "Subscription ID is required", http.StatusBadRequest)
+		return
+	}
+
+	params := &stripe.SubscriptionCancelParams{}
+	_, err = sub.Cancel(subscriptionID, params)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to cancel subscription: %v", err), http.StatusInternalServerError)
+		return
+	}
+	user, err := userService.GetUserByEmail(email)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusInternalServerError)
+		return
+	}
+	canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(user.ID, email)
+	subscriptionUtils.UserSubscription[email] = subscriptionUtils.UserAlertInfo{
+		CanAddAlert:      canAddAlert,
+		SubscriptionType: subscriptionType,
+	}
+
+	w.Write([]byte("Subscription canceled successfully."))
 }
 
 func Setup() {
