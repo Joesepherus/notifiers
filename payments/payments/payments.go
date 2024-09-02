@@ -54,8 +54,8 @@ func CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 		Mode:       stripe.String("subscription"),
-		SuccessURL: stripe.String(os.Getenv("URL") + "/success"),
-		CancelURL:  stripe.String(os.Getenv("URL") + "/cancel"),
+		SuccessURL: stripe.String(os.Getenv("URL") + "/subscription-success"),
+		CancelURL:  stripe.String(os.Getenv("URL") + "/subscription-cancel"),
 	}
 
 	s, err := session.New(params)
