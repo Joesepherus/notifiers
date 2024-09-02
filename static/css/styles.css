@@ -95,7 +95,6 @@ footer p {
 .form-container {
   width: 100%;
   max-width: 400px; /* Adjust this as needed */
-  margin: 30px auto;
   padding: 20px;
   background-color: #f7f7f7;
   border: 1px solid #ccc;
@@ -533,32 +532,60 @@ button:hover {
   align-items: center;
 }
 
-#alertsTable {
+table {
   border: 0px solid #ddd;
   border-radius: 4px;
   font-family: Arial, sans-serif;
 }
 
-#alertsTable th, #alertsTable td {
+table th, table td {
   padding: 12px;
   text-align: left;
 }
 
-#alertsTable th {
+table th {
   background-color: #f4f4f4;
   color: #333;
   border-bottom: 0px solid #ddd;
 }
 
-#alertsTable tr:nth-child(even) {
+table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-#alertsTable tr:hover {
+table tr:hover {
   background-color: #f1f1f1;
 }
 
 
-#alertsTable tr {
+table tr {
   border: 0px solid #ddd;
+}
+
+.tab-container {
+  display: flex;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.tab {
+  padding: 10px 20px;
+  margin-right: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px 4px 0 0;
+  background-color: #f1f1f1;
+  color: #333;
+}
+.tab.active {
+  background-color: white;
+  border-bottom: 1px solid white;
+  font-weight: bold;
+}
+.tab-content {
+  border: 1px solid #ddd;
+  border-radius: 0 0 4px 4px;
+  padding: 10px;
+}
+
+.none {
+  display: none;
 }

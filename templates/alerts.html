@@ -3,29 +3,111 @@
 <div class="content">
   <div class="page">
     <h1>Alerts</h1>
-    <table id="alertsTable" style="border-collapse: collapse; width: 100%; max-width: 600px;">
+    <div class="tab-container">
+      <div class="tab active" onclick="showAlerts()">Active Alerts</div>
+      <div class="tab" onclick="showCompletedAlerts()">Completed Alerts</div>
+    </div>
+    <table
+      id="alertsTable"
+      style="border-collapse: collapse; width: 100%; max-width: 600px"
+    >
       <thead>
         <tr>
-          <th>Symbol</th>
-          <th>Trigger Value</th>
-          <th>Action</th>
+          <th style="width: 33%;">Symbol</th>
+          <th style="width: 33%;">Trigger Value</th>
+          <th style="width: 33%;">Action</th>
         </tr>
       </thead>
       <tbody>
         {{range .Alerts}}
         <tr id="alert-{{.ID}}">
-          <td>{{.Symbol}}</td>
-          <td>{{printf "%.2f" .TriggerValue}}</td>
-          <td><a href="#" onclick="deleteAlert({{ .ID }})" style="color: red; text-decoration: none;">❌</a></td>
+          <td style="width: 33%;">{{.Symbol}}</td>
+          <td style="width: 33%;">{{printf "%.2f" .TriggerValue}}</td>
+          <td style="width: 33%;">
+            <a
+              href="#"
+              onclick="deleteAlert({{ .ID }})"
+              style="color: red; text-decoration: none"
+              >❌</a
+            >
+          </td>
         </tr>
         {{else}}
         <tr>
-          <td colspan="3" style="text-align: center; padding: 10px;">No active alerts found.</td>
+          <td colspan="3" style="text-align: center; padding: 10px">
+            No active alerts found.
+          </td>
         </tr>
         {{end}}
       </tbody>
     </table>
-    
+    <table
+      id="completedAlertsTable"
+      class="none"
+      style="border-collapse: collapse; width: 100%; max-width: 600px"
+    >
+      <thead>
+        <tr>
+          <th style="width: 50%;">Symbol</th>
+          <th style="width: 50%;">Trigger Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .CompletedAlerts}}
+        <tr id="alert-{{.ID}}">
+          <td style="width: 50%;">{{.Symbol}}</td>
+          <td style="width: 50%;">{{printf "%.2f" .TriggerValue}}</td>
+        </tr>
+        {{else}}
+        <tr>
+          <td colspan="3" style="text-align: center; padding: 10px">
+            No active alerts found.
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+
+    <h2>Add alert</h2>
+    <div class="form-container">
+      <form id="alert-form" action="/api/add-alert" method="post">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="symbol">Symbol</label>
+            <input
+              type="text"
+              id="symbol"
+              name="symbol"
+              placeholder="NVDA"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="triggerValue">Trigger Value</label>
+            <input
+              type="number"
+              id="triggerValue"
+              name="triggerValue"
+              placeholder="120.45"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          {{ if .Email }} {{ if .CanAddAlert }}
+          <button type="submit">Set Alert</button>
+          {{ else }}
+          <button type="button" onclick="showSubscribeModal()">
+            Set Alert
+          </button>
+          {{ end }} {{ else }}
+          <button type="button" onclick="openModalShowSignUpForm()">
+            Set Alert
+          </button>
+          {{ end }}
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 

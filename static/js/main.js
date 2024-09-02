@@ -130,3 +130,26 @@ function deleteAlert(id) {
       console.error("Error:", error);
     });
 }
+
+function showAlerts() {
+  document.getElementById("alertsTable").classList.remove("none");
+  document.getElementById("completedAlertsTable").classList.add("none");
+  setActiveTab("Active Alerts");
+}
+
+function showCompletedAlerts() {
+  document.getElementById("alertsTable").classList.add("none");
+  document.getElementById("completedAlertsTable").classList.remove("none");
+  setActiveTab("Completed Alerts");
+}
+
+function setActiveTab(tabName) {
+  const tabs = document.querySelectorAll(".tab");
+  tabs.forEach((tab) => {
+    if (tab.innerText === tabName) {
+      tab.classList.add("active");
+    } else {
+      tab.classList.remove("active");
+    }
+  });
+}

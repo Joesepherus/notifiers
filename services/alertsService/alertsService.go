@@ -89,6 +89,38 @@ func GetAlertsByUserID(userID int) ([]alertsTypes.Alert, error) {
 	return alerts, nil
 }
 
+func GetCompletedAlertsByUserID(userID int) ([]alertsTypes.Alert, error) {
+	var alerts []alertsTypes.Alert
+
+	// Query to fetch rows from the database
+	rows, err := db.Query(`SELECT id, symbol, trigger_value, alert_type 
+		FROM alerts 
+		WHERE triggered = TRUE AND user_id = $1 
+		ORDER BY symbol 
+		LIMIT 100`, userID)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to query alerts: %v", err)
+	}
+	defer rows.Close()
+
+	// Iterate over rows and scan into struct
+	for rows.Next() {
+		var alert alertsTypes.Alert
+		if err := rows.Scan(&alert.ID, &alert.Symbol, &alert.TriggerValue, &alert.AlertType); err != nil {
+			return nil, fmt.Errorf("failed to scan row: %v", err)
+		}
+		alerts = append(alerts, alert)
+	}
+
+	// Check for errors from iterating over rows
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %v", err)
+	}
+
+	return alerts, nil
+}
+
 func CheckAlerts(symbol string, currentPrice float64) {
 	alerts, err := GetAlertsBySymbol(symbol)
 	if err != nil {

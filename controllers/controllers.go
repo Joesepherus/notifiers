@@ -60,9 +60,14 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	case "/alerts":
 		// Fetch alerts and add to data
 		alerts, err := alertsService.GetAlertsByUserID(user.ID)
+		completed_alerts, err2 := alertsService.GetCompletedAlertsByUserID(user.ID)
 		if err == nil {
 			data["Alerts"] = alerts
 		}
+		if err2 == nil {
+			data["CompletedAlerts"] = completed_alerts
+		}
+
 		templateLocation = "./templates/alerts.html"
 		pageTitle = "Alerts - Trading Alerts"
 	case "/profile":
