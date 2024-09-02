@@ -144,18 +144,3 @@ func DeleteAlert(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Alert deleted successfully"))
 }
-
-func Setup() {
-	emails := map[string]int{
-		"joes@joesexperiences.com": 1,
-		"test@gmail.com":           2,
-	}
-
-	for email, userID := range emails {
-		canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(userID, email)
-		subscriptionUtils.UserSubscription[email] = subscriptionUtils.UserAlertInfo{
-			CanAddAlert:      canAddAlert,
-			SubscriptionType: subscriptionType,
-		}
-	}
-}

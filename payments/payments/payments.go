@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"notifiers/controllers/alertsController"
 	"notifiers/middlewares/authMiddleware"
 	"notifiers/services/userService"
 	subscriptionUtils "notifiers/utils/subscription"
@@ -89,7 +88,7 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	switch event.Type {
 	case "invoice.payment_succeeded":
 		log.Println("Payment succeeded")
-		alertsController.Setup()
+		subscriptionUtils.Setup()
 		// Handle successful payment
 	case "customer.subscription.deleted":
 		log.Println("Subscription canceled")

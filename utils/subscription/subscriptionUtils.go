@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"notifiers/services/alertsService"
+	"notifiers/services/userService"
 
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/customer"
@@ -89,4 +90,16 @@ func CheckToAddAlert(userID int, email string) (bool, string) {
 		return false, "silver"
 	}
 	return true, "silver"
+}
+
+func Setup() {
+	users, _ := userService.GetUsers()
+	log.Printf("users", users)
+	for _, user := range users {
+		canAddAlert, subscriptionType := CheckToAddAlert(user.ID, user.Email)
+		UserSubscription[user.Email] = UserAlertInfo{
+			CanAddAlert:      canAddAlert,
+			SubscriptionType: subscriptionType,
+		}
+	}
 }

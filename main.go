@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"notifiers/controllers"
-	"notifiers/controllers/alertsController"
 	database "notifiers/db"
+	subscriptionUtils "notifiers/utils/subscription"
 
 	// "notifiers/loadTest"
 	"notifiers/payments/payments"
@@ -43,7 +43,7 @@ func main() {
 
 	// loadTest.SetupDbWithLotsOfAlerts()
 	payments.Setup()
-	alertsController.Setup()
+	subscriptionUtils.Setup()
 
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
