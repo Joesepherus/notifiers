@@ -3,14 +3,29 @@
 <div class="content">
   <div class="page">
     <h1>Alerts</h1>
-    {{range .Alerts}}
-    <div id="alert-{{.ID}}">
-      {{.Symbol}}: {{printf "%.2f" .TriggerValue}}
-      <a onclick="deleteAlert({{ .ID }})">❌</a>
-    </div>
-    {{else}}
-    <div>No active alerts found.</div>
-    {{end}}
+    <table id="alertsTable" style="border-collapse: collapse; width: 100%; max-width: 600px;">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Trigger Value</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .Alerts}}
+        <tr id="alert-{{.ID}}" style="border-bottom: 1px solid #ddd;">
+          <td>{{.Symbol}}</td>
+          <td>{{printf "%.2f" .TriggerValue}}</td>
+          <td><a href="#" onclick="deleteAlert({{ .ID }})" style="color: red; text-decoration: none;">❌</a></td>
+        </tr>
+        {{else}}
+        <tr>
+          <td colspan="3" style="text-align: center; padding: 10px;">No active alerts found.</td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+    
   </div>
 </div>
 
