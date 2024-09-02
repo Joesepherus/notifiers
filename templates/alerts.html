@@ -3,14 +3,14 @@
 <div class="content">
   <div class="page">
     <h1>Alerts</h1>
-    <ul>
-      {{range .Alerts}}
-      <li>{{.Symbol}}: {{printf "%.2f" .TriggerValue}}</li>
-      {{else}}
-      <li>No active alerts found.</li>
-      {{end}}
-    </ul>
-
+    {{range .Alerts}}
+    <div id="alert-{{.ID}}">
+      {{.Symbol}}: {{printf "%.2f" .TriggerValue}}
+      <a onclick="deleteAlert({{ .ID }})">❌</a>
+    </div>
+    {{else}}
+    <div>No active alerts found.</div>
+    {{end}}
   </div>
 </div>
 

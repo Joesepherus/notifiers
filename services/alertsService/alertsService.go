@@ -156,3 +156,20 @@ func GetAlertsBySymbol(symbol string) ([]alertsTypes.Alert, error) {
 
 	return alerts, nil
 }
+
+func DeleteAlertByID(id int) error {
+	// Prepare the SQL statement for deleting the alert by ID
+	stmt, err := db.Prepare("DELETE FROM alerts WHERE id = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	// Execute the deletion
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

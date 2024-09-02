@@ -58,28 +58,28 @@ const diamond_price = "price_1PuEM6L7saX4DlUzJgkTzYGy";
 async function selectPlan(type, email) {
   console.log("type: ", type);
   console.log("email: ", email);
-  let customer
+  let customer;
   await fetch("/customer-by-email", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({email}),
+    body: JSON.stringify({ email }),
   })
-  .then((response) => {
-    if (response.ok) {
-      return response.json(); // or response.json() if expecting JSON response
-    }
-    throw new Error("Network response was not ok.");
-  })
-  .then((data) => {
-    customer = data
-  })
-  .catch((error) => {
-    console.error("There was a problem with your fetch operation:", error);
-  });
-  
-  console.log('customer: ', customer);
+    .then((response) => {
+      if (response.ok) {
+        return response.json(); // or response.json() if expecting JSON response
+      }
+      throw new Error("Network response was not ok.");
+    })
+    .then((data) => {
+      customer = data;
+    })
+    .catch((error) => {
+      console.error("There was a problem with your fetch operation:", error);
+    });
+
+  console.log("customer: ", customer);
   const priceID = type === "gold" ? gold_price : diamond_price;
   console.log("priceID: ", priceID);
 
@@ -108,5 +108,25 @@ async function selectPlan(type, email) {
     })
     .catch((error) => {
       console.error("There was a problem with your fetch operation:", error);
+    });
+}
+
+function deleteAlert(id) {
+  console.log("deleteAlert", id);
+
+  fetch(`/api/delete-alert?id=${id}`, {
+    method: "DELETE",
+  })
+    .then((response) => {
+      if (response.ok) {
+        console.log("Alert deleted successfully");
+        // Optionally, remove the alert from the DOM or refresh the alerts list
+        document.getElementById(`alert-${id}`).remove();
+      } else {
+        console.error("Failed to delete alert");
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
     });
 }

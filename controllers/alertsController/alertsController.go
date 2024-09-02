@@ -174,6 +174,29 @@ func GetAlerts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func DeleteAlert(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	}
+	// Get the ID from the query parameters
+	idStr := r.URL.Query().Get("id")
+	// Convert the ID to an integer
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid alert ID", http.StatusBadRequest)
+		return
+	}
+
+	// Delete the alert by ID (implement your deletion logic here)
+	err = alertsService.DeleteAlertByID(id)
+	if err != nil {
+		http.Error(w, "Failed to delete alert", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Alert deleted successfully"))
+}
+
 func Setup() {
 	emails := map[string]int{
 		"joes@joesexperiences.com": 1,
