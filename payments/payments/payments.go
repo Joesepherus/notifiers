@@ -78,7 +78,7 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), "whsec_df27cdea0a382282ba590e627ddb527358a1be26da6cbbe7819588df7f40e573")
+	event, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), os.Getenv("STRIPE_WEBHOOK_SECRET"))
 	log.Printf("event", event)
 
 	// if err != nil {
