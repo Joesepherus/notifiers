@@ -24,13 +24,17 @@ func InitDB(dataSourceName string) *sql.DB {
 		alert_type TEXT CHECK(alert_type IN ('lower', 'higher')) NOT NULL,
 		triggered BOOLEAN DEFAULT FALSE,
 		user_id INTEGER NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		completed_at TIMESTAMP,
 		FOREIGN KEY (user_id) REFERENCES users(id)
 	);`)
 	statement.Exec()
+
 	statement, _ = DB.Prepare(`CREATE TABLE IF NOT EXISTS users (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		email TEXT UNIQUE NOT NULL,
-		password TEXT NOT NULL
+		password TEXT NOT NULL,
+		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 	);`)
 	statement.Exec()
 

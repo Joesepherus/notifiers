@@ -7,6 +7,7 @@ import (
 	"notifiers/mail"
 	"notifiers/services/userService"
 	"notifiers/types/alertsTypes"
+	"time"
 )
 
 var db *sql.DB
@@ -140,14 +141,17 @@ func CheckAlerts(symbol string, currentPrice float64) {
 		if shouldTrigger {
 			log.Printf("Alert triggered for %s: current price %.4f has reached the trigger value %.4f (%s)", symbol, currentPrice, alert.TriggerValue, alert.AlertType)
 
-			statement, err := db.Prepare("UPDATE alerts SET triggered = TRUE WHERE id = ?")
+			statement, err := db.Prepare("UPDATE alerts SET triggered = TRUE, completed_at = ? WHERE id = ?")
 			fmt.Printf("id: ", alert.ID)
 
 			if err != nil {
 				fmt.Printf("Wtf error\n", err)
 				return
 			}
-			_, err = statement.Exec(alert.ID)
+
+			// Current time
+			completedAt := time.Now()
+			_, err = statement.Exec(completedAt, alert.ID)
 			if err != nil {
 				fmt.Printf("Hey error\n", err)
 				return

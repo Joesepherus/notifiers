@@ -94,7 +94,6 @@ func CheckToAddAlert(userID int, email string) (bool, string) {
 
 func Setup() {
 	users, _ := userService.GetUsers()
-	log.Printf("users", users)
 	for _, user := range users {
 		canAddAlert, subscriptionType := CheckToAddAlert(user.ID, user.Email)
 		UserSubscription[user.Email] = UserAlertInfo{
