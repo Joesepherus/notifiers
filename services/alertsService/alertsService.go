@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"notifiers/mail"
+	"notifiers/services/userService"
 	"notifiers/types/alertsTypes"
 )
 
@@ -154,10 +155,14 @@ func CheckAlerts(symbol string, currentPrice float64) {
 
 				fmt.Printf("Updated\n")
 			}
-			go mail.SendEmail("joes@joesexperiences.com", "Alert Triggered", fmt.Sprintf(
-				"Alert triggered for %s: current price %.4f has reached the trigger value %.4f (%s)",
-				symbol, currentPrice, alert.TriggerValue, alert.AlertType,
-			))
+			user, err := userService.GetUserById(alert.UserID)
+			if err == nil {
+				go mail.SendEmail(user.Email, "Alert Triggered", fmt.Sprintf(
+					"Alert triggered for %s: current price %.4f has reached the trigger value %.4f (%s)",
+					symbol, currentPrice, alert.TriggerValue, alert.AlertType,
+				))
+
+			}
 		}
 	}
 }
@@ -166,7 +171,7 @@ func GetAlertsBySymbol(symbol string) ([]alertsTypes.Alert, error) {
 	var alerts []alertsTypes.Alert
 
 	// Query to fetch rows from the database
-	rows, err := db.Query("SELECT id, symbol, trigger_value, alert_type FROM alerts WHERE symbol = ? AND triggered = FALSE", symbol)
+	rows, err := db.Query("SELECT id, symbol, trigger_value, alert_type, user_id FROM alerts WHERE symbol = ? AND triggered = FALSE", symbol)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query alerts: %v", err)
 	}
@@ -175,7 +180,7 @@ func GetAlertsBySymbol(symbol string) ([]alertsTypes.Alert, error) {
 	// Iterate over rows and scan into struct
 	for rows.Next() {
 		var alert alertsTypes.Alert
-		if err := rows.Scan(&alert.ID, &alert.Symbol, &alert.TriggerValue, &alert.AlertType); err != nil {
+		if err := rows.Scan(&alert.ID, &alert.Symbol, &alert.TriggerValue, &alert.AlertType, &alert.UserID); err != nil {
 			return nil, fmt.Errorf("failed to scan row: %v", err)
 		}
 		alerts = append(alerts, alert)

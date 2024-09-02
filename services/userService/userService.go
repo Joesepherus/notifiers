@@ -31,6 +31,15 @@ func CreateUser(email, password string) (int, error) {
 	return int(userID), nil
 }
 
+func GetUserById(id int) (*userTypes.User, error) {
+	user := &userTypes.User{}
+	err := db.QueryRow("SELECT id, email, password FROM users WHERE id = ?", id).Scan(&user.ID, &user.Email, &user.Password)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 func GetUserByEmail(email string) (*userTypes.User, error) {
 	user := &userTypes.User{}
 	err := db.QueryRow("SELECT id, email, password FROM users WHERE email = ?", email).Scan(&user.ID, &user.Email, &user.Password)
