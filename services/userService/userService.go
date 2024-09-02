@@ -53,3 +53,20 @@ func CheckPassword(user *userTypes.User, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	return err == nil
 }
+
+func UpdatePassword(email string, hashedPassword string) error {
+	query := `UPDATE users SET password = ? WHERE email = ?`
+
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(hashedPassword, email)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

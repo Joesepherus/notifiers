@@ -489,7 +489,9 @@ button:hover {
 
  /* Hidden forms */
  #signup-form,
- #login-form {
+ #login-form,
+ #reset-password-form,
+ #set-password-form {
    display: none;
  }
 

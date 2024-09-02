@@ -27,6 +27,8 @@ func InitTemplates() {
 		"./templates/about.html",
 		"./templates/alerts.html",
 		"./templates/profile.html",
+		"./templates/reset-password-sent.html",
+		"./templates/reset-password-success.html",
 		"./templates/404.html",
 	}
 

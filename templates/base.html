@@ -120,8 +120,52 @@
             <a class="switch-link" onclick="showSignUpForm()"
               >Don't have an account? Sign up</a
             >
+            <a class="switch-link" onclick="showResetPasswordForm()"
+              >Forgot password?</a
+            >
           </form>
         </div>
+        <!-- Reset Password Request Form -->
+        <div id="reset-password-form">
+          <h2>Reset Password</h2>
+          <form action="/api/reset-password" method="post">
+            <div class="form-group">
+              <label for="login-email">Email</label>
+              <input
+                type="email"
+                id="login-email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            <button type="submit" class="submit-btn">Reset Password</button>
+            <a class="switch-link" onclick="showSignUpForm()"
+              >Don't have an account? Sign up</a
+            >
+          </form>
+        </div>
+          <!-- Set Password Form -->
+          <div id="set-password-form">
+            <h2>Set New Password</h2>
+            <form action="/api/set-password" method="post">
+              <div class="form-group">
+                <input type="hidden" id="tokenInput" name="token" value="">
+                <label for="login-password">Password</label>
+                <input
+                  type="password"
+                  id="login-password"
+                  name="password"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+              <button type="submit" class="submit-btn">Set Password</button>
+              <a class="switch-link" onclick="showSignUpForm()"
+                >Don't have an account? Sign up</a
+              >
+            </form>
+          </div>
       </div>
     </div>
 
@@ -129,7 +173,8 @@
       <div class="modal-content">
         <h2>You need to subscribe to continue.</h2>
         <p class="subscribe-modal-text">
-          You are over the free limit of 5 active alerts. You can subscribe to have more active alerts.
+          You are over the free limit of 5 active alerts. You can subscribe to
+          have more active alerts.
         </p>
         <a href="/pricing" class="subscribe-modal-link">
           <button type="button">Subscribe</button>

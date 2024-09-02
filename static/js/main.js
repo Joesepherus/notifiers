@@ -16,15 +16,48 @@ function closeSignUpForm() {
 function showSignUpForm() {
   const signupForm = document.getElementById("signup-form");
   const loginForm = document.getElementById("login-form");
+  const resetPasswordForm = document.getElementById("reset-password-form");
+  const setPasswordForm = document.getElementById("set-password-form");
   signupForm.classList.add("active-form");
   loginForm.classList.remove("active-form");
+  resetPasswordForm.classList.remove("active-form");
+  setPasswordForm.classList.remove("active-form");
+  
 }
 
 function showLoginForm() {
   const signupForm = document.getElementById("signup-form");
   const loginForm = document.getElementById("login-form");
+  const resetPasswordForm = document.getElementById("reset-password-form");
+  const setPasswordForm = document.getElementById("set-password-form");
   loginForm.classList.add("active-form");
   signupForm.classList.remove("active-form");
+  resetPasswordForm.classList.remove("active-form");
+  setPasswordForm.classList.remove("active-form");
+}
+
+function showResetPasswordForm() {
+  const signupForm = document.getElementById("signup-form");
+  const loginForm = document.getElementById("login-form");
+  const resetPasswordForm = document.getElementById("reset-password-form");
+  const setPasswordForm = document.getElementById("set-password-form");
+
+  loginForm.classList.remove("active-form");
+  signupForm.classList.remove("active-form");
+  resetPasswordForm.classList.add("active-form");
+  setPasswordForm.classList.remove("active-form");
+}
+
+function showSetPasswordForm() {
+  const signupForm = document.getElementById("signup-form");
+  const loginForm = document.getElementById("login-form");
+  const resetPasswordForm = document.getElementById("reset-password-form");
+  const setPasswordForm = document.getElementById("set-password-form");
+
+  loginForm.classList.remove("active-form");
+  signupForm.classList.remove("active-form");
+  resetPasswordForm.classList.remove("active-form");
+  setPasswordForm.classList.add("active-form");
 }
 
 function openModalShowLoginForm() {
@@ -35,6 +68,11 @@ function openModalShowLoginForm() {
 function openModalShowSignUpForm() {
   showModal();
   showSignUpForm();
+}
+
+function openModalShowSetPasswordForm() {
+  showModal();
+  showSetPasswordForm();
 }
 
 function closeSubscribeForm() {
@@ -153,3 +191,20 @@ function setActiveTab(tabName) {
     }
   });
 }
+
+window.onload = function () {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  // Get the value of the 'token' parameter
+  const token = urlParams.get("token");
+
+  // Check if the token exists
+  if (token) {
+    console.log("Token:", token);
+    document.getElementById('tokenInput').value = token;
+    openModalShowSetPasswordForm()
+    // Perform actions with the token, like sending it to the server
+  } else {
+    console.log("No token found in the URL");
+  }
+};

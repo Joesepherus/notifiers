@@ -81,6 +81,12 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		data["MaxAlerts"] = alertsController.SUBSCRIPTION_LIMITS[UserSubscription.SubscriptionType]
 		templateLocation = "./templates/profile.html"
 		pageTitle = "Profile - Trading Alerts"
+	case "/reset-password-sent":
+		templateLocation = "./templates/reset-password-sent.html"
+		pageTitle = "Reset password - Trading Alerts"
+	case "/reset-password-sucess":
+		templateLocation = "./templates/reset-password-success.html"
+		pageTitle = "Reset password - Trading Alerts"
 	default:
 		templateLocation = "./templates/404.html"
 		pageTitle = "Page not found"
@@ -115,6 +121,8 @@ func RestApi() {
 	http.HandleFunc("/api/sign-up", authController.SignUp)
 	http.HandleFunc("/api/login", authController.Login)
 	http.HandleFunc("/api/logout", authController.Logout)
+	http.HandleFunc("/api/reset-password", authController.ResetPassword)
+	http.HandleFunc("/api/set-password", authController.SetPassword)
 
 	// Stripe routes
 	http.HandleFunc("/create-checkout-session", payments.CreateCheckoutSession)
