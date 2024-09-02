@@ -388,6 +388,14 @@ button:hover {
   .right-links {
     margin-top: 10px; /* Add space between left and right groups */
   }
+  
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-container {
+    width: auto;
+  }
 }
 
 .modal {
