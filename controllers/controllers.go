@@ -61,12 +61,16 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		// Fetch alerts and add to data
 		alerts, err := alertsService.GetAlertsByUserID(user.ID)
 		completed_alerts, err2 := alertsService.GetCompletedAlertsByUserID(user.ID)
+
 		if err == nil {
 			data["Alerts"] = alerts
 		}
 		if err2 == nil {
 			data["CompletedAlerts"] = completed_alerts
 		}
+		UserSubscription := alertsController.UserSubscription[email]
+		data["CanAddAlert"] = UserSubscription.CanAddAlert
+		data["SubscriptionType"] = UserSubscription.SubscriptionType
 
 		templateLocation = "./templates/alerts.html"
 		pageTitle = "Alerts - Trading Alerts"
