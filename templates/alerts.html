@@ -13,7 +13,7 @@
       </thead>
       <tbody>
         {{range .Alerts}}
-        <tr id="alert-{{.ID}}" style="border-bottom: 1px solid #ddd;">
+        <tr id="alert-{{.ID}}">
           <td>{{.Symbol}}</td>
           <td>{{printf "%.2f" .TriggerValue}}</td>
           <td><a href="#" onclick="deleteAlert({{ .ID }})" style="color: red; text-decoration: none;">❌</a></td>

@@ -534,7 +534,7 @@ button:hover {
 }
 
 #alertsTable {
-  border: 1px solid #ddd;
+  border: 0px solid #ddd;
   border-radius: 4px;
   font-family: Arial, sans-serif;
 }
@@ -547,7 +547,7 @@ button:hover {
 #alertsTable th {
   background-color: #f4f4f4;
   color: #333;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 0px solid #ddd;
 }
 
 #alertsTable tr:nth-child(even) {
@@ -556,4 +556,9 @@ button:hover {
 
 #alertsTable tr:hover {
   background-color: #f1f1f1;
+}
+
+
+#alertsTable tr {
+  border: 0px solid #ddd;
 }
