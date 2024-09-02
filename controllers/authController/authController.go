@@ -7,7 +7,9 @@ import (
 	"log"
 	"net/http"
 	"notifiers/mail"
+	"notifiers/payments/payments"
 	"notifiers/services/userService"
+	subscriptionUtils "notifiers/utils/subscription"
 	"os"
 	"time"
 
@@ -25,12 +27,18 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Printf("email, pass", email, password)
-		_, err := userService.CreateUser(email, password)
+		userID, err := userService.CreateUser(email, password)
 		if err != nil {
 			http.Error(w, "Error creating user", http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		http.Redirect(w, r, "/?login=true", http.StatusSeeOther)
+		payments.CreateCustomer(email)
+		canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(userID, email)
+		subscriptionUtils.UserSubscription[email] = subscriptionUtils.UserAlertInfo{
+			CanAddAlert:      canAddAlert,
+			SubscriptionType: subscriptionType,
+		}
 	} else {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}

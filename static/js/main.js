@@ -206,6 +206,12 @@ window.onload = function () {
   } else {
     console.log("No token found in the URL");
   }
+
+  const login = urlParams.get("login");
+  if (login) {
+    openModalShowLoginForm()
+  }
+
 };
 
 async function cancelSubscription() {

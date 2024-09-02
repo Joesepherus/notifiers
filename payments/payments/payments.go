@@ -19,7 +19,7 @@ import (
 	"github.com/stripe/stripe-go/v74/webhook"
 )
 
-func createCustomer(email string) (*stripe.Customer, error) {
+func CreateCustomer(email string) (*stripe.Customer, error) {
 	params := &stripe.CustomerParams{
 		Email: stripe.String(email),
 	}
@@ -131,7 +131,7 @@ func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 func test_createCustomer() {
-	newCustomer, err := createCustomer("test@gmail.com")
+	newCustomer, err := CreateCustomer("test@gmail.com")
 	if err != nil {
 		log.Fatalf("Failed to create customer: %v", err)
 	}
