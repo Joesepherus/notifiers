@@ -11,7 +11,7 @@ import (
 
 	"notifiers/controllers"
 	database "notifiers/db"
-	subscriptionUtils "notifiers/utils/subscription"
+	"notifiers/utils/subscriptionUtils"
 
 	// "notifiers/loadTest"
 	"notifiers/payments/payments"

@@ -9,49 +9,38 @@ import (
 	"notifiers/mail"
 	"notifiers/payments/payments"
 	"notifiers/services/userService"
-	subscriptionUtils "notifiers/utils/subscription"
+	"notifiers/utils/authUtils"
+	"notifiers/utils/subscriptionUtils"
 	"os"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func SignUp(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		email := r.FormValue("email")
-		password := r.FormValue("password")
-
-		if email == "" || password == "" {
-			http.Error(w, "Email and password are required", http.StatusBadRequest)
-			return
-		}
-		log.Printf("email, pass", email, password)
-		userID, err := userService.CreateUser(email, password)
-		if err != nil {
-			http.Error(w, "Error creating user", http.StatusInternalServerError)
-			return
-		}
-		http.Redirect(w, r, "/?login=true", http.StatusSeeOther)
-		payments.CreateCustomer(email)
-		canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(userID, email)
-		subscriptionUtils.UserSubscription[email] = subscriptionUtils.UserAlertInfo{
-			CanAddAlert:      canAddAlert,
-			SubscriptionType: subscriptionType,
-		}
-	} else {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
 	}
-}
+	email := r.FormValue("email")
+	password := r.FormValue("password")
 
-// GenerateToken generates a JWT token
-func GenerateToken(email string) (string, error) {
-	claims := jwt.MapClaims{
-		"email": email,
-		"exp":   time.Now().Add(time.Hour * 24).Unix(), // Token expires in 24 hours
+	if email == "" || password == "" {
+		http.Error(w, "Email and password are required", http.StatusBadRequest)
+		return
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte("your-secret-key"))
+
+	userID, err := userService.CreateUser(email, password)
+	if err != nil {
+		http.Error(w, "Error creating user", http.StatusInternalServerError)
+		return
+	}
+	payments.CreateCustomer(email)
+	canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(userID, email)
+	subscriptionUtils.UserSubscription[email] = subscriptionUtils.UserAlertInfo{
+		CanAddAlert:      canAddAlert,
+		SubscriptionType: subscriptionType,
+	}
+	http.Redirect(w, r, "/?login=true", http.StatusSeeOther)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +65,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Generate token
-		token, err := GenerateToken(email)
+		token, err := authUtils.GenerateToken(email)
 		if err != nil {
 			http.Error(w, "Error generating token", http.StatusInternalServerError)
 			return

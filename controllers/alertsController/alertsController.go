@@ -8,7 +8,7 @@ import (
 	"notifiers/services/alertsService"
 	"notifiers/services/userService"
 	"notifiers/services/yahooService"
-	subscriptionUtils "notifiers/utils/subscription"
+	"notifiers/utils/subscriptionUtils"
 	"strconv"
 )
 

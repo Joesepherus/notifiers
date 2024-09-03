@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"notifiers/middlewares/authMiddleware"
 	"notifiers/services/userService"
-	subscriptionUtils "notifiers/utils/subscription"
+	"notifiers/utils/subscriptionUtils"
 
 	"os"
 

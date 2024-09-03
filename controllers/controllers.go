@@ -8,7 +8,7 @@ import (
 	"notifiers/controllers/authController"
 	"notifiers/middlewares/authMiddleware"
 	"notifiers/payments/payments"
-	subscriptionUtils "notifiers/utils/subscription"
+	"notifiers/utils/subscriptionUtils"
 
 	"notifiers/services/alertsService"
 	"notifiers/services/userService"
