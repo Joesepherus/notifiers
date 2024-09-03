@@ -5,7 +5,7 @@
   <li><p>✅ landing page</p></li>
   <li><p>✅ pricing page</p></li>
   <li><p>✅ payment mechanism/gateway</p></li>
-  <li><p>alerts dashboard</p></li>
+  <li><p>✅ alerts dashboard</p></li>
   <li><p>✅ price change alerts</p></li>
   <li><p>✅ login/signup</p></li>
   <li><p>✅ load test</p></li>
@@ -13,10 +13,11 @@
 <p></p>
 <h4>Alerts Dashboard</h4>
 <ol>
-  <li><p>create alert, delete alert</p></li>
+  <li><p>✅ create alert</p></li>
+  <li><p>✅ delete alert</p></li>
   <li><p>disable all alerts -- if you go on a holiday, etc.</p></li>
   <li><p>remove all alerts</p></li>
-  <li><p>show all alerts, active, disabled, completed</p></li>
+  <li><p>✅ show all alerts, active, disabled, completed</p></li>
 </ol>
 <p></p>
 <h4>Price Change Alerts</h4>
@@ -28,7 +29,7 @@
 </p>
 <p></p>
 <h4>Pricing Page</h4>
-<p><strong>Silver tier - Free </strong></p>
+<p><strong>Silver tier - Free</strong></p>
 <ul>
   <li><p>5 alerts</p></li>
   <li><p>any stock</p></li>
@@ -63,3 +64,51 @@
   Make lots of users with hundreds of alerts and test if the app can handle it.
   If it slows down or no, if there need to be changes made, optimisations, etc.
 </p>
+<p></p>
+<p><strong>Last touches:</strong></p>
+<ol>
+  <li><p>✅ send alerts based on the users email</p></li>
+  <li><p>✅ add subscription success and cancel pages</p></li>
+  <li><p>✅ add reset password</p></li>
+  <li><p>✅ add created_at and completed_at to alerts</p></li>
+  <li><p>✅ add cancel subscription</p></li>
+  <li>
+    <p>
+      ✅ make the setup for users subscriptions not be from hardcoded users but
+      from db
+    </p>
+  </li>
+  <li>
+    <p>
+      ✅ On signup now createCustomer with the email in stripe and check his
+      subscription status. so add him to UserSubscription. Also on signUp
+      redirect to ?login=true and when that happens show the login modal form.
+    </p>
+  </li>
+</ol>
+<p><strong>More last touches:</strong></p>
+
+<ol>
+  <li>
+    <p>
+      ✅ <strong>REFACTOR a lot</strong> and see where things can be moved to
+      and out of.
+    </p>
+  </li>
+  <li>
+    <p>✅ And then <strong>lots of TESTING.</strong></p>
+  </li>
+  <li>
+    <p>
+      Fix the way we abuse <strong>subscriptionUtils.Setup</strong>, where after
+      every time someone subs we call the whole damn thing and refetch the
+      subscription type for all users
+    </p>
+  </li>
+  <li><p>✅ Add documentation</p></li>
+  <li>
+    <p>release <strong>Trading Alerts</strong> on the pi</p>
+  </li>
+  <li><p>finish documentation</p></li>
+</ol>
+<p></p>
