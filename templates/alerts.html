@@ -22,7 +22,7 @@
         {{range .Alerts}}
         <tr id="alert-{{.ID}}">
           <td style="width: 33%">{{.Symbol}}</td>
-          <td style="width: 33%">{{printf "%.2f" .TriggerValue}}</td>
+          <td style="width: 33%">{{printf "%.4f" .TriggerValue}}</td>
           <td style="width: 33%">
             <a
               href="#"
@@ -56,7 +56,7 @@
         {{range .CompletedAlerts}}
         <tr id="alert-{{.ID}}">
           <td style="width: 50%">{{.Symbol}}</td>
-          <td style="width: 50%">{{printf "%.2f" .TriggerValue}}</td>
+          <td style="width: 50%">{{printf "%.4f" .TriggerValue}}</td>
         </tr>
         {{else}}
         <tr>
@@ -89,7 +89,7 @@
               id="triggerValue"
               name="triggerValue"
               placeholder="120.45"
-              step="0.01"
+              step="0.00001"
               required
             />
           </div>
