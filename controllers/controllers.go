@@ -17,7 +17,7 @@ import (
 	"strconv"
 )
 
-func ProtectedHandler(w http.ResponseWriter, r *http.Request) {
+func protectedHandler(w http.ResponseWriter, r *http.Request) {
 	// This handler will only be called if the token is valid
 	fmt.Fprintf(w, "Welcome to the protected area!")
 }
@@ -136,10 +136,10 @@ func RestApi() {
 	http.HandleFunc("/api/set-password", authController.SetPassword)
 
 	// Stripe routes
-	http.HandleFunc("/create-checkout-session", payments.CreateCheckoutSession)
-	http.HandleFunc("/customer-by-email", payments.HandleGetCustomerByEmail)
-	http.HandleFunc("/webhook", payments.HandleWebhook)
+	http.HandleFunc("/api/create-checkout-session", payments.CreateCheckoutSession)
+	http.HandleFunc("/api/customer-by-email", payments.HandleGetCustomerByEmail)
 	http.Handle("/api/cancel-subscription", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(payments.CancelSubscription)))
+	http.HandleFunc("/webhook", payments.HandleWebhook)
 
 	http.Handle("/", authMiddleware.TokenCheckMiddleware(http.HandlerFunc(pageHandler)))
 

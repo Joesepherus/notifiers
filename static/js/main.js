@@ -96,7 +96,7 @@ async function selectPlan(type, email) {
   console.log("type: ", type);
   console.log("email: ", email);
   let customer;
-  await fetch("/customer-by-email", {
+  await fetch("/api/customer-by-email", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -125,7 +125,7 @@ async function selectPlan(type, email) {
     price_id: priceID,
   };
 
-  fetch("/create-checkout-session", {
+  fetch("/api/create-checkout-session", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
