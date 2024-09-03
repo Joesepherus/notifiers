@@ -44,48 +44,49 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
-		email := r.FormValue("email")
-		password := r.FormValue("password")
-
-		if email == "" || password == "" {
-			http.Error(w, "Email and password are required", http.StatusBadRequest)
-			return
-		}
-
-		user, err := userService.GetUserByEmail(email)
-		if err != nil {
-			http.Error(w, "Invalid email or password", http.StatusUnauthorized)
-			return
-		}
-
-		if err != nil || !userService.CheckPassword(user, password) {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		// Generate token
-		token, err := authUtils.GenerateToken(email)
-		if err != nil {
-			http.Error(w, "Error generating token", http.StatusInternalServerError)
-			return
-		}
-
-		// Set token in a cookie
-		http.SetCookie(w, &http.Cookie{
-			Name:     "token",
-			Value:    token,
-			Path:     "/",
-			HttpOnly: true,      // Prevent JavaScript access
-			Secure:   true,      // Use only on HTTPS
-			MaxAge:   3600 * 24, // Token expires in 1 day
-		})
-
-		// Redirect to user dashboard or home page after successful login
-		http.Redirect(w, r, "/alerts", http.StatusSeeOther)
-	} else {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
 	}
+
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+
+	if email == "" || password == "" {
+		http.Error(w, "Email and password are required", http.StatusBadRequest)
+		return
+	}
+
+	user, err := userService.GetUserByEmail(email)
+	if err != nil {
+		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+		return
+	}
+
+	if !userService.CheckPassword(user, password) {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Generate token
+	token, err := authUtils.GenerateToken(email)
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+
+	// Set token in a cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,      // Prevent JavaScript access
+		Secure:   true,      // Use only on HTTPS
+		MaxAge:   3600 * 24, // Token expires in 1 day
+	})
+
+	// Redirect to user dashboard or home page after successful login
+	http.Redirect(w, r, "/alerts", http.StatusSeeOther)
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
@@ -103,10 +104,17 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-var resetTokens = map[string]string{}
-
 func ResetPassword(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	email := r.FormValue("email")
+
+	if email == "" {
+		http.Error(w, "Email is required", http.StatusBadRequest)
+		return
+	}
 
 	// Generate a random token
 	tokenBytes := make([]byte, 32)
@@ -118,7 +126,7 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	token := base64.URLEncoding.EncodeToString(tokenBytes)
 
 	// Store the token with an expiration time
-	resetTokens[token] = email
+	authUtils.ResetTokens[token] = email
 
 	// Send the reset link via email
 	resetLink := fmt.Sprintf(os.Getenv("URL")+"?token=%s", token)
@@ -139,7 +147,7 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 	log.Printf("password", password)
 
-	email, ok := resetTokens[token]
+	email, ok := authUtils.ResetTokens[token]
 	if !ok {
 		http.Error(w, "Invalid or expired token", http.StatusBadRequest)
 		return
@@ -160,7 +168,7 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Invalidate the token
-	delete(resetTokens, token)
+	delete(authUtils.ResetTokens, token)
 	http.Redirect(w, r, "/reset-password-sucess", http.StatusSeeOther)
 
 	w.Write([]byte("Password has been reset successfully."))

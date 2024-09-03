@@ -15,3 +15,5 @@ func GenerateToken(email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte("your-secret-key"))
 }
+
+var ResetTokens = map[string]string{}

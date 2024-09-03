@@ -54,6 +54,74 @@
       subscriptionUtils.UserSubscription of that particular user.
     </div>
     <div>Lastly redirect user to "/alerts" route.</div>
+    <h3>authController</h3>
+    <div>
+      For controlling authentication we have functions:
+      <h3>SignUp</h3>
+      <div>SignUp function checks if the endpoint method used is POST.</div>
+      <div>
+        Then it gets the email and password from form values and validates that
+        they are not empty strings.
+      </div>
+      <div>
+        Afterwards it saves the user to the db using userService.CreateUser.
+      </div>
+      <div>It creates the stripe customer using payments.CreateCustomer.</div>
+      <div>
+        And does a check if user can still add more alerts using
+        subscriptionUtils.CheckToAddAlert and store it in
+        subscriptionUtils.UserSubscription of that particular user.
+      </div>
+      <div>
+        Lastly it redirects the user to "/?login=true" this triggers the client
+        code to open a modal with the login form.
+      </div>
+
+      <h3>Login</h3>
+      <div>SignUp function checks if the endpoint method used is POST.</div>
+      <div>
+        Then it gets the email and password from form values and validates that
+        they are not empty strings.
+      </div>
+      <div>
+        Afterwards it fetches the user from db using userService.GetUserByEmail.
+      </div>
+      <div>
+        Then it checks the password if its correct using
+        userService.CheckPassword.
+      </div>
+      <div>Generates a token using authUtils.GenerateToken.</div>
+      <div>And sets the cookie with token.</div>
+      <div>Lastly redirects the user to "/alerts" route.</div>
+
+      <h3>Logout</h3>
+      <div>Logout function sets the token cookie to empty string.</div>
+      <div>Lastly redirects the user to "/" route.</div>
+
+      <h3>ResetPassword</h3>
+      <div>
+        ResetPassword function checks if the endpoint method used is POST.
+      </div>
+      <div>
+        Then it gets the email form values and validates that its are not empty
+        string.
+      </div>
+      <div>It generates a token using base64.URLEncoding.EncodeToString and stores it into authUtils.ResetTokens map.</div>
+      <div>Sends and email with the token to the email from the form.</div>
+      <div>Lastly redirects the user to "/reset-password-sent" route.</div>
+
+      <h3>SetPassword</h3>
+      <div>
+        SetPassword function checks if the endpoint method used is POST.
+      </div>
+      <div>
+        Then it gets the password and token from form values and validates that checks the authUtils.ResetPassword map with the token as key.
+      </div>
+      <div>Hashes the password using bcrypt.GenerateFromPassword.</div>
+      <div>And updates the user with the newly hashed password using userService.UpdatePassword.</div>
+      <div>It then invalidates the token by deleting it from the authUtils.ResetToken map using delete.</div>
+      <div>Lastly redirects the user to "/reset-password-success" route.</div>
+    </div>
   </div>
 </div>
 
