@@ -107,20 +107,15 @@ func GetCompletedAlertsByUserID(userID int) ([]alertsTypes.Alert, error) {
 	}
 	defer rows.Close()
 
-	log.Printf("GetCompletedAlertsByUserID", GetCompletedAlertsByUserID)
 	// Iterate over rows and scan into struct
 	for rows.Next() {
 		var alert alertsTypes.Alert
 		var completedAt time.Time
-		log.Printf("GetCompletedAlertsByUserID", GetCompletedAlertsByUserID)
-
 		if err := rows.Scan(&alert.ID, &alert.Symbol, &alert.TriggerValue, &alert.AlertType, &completedAt); err != nil {
-			log.Printf("error", err)
 			return nil, fmt.Errorf("failed to scan row: %v", err)
 		}
 
 		alert.CompletedAt = completedAt.Format("02/01/2006 15:04")
-		log.Printf("alert.CompletedAt", alert.CompletedAt)
 		alerts = append(alerts, alert)
 	}
 
