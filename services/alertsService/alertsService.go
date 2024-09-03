@@ -17,17 +17,10 @@ func SetDB(database *sql.DB) {
 }
 
 func AddAlert(userID int, symbol string, triggerValue float64, alertType string) error {
-	result, err := db.Exec("INSERT INTO alerts (user_id, symbol, trigger_value, alert_type) VALUES (?, ?, ?, ?)", userID, symbol, triggerValue, alertType)
-	lastInsertID, err := result.LastInsertId()
+	_, err := db.Exec("INSERT INTO alerts (user_id, symbol, trigger_value, alert_type) VALUES (?, ?, ?, ?)", userID, symbol, triggerValue, alertType)
 	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("Alert created with id: %d", lastInsertID)
-	if err == nil {
+		log.Printf("error inserting alerts: %v", err)
 		return nil
-	}
-	if err.Error() == "database is locked" {
-		fmt.Printf("error inserting alerts: %v", err)
 	}
 
 	return err

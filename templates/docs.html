@@ -205,10 +205,76 @@
           fromName and password are env variables. Otherwise to, subject and
           body are the functions parameters.
         </div>
-        <div>For the sender it uses plain authentication just email and password.</div>
+        <div>
+          For the sender it uses plain authentication just email and password.
+        </div>
 
-<h3></h3>
-<div></div>
+        <h3>alertsService</h3>
+        <div>
+          With alertService we communicate with the db using raw sql statements.
+          
+          <h3>SetDB</h3>
+          <div>Function for setting the db from main package.</div>
+          <h3>AddAlert</h3>
+          <div>
+            AddAlert inserts a new alert to the database. Doesn't return
+            anything
+          </div>
+
+          <h3>GetAlerts</h3>
+          <div>
+            GetAlerts selects all alerts of all users that have not been
+            triggered yet and orders them by symbol. Returns the list of fetched
+            alerts.
+          </div>
+
+          <h3>GetAlertsByUserID</h3>
+          <div>
+            GetAlertsByUserID selects all alerts of a specific user that have
+            not been triggered yet and orders them by created_at. Returns the
+            list of fetched alerts.
+          </div>
+
+          <h3>GetCompletedAlertsByUserID</h3>
+          <div>
+            GetCompletedAlertsByUserID selects all alerts of a specific user
+            that have been triggered and limits them to 100 rows and orders them
+            by created_at. Returns the list of fetched alerts.
+          </div>
+
+          <h3>GetAlertsBySymbol</h3>
+          <div>
+            GetAlertsBySymbol selects all alerts of a specific symbol
+            that have not been triggered yet. Returns the list of fetched alerts.
+          </div>
+
+          <h3>CheckAlerts</h3>
+          <div>
+            CheckAlerts get all alerts for a specific symbol using
+            GetAlertsBySymbol and then checks if any of the alerts should be
+            triggered based on the current price of the specific stock.
+          </div>
+          <div>
+            If the alert should be triggered it then updates the alerts as
+            triggered and sends an email to the user of the alert which it gets
+            by calling userService.GetUserById and sends the email using go
+            mail.SendEmail.
+          </div>
+          <div>
+            Here we use the go routine for sending the email, because it takes
+            time till the email is properly sent and we don't need to wait for
+            that. Otherwise it would slow down the whole app.
+          </div>
+          <div>This function doesnt return anything.</div>
+
+          <h3>DeleteAlertByID</h3>
+          <div>
+            DeleteAlertByID deletes a specific alert by using an ID.
+          </div>
+          <div>This function doesnt return anything.</div>
+
+
+        </div>
       </div>
     </div>
   </div>
