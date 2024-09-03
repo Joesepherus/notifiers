@@ -1,10 +1,14 @@
 package authUtils
 
 import (
+	"notifiers/types/userTypes"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"golang.org/x/crypto/bcrypt"
 )
+
+var ResetTokens = map[string]string{}
 
 // GenerateToken generates a JWT token
 func GenerateToken(email string) (string, error) {
@@ -16,4 +20,7 @@ func GenerateToken(email string) (string, error) {
 	return token.SignedString([]byte("your-secret-key"))
 }
 
-var ResetTokens = map[string]string{}
+func CheckPassword(user *userTypes.User, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	return err == nil
+}

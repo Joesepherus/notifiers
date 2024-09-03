@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
-	"log"
 	"net/http"
 	"notifiers/mail"
 	"notifiers/payments/payments"
@@ -63,7 +62,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !userService.CheckPassword(user, password) {
+	if !authUtils.CheckPassword(user, password) {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
@@ -143,9 +142,12 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func SetPassword(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	token := r.FormValue("token")
 	password := r.FormValue("password")
-	log.Printf("password", password)
 
 	email, ok := authUtils.ResetTokens[token]
 	if !ok {

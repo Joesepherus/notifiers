@@ -88,7 +88,7 @@
       </div>
       <div>
         Then it checks the password if its correct using
-        userService.CheckPassword.
+        authUtils.CheckPassword.
       </div>
       <div>Generates a token using authUtils.GenerateToken.</div>
       <div>And sets the cookie with token.</div>
@@ -121,6 +121,9 @@
       <div>And updates the user with the newly hashed password using userService.UpdatePassword.</div>
       <div>It then invalidates the token by deleting it from the authUtils.ResetToken map using delete.</div>
       <div>Lastly redirects the user to "/reset-password-success" route.</div>
+
+
+
     </div>
   </div>
 </div>

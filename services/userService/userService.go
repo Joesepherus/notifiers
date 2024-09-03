@@ -76,11 +76,6 @@ func GetUsers() ([]*userTypes.User, error) {
 	return users, nil
 }
 
-func CheckPassword(user *userTypes.User, password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	return err == nil
-}
-
 func UpdatePassword(email string, hashedPassword string) error {
 	query := `UPDATE users SET password = ? WHERE email = ?`
 
