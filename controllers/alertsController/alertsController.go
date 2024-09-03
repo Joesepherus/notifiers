@@ -13,6 +13,10 @@ import (
 )
 
 func AddAlert(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
@@ -22,11 +26,6 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 
 	if !subscriptionUtils.UserSubscription[email].CanAddAlert {
 		http.Error(w, "You have hit limit of 5 active alerts for free tier.", http.StatusInternalServerError)
-		return
-	}
-
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -123,6 +122,10 @@ func GetAlerts(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteAlert(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+	}
+
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
@@ -130,9 +133,6 @@ func DeleteAlert(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-	}
 	// Get the ID from the query parameters
 	idStr := r.URL.Query().Get("id")
 	// Convert the ID to an integer

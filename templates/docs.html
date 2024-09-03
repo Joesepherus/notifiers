@@ -1,0 +1,60 @@
+{{ define "content" }}
+<div class="content">
+  <div class="page">
+    <h2>Controllers</h2>
+    <h3>alertsController</h3>
+    <div>
+      For controlling alerts endpoints we have functions:
+      <h3>AddAlert</h3>
+      <div>AddAlert function checks if the endpoint method used is POST.</div>
+      <div>
+        Then gets the email of the user from auth middleware and then fetches
+        the user userService.GetUserByEmail.
+      </div>
+      <div>
+        Afterwards it checks if a user can add more alerts fetching from
+        subscriptionUtils.UserSubscription variable.
+      </div>
+      <div>
+        Then it parses the form fields for symbol and triggerValue and does
+        validation on them.
+      </div>
+      <div>
+        Gets the current price of symbols stock using
+        yahooService.GetStockCurrentValue. And based on that determines the
+        alertType. If the current price > triggerValue then alertType is "lower"
+        otherwise "higher".
+      </div>
+      <div>
+        Then save the alert to db using alertsService.AddAlert. And does a check
+        if user can still add more alerts using
+        subscriptionUtils.CheckToAddAlert and store it in
+        subscriptionUtils.UserSubscription of that particular user.
+      </div>
+      <div>Lastly redirect user to "/alerts" route.</div>
+    </div>
+    <h3>GetAlerts</h3>
+    <div>GetAlerts function checks if the endpoint method used is GET.</div>
+    <div>Then it fetches alerts using alertsService.GetAlerts.</div>
+    <div>Lastly function returns the fetched alerts as a JSON.</div>
+    <h3>DeleteAlert</h3>
+    <div>DeleteAlert function checks if the endpoint method used is POST.</div>
+    <div>
+      Then gets the email of the user from auth middleware and then fetches the
+      user userService.GetUserByEmail.
+    </div>
+    <div>
+      Afterwards from the URL it gets the id of the alert to be deleted and
+      converts it to int.
+    </div>
+    <div>
+      It deletes the alerts using alertsService.DeleteAlertByID. And does a
+      check if user can still add more alerts using
+      subscriptionUtils.CheckToAddAlert and store it in
+      subscriptionUtils.UserSubscription of that particular user.
+    </div>
+    <div>Lastly redirect user to "/alerts" route.</div>
+  </div>
+</div>
+
+{{end}}

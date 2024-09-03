@@ -95,6 +95,9 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 	case "/subscription-cancel":
 		templateLocation = "./templates/subscription-cancel.html"
 		pageTitle = "Reset password - Trading Alerts"
+	case "/docs":
+		templateLocation = "./templates/docs.html"
+		pageTitle = "Reset password - Trading Alerts"
 	default:
 		templateLocation = "./templates/404.html"
 		pageTitle = "Page not found"
