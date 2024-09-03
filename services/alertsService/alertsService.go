@@ -68,7 +68,7 @@ func GetAlertsByUserID(userID int) ([]alertsTypes.Alert, error) {
 	rows, err := db.Query(`SELECT id, symbol, trigger_value, alert_type 
 		FROM alerts 
 		WHERE triggered = FALSE AND user_id = $1 
-		ORDER BY symbol`, userID)
+		ORDER BY created_at DESC`, userID)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to query alerts: %v", err)
@@ -99,7 +99,7 @@ func GetCompletedAlertsByUserID(userID int) ([]alertsTypes.Alert, error) {
 	rows, err := db.Query(`SELECT id, symbol, trigger_value, alert_type, completed_at
 	FROM alerts 
 	WHERE triggered = TRUE AND user_id = $1 
-	ORDER BY symbol 
+	ORDER BY completed_at DESC
 	LIMIT 100`, userID)
 
 	if err != nil {
