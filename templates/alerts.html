@@ -7,66 +7,52 @@
       <div class="tab active" onclick="showAlerts()">Active Alerts</div>
       <div class="tab" onclick="showCompletedAlerts()">Completed Alerts</div>
     </div>
-    <table
-      id="alertsTable"
-      style="border-collapse: collapse; width: 100%; max-width: 600px"
-    >
-      <thead>
-        <tr>
-          <th style="width: 33%">Symbol</th>
-          <th style="width: 33%">Trigger Value</th>
-          <th style="width: 33%">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{range .Alerts}}
-        <tr id="alert-{{.ID}}">
-          <td style="width: 33%">{{.Symbol}}</td>
-          <td style="width: 33%">{{printf "%.4f" .TriggerValue}}</td>
-          <td style="width: 33%">
-            <a
-              href="#"
-              onclick="deleteAlert({{ .ID }})"
-              style="color: red; text-decoration: none"
-              >❌</a
-            >
-          </td>
-        </tr>
-        {{else}}
-        <tr>
-          <td colspan="3" style="text-align: center; padding: 10px">
-            No active alerts found.
-          </td>
-        </tr>
-        {{end}}
-      </tbody>
-    </table>
-    <table
-      id="completedAlertsTable"
-      class="none"
-      style="border-collapse: collapse; width: 100%; max-width: 600px"
-    >
-      <thead>
-        <tr>
-          <th style="width: 50%">Symbol</th>
-          <th style="width: 50%">Trigger Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{range .CompletedAlerts}}
-        <tr id="alert-{{.ID}}">
-          <td style="width: 50%">{{.Symbol}}</td>
-          <td style="width: 50%">{{printf "%.4f" .TriggerValue}}</td>
-        </tr>
-        {{else}}
-        <tr>
-          <td colspan="3" style="text-align: center; padding: 10px">
-            No active alerts found.
-          </td>
-        </tr>
-        {{end}}
-      </tbody>
-    </table>
+    <div id="alertsTable" class="grid-container">
+      <div class="grid-header">
+        <div class="grid-item header-item">Symbol</div>
+        <div class="grid-item header-item">Trigger Value</div>
+        <div class="grid-item header-item">Action</div>
+      </div>
+      {{range .Alerts}}
+      <div class="grid-body" id="alert-{{.ID}}">
+        <div class="grid-item body-item">{{.Symbol}}</div>
+        <div class="grid-item body-item">{{printf "%.4f" .TriggerValue}}</div>
+        <div class="grid-item body-item">
+          <form action="/api/delete-alert?id={{.ID}}" method="post">
+            <input type="hidden" name="id" value="{{.ID}}">
+            <button type="submit" style="color: red; background: none; border: none; cursor: pointer; padding: 0;">❌</button>
+          </form>
+        </div>
+      </div>
+
+      {{else}}
+      <div>No active alerts found.</div>
+      {{end}}
+    </div>
+
+    <div id="completedAlertsTable" class="grid-container none">
+      <div class="grid-header">
+        <div id="alert-{{.ID}}" class="grid-item header-item">Symbol</div>
+        <div id="alert-{{.ID}}" class="grid-item header-item">
+          Trigger Value
+        </div>
+        <div id="alert-{{.ID}}" class="grid-item header-item">Completed At</div>
+      </div>
+      {{range .CompletedAlerts}}
+      <div class="grid-body">
+        <div id="alert-{{.ID}}" class="grid-item body-item">{{.Symbol}}</div>
+        <div id="alert-{{.ID}}" class="grid-item body-item">
+          {{printf "%.4f" .TriggerValue}}
+        </div>
+        <div id="alert-{{.ID}}" class="grid-item body-item">
+          {{.CompletedAt}}
+        </div>
+      </div>
+
+      {{else}}
+      <div>No completed alerts found.</div>
+      {{end}}
+    </div>
 
     <h2>Add alert</h2>
     <div class="form-container">

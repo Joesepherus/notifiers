@@ -9,5 +9,5 @@ type Alert struct {
 	Symbol       string    `json:"symbol"`
 	UserID       int       `json:"userID"`
 	CreatedAt    time.Time `json:"createdAt"`
-	CompletedAt  time.Time `json:"completedAt"`
+	CompletedAt  string    `json:"completedAt"`
 }

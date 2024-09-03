@@ -148,26 +148,6 @@ async function selectPlan(type, email) {
     });
 }
 
-function deleteAlert(id) {
-  console.log("deleteAlert", id);
-
-  fetch(`/api/delete-alert?id=${id}`, {
-    method: "DELETE",
-  })
-    .then((response) => {
-      if (response.ok) {
-        console.log("Alert deleted successfully");
-        // Optionally, remove the alert from the DOM or refresh the alerts list
-        document.getElementById(`alert-${id}`).remove();
-      } else {
-        console.error("Failed to delete alert");
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-    });
-}
-
 function showAlerts() {
   document.getElementById("alertsTable").classList.remove("none");
   document.getElementById("completedAlertsTable").classList.add("none");
@@ -232,3 +212,4 @@ async function cancelSubscription() {
     alert(`Error canceling subscription: ${error.message}`);
   }
 }
+

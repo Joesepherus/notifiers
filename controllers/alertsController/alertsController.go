@@ -123,7 +123,14 @@ func GetAlerts(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteAlert(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodDelete {
+	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
+	user, err := userService.GetUserByEmail(email)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusInternalServerError)
+		return
+	}
+
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 	}
 	// Get the ID from the query parameters
@@ -141,6 +148,15 @@ func DeleteAlert(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to delete alert", http.StatusInternalServerError)
 		return
 	}
+
+	canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(user.ID, email)
+	log.Printf("canAddAlert", canAddAlert)
+	subscriptionUtils.UserSubscription[email] = subscriptionUtils.UserAlertInfo{
+		CanAddAlert:      canAddAlert,
+		SubscriptionType: subscriptionType,
+	}
+	http.Redirect(w, r, "/alerts", http.StatusSeeOther)
+
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Alert deleted successfully"))
 }
