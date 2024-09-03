@@ -211,10 +211,12 @@
 
         <h3>alertsService</h3>
         <div>
-          With alertService we communicate with the db using raw sql statements.
-          
+          With alertService we communicate with the alerts table of db using raw
+          sql statements.
+
           <h3>SetDB</h3>
           <div>Function for setting the db from main package.</div>
+
           <h3>AddAlert</h3>
           <div>
             AddAlert inserts a new alert to the database. Doesn't return
@@ -244,8 +246,8 @@
 
           <h3>GetAlertsBySymbol</h3>
           <div>
-            GetAlertsBySymbol selects all alerts of a specific symbol
-            that have not been triggered yet. Returns the list of fetched alerts.
+            GetAlertsBySymbol selects all alerts of a specific symbol that have
+            not been triggered yet. Returns the list of fetched alerts.
           </div>
 
           <h3>CheckAlerts</h3>
@@ -268,12 +270,34 @@
           <div>This function doesnt return anything.</div>
 
           <h3>DeleteAlertByID</h3>
-          <div>
-            DeleteAlertByID deletes a specific alert by using an ID.
-          </div>
+          <div>DeleteAlertByID deletes a specific alert by using an ID.</div>
           <div>This function doesnt return anything.</div>
 
+          <h3>userSerivce</h3>
+          <div>
+            With userSerivce we communicate with the users table of db using raw
+            sql statements.
 
+            <h3>CreateUser</h3>
+            <div>CreateUser inserts a new user to the db.</div>
+            <div>This function returns the ID of the new alert.</div>
+
+            <h3>GetUserById</h3>
+            <div>GetUserById gets user with a specific ID.</div>
+            <div>This function returns a user.</div>
+
+            <h3>GetUserByEmail</h3>
+            <div>GetUserByEmail gets user with a specific email.</div>
+            <div>This function returns a user.</div>
+
+            <h3>GetUsers</h3>
+            <div>GetUsers gets all users.</div>
+            <div>This function returns a n array of users.</div>
+
+            <h3>UpdatePassword</h3>
+            <div>UpdatePassword updates the password of a specific user.</div>
+            <div>This function doesnt return anything.</div>
+          </div>
         </div>
       </div>
     </div>
