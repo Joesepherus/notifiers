@@ -120,7 +120,7 @@ func RestApi() {
 		}
 	}
 
-	http.Handle("/protected", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(ProtectedHandler)))
+	http.Handle("/protected", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(protectedHandler)))
 
 	http.Handle("/api/add-alert", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(alertsController.AddAlert)))
 	http.Handle("/api/delete-alert", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(alertsController.DeleteAlert)))
