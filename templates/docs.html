@@ -146,7 +146,8 @@
           pageHandler is a function that sets necessary data, title, content and
           user info for pages and renders them using templates.RenderTemplate.
         </div>
-        <div>Pages that we have:
+        <div>
+          Pages that we have:
           <ul>
             <li>/ - home page</li>
             <li>/pricing</li>
@@ -184,6 +185,30 @@
             <li>/webhook</li>
           </ul>
         </div>
+
+        <h3>db - Database</h3>
+        <div>
+          The database has only one function called InitDB, where we initialize
+          the db with alerts and users tables.
+        </div>
+
+        <h3>loadTest</h3>
+        <div>
+          loadTest has only one function called SetupDbWithLotsOfAlerts for
+          adding random 100k alerts to simulate how the app would function with
+          while monitoring lots of alerts.
+        </div>
+
+        <h3>mail</h3>
+        <div>
+          mail has only one function called SendEmail for sending emails from,
+          fromName and password are env variables. Otherwise to, subject and
+          body are the functions parameters.
+        </div>
+        <div>For the sender it uses plain authentication just email and password.</div>
+
+<h3></h3>
+<div></div>
       </div>
     </div>
   </div>
