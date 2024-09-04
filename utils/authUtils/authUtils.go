@@ -8,7 +8,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var ResetTokens = map[string]string{}
+type ResetTokenData struct {
+	Email      string
+	Expiration time.Time
+}
+
+var ResetTokens = map[string]ResetTokenData{}
 
 // GenerateToken generates a JWT token
 func GenerateToken(email string) (string, error) {

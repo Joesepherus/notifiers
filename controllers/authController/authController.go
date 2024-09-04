@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 	"fmt"
+	"log"
 	"net/http"
 	"notifiers/mail"
 	"notifiers/payments/payments"
@@ -11,6 +12,7 @@ import (
 	"notifiers/utils/authUtils"
 	"notifiers/utils/subscriptionUtils"
 	"os"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -124,18 +126,21 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	token := base64.URLEncoding.EncodeToString(tokenBytes)
 
-	// Store the token with an expiration time
-	authUtils.ResetTokens[token] = email
+	// Set the expiration time (e.g., 24 hours from now)
+	expiration := time.Now().Add(24 * time.Hour)
+
+	// Store the token with email and expiration time
+	authUtils.ResetTokens[token] = authUtils.ResetTokenData{
+		Email:      email,
+		Expiration: expiration,
+	}
 
 	// Send the reset link via email
 	resetLink := fmt.Sprintf(os.Getenv("URL")+"?token=%s", token)
 	go mail.SendEmail(email, "Trading Alerts: Password Reset", fmt.Sprintf(
 		"Click the link below to reset your password:"+resetLink,
 	))
-	if err != nil {
-		http.Error(w, "Error sending email", http.StatusInternalServerError)
-		return
-	}
+
 	http.Redirect(w, r, "/reset-password-sent", http.StatusSeeOther)
 
 	w.Write([]byte("Password reset email sent."))
@@ -149,11 +154,22 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 	token := r.FormValue("token")
 	password := r.FormValue("password")
 
-	email, ok := authUtils.ResetTokens[token]
-	if !ok {
+	tokenData, exists := authUtils.ResetTokens[token]
+	if !exists {
+		http.Redirect(w, r, "/token-expired", http.StatusSeeOther)
 		http.Error(w, "Invalid or expired token", http.StatusBadRequest)
 		return
 	}
+
+	// Check if the token has expired
+	if time.Now().After(tokenData.Expiration) {
+		log.Printf("token has expirted")
+		delete(authUtils.ResetTokens, token)
+		http.Redirect(w, r, "/token-expired", http.StatusSeeOther)
+		http.Error(w, "Token has expired", http.StatusBadRequest)
+		return
+	}
+	log.Printf("token is valid", tokenData.Expiration, time.Now())
 
 	// Hash the new password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -163,7 +179,7 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Save the new password in your database (pseudo-code)
-	err = userService.UpdatePassword(email, string(hashedPassword))
+	err = userService.UpdatePassword(tokenData.Email, string(hashedPassword))
 	if err != nil {
 		http.Error(w, "Error saving new password", http.StatusInternalServerError)
 		return

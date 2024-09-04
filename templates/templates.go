@@ -31,6 +31,7 @@ func InitTemplates() {
 		"./templates/reset-password-success.html",
 		"./templates/subscription-success.html",
 		"./templates/subscription-cancel.html",
+		"./templates/token-expired.html",
 		"./templates/docs.html",
 		"./templates/404.html",
 	}
