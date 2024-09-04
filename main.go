@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"sort"
 	"sync"
 
@@ -87,7 +86,7 @@ func main() {
 					}
 
 					currentPrice := stockData.Chart.Result[0].Meta.RegularMarketPrice
-					fmt.Printf("Current price of %s: %.4f %s\n", stockData.Chart.Result[0].Meta.Symbol, currentPrice, stockData.Chart.Result[0].Meta.Currency)
+					// fmt.Printf("Current price of %s: %.4f %s\n", stockData.Chart.Result[0].Meta.Symbol, currentPrice, stockData.Chart.Result[0].Meta.Currency)
 
 					// Check and process alerts
 					alertsService.CheckAlerts(symbol, currentPrice)
@@ -97,6 +96,6 @@ func main() {
 			// Wait for all goroutines to finish
 			wg.Wait()
 		}
-		fmt.Println("\n\n")
+		// fmt.Println("\n\n")
 	}
 }
