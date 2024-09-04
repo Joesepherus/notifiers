@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"notifiers/mail"
-	"notifiers/payments/payments"
-	"notifiers/services/userService"
-	"notifiers/utils/authUtils"
-	"notifiers/utils/subscriptionUtils"
 	"os"
 	"time"
+	"tradingalerts/mail"
+	"tradingalerts/payments/payments"
+	"tradingalerts/services/userService"
+	"tradingalerts/utils/authUtils"
+	"tradingalerts/utils/subscriptionUtils"
 
 	"golang.org/x/crypto/bcrypt"
 )

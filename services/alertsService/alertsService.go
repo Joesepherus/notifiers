@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"notifiers/mail"
-	"notifiers/services/userService"
-	"notifiers/types/alertsTypes"
 	"time"
+	"tradingalerts/mail"
+	"tradingalerts/services/userService"
+	"tradingalerts/types/alertsTypes"
 )
 
 var db *sql.DB

@@ -1,8 +1,8 @@
 package loadTest
 
 import (
-	"notifiers/services/alertsService"
 	"time"
+	"tradingalerts/services/alertsService"
 
 	"golang.org/x/exp/rand"
 )

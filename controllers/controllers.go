@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"notifiers/controllers/alertsController"
-	"notifiers/controllers/authController"
-	"notifiers/middlewares/authMiddleware"
-	"notifiers/payments/payments"
-	"notifiers/utils/subscriptionUtils"
+	"tradingalerts/controllers/alertsController"
+	"tradingalerts/controllers/authController"
+	"tradingalerts/middlewares/authMiddleware"
+	"tradingalerts/payments/payments"
+	"tradingalerts/utils/subscriptionUtils"
 
-	"notifiers/services/alertsService"
-	"notifiers/services/userService"
-	"notifiers/templates"
 	"os"
 	"strconv"
+	"tradingalerts/services/alertsService"
+	"tradingalerts/services/userService"
+	"tradingalerts/templates"
 )
 
 func protectedHandler(w http.ResponseWriter, r *http.Request) {

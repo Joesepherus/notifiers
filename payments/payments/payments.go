@@ -6,9 +6,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"notifiers/middlewares/authMiddleware"
-	"notifiers/services/userService"
-	"notifiers/utils/subscriptionUtils"
+	"tradingalerts/middlewares/authMiddleware"
+	"tradingalerts/services/userService"
+	"tradingalerts/utils/subscriptionUtils"
 
 	"os"
 

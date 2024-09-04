@@ -3,8 +3,8 @@ package subscriptionUtils
 import (
 	"fmt"
 	"log"
-	"notifiers/services/alertsService"
-	"notifiers/services/userService"
+	"tradingalerts/services/alertsService"
+	"tradingalerts/services/userService"
 
 	"github.com/stripe/stripe-go/v74"
 	"github.com/stripe/stripe-go/v74/customer"

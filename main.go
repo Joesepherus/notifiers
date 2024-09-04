@@ -9,18 +9,18 @@ import (
 	"log"
 	"time"
 
-	"notifiers/controllers"
-	database "notifiers/db"
-	"notifiers/utils/subscriptionUtils"
+	"tradingalerts/controllers"
+	database "tradingalerts/db"
+	"tradingalerts/utils/subscriptionUtils"
 
-	// "notifiers/loadTest"
-	"notifiers/payments/payments"
-	"notifiers/services/alertsService"
-	"notifiers/services/userService"
-	"notifiers/services/yahooService"
-	"notifiers/types/alertsTypes"
+	// "tradingalerts/loadTest"
+	"tradingalerts/payments/payments"
+	"tradingalerts/services/alertsService"
+	"tradingalerts/services/userService"
+	"tradingalerts/services/yahooService"
+	"tradingalerts/types/alertsTypes"
 
-	"notifiers/templates"
+	"tradingalerts/templates"
 
 	"github.com/joho/godotenv"
 )
@@ -34,7 +34,7 @@ func main() {
 	}
 	if os.Getenv("ENV") == "prod" {
 		// Open or create the log file
-		file, err := os.OpenFile("notifiers.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		file, err := os.OpenFile("tradingalerts.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			log.Fatal(err)
 		}

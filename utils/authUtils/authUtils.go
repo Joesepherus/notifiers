@@ -1,8 +1,8 @@
 package authUtils
 
 import (
-	"notifiers/types/userTypes"
 	"time"
+	"tradingalerts/types/userTypes"
 
 	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"

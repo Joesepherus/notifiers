@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"notifiers/types/yahooTypes"
+	"tradingalerts/types/yahooTypes"
 )
 
 func GetStockCurrentValue(symbol string) (*yahooTypes.StockResponse, error) {

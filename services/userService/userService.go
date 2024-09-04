@@ -3,7 +3,7 @@ package userService
 import (
 	"database/sql"
 	"log"
-	"notifiers/types/userTypes"
+	"tradingalerts/types/userTypes"
 
 	"golang.org/x/crypto/bcrypt"
 )

@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"notifiers/middlewares/authMiddleware"
-	"notifiers/services/alertsService"
-	"notifiers/services/userService"
-	"notifiers/services/yahooService"
-	"notifiers/utils/subscriptionUtils"
 	"strconv"
+	"tradingalerts/middlewares/authMiddleware"
+	"tradingalerts/services/alertsService"
+	"tradingalerts/services/userService"
+	"tradingalerts/services/yahooService"
+	"tradingalerts/utils/subscriptionUtils"
 )
 
 func AddAlert(w http.ResponseWriter, r *http.Request) {

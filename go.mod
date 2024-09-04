@@ -1,4 +1,4 @@
-module notifiers
+module tradingalerts
 
 go 1.22.5
 

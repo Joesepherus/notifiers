@@ -1,3 +1,4 @@
 .env
 alerts.db
 .DS_Store
+tradingalerts.log
