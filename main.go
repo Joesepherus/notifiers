@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"os"
 	"sort"
 	"sync"
 
@@ -27,7 +28,24 @@ import (
 var db *sql.DB
 
 func main() {
-	var err error = godotenv.Load()
+	// Open or create the log file
+	file, err := os.OpenFile("notifiers.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Set log output to the file
+	log.SetOutput(file)
+
+	// Customize the logger (optional)
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	log.SetPrefix("INFO: ")
+
+	// Log initialization message
+	log.Printf("Initializing")
+	log.Println("Logging initialized")
+
+	err = godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
