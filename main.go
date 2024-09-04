@@ -28,27 +28,29 @@ import (
 var db *sql.DB
 
 func main() {
-	// Open or create the log file
-	file, err := os.OpenFile("notifiers.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Set log output to the file
-	log.SetOutput(file)
-
-	// Customize the logger (optional)
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
-	log.SetPrefix("INFO: ")
-
-	// Log initialization message
-	log.Printf("Initializing")
-	log.Println("Logging initialized")
-
-	err = godotenv.Load()
+	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("Error loading .env file")
 	}
+	if os.Getenv("ENV") == "prod" {
+		// Open or create the log file
+		file, err := os.OpenFile("notifiers.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Set log output to the file
+		log.SetOutput(file)
+
+		// Customize the logger (optional)
+		log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+		log.SetPrefix("INFO: ")
+
+		// Log initialization message
+		log.Printf("Initializing")
+		log.Println("Logging initialized")
+	}
+
 	templates.InitTemplates()
 	// start a new goroutine for the rest api endpoints
 	go controllers.RestApi()
