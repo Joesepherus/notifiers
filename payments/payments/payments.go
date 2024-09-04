@@ -88,7 +88,33 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	switch event.Type {
 	case "invoice.payment_succeeded":
 		log.Println("Payment succeeded")
-		subscriptionUtils.Setup()
+
+		var rawData map[string]interface{}
+		err := json.Unmarshal(event.Data.Raw, &rawData)
+		if err != nil {
+			log.Fatalf("Failed to unmarshal event data: %v", err)
+		}
+
+		// Access the nested data
+		// Access the email directly from rawData
+		email, ok := rawData["customer_email"].(string)
+		if !ok {
+			log.Fatalf("Failed to get email from raw data")
+		}
+		log.Println("Email:", email)
+
+		user, err := userService.GetUserByEmail(email)
+		if err != nil {
+			log.Printf("Error finding user.")
+		}
+		canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(user.ID, user.Email)
+		subscriptionUtils.UserSubscription[user.Email] = subscriptionUtils.UserAlertInfo{
+			CanAddAlert:      canAddAlert,
+			SubscriptionType: subscriptionType,
+		}
+		log.Printf("canAddAlert", canAddAlert)
+		log.Printf("subscriptionType", subscriptionType)
+
 		// Handle successful payment
 	case "customer.subscription.deleted":
 		log.Println("Subscription canceled")
@@ -201,6 +227,8 @@ func CancelSubscription(w http.ResponseWriter, r *http.Request) {
 		CanAddAlert:      canAddAlert,
 		SubscriptionType: subscriptionType,
 	}
+
+	http.Redirect(w, r, "/profile", http.StatusSeeOther)
 
 	w.Write([]byte("Subscription canceled successfully."))
 }

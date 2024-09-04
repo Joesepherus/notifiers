@@ -33,9 +33,11 @@
           <a href="/pricing">Pricing</a> page.
         </p>
         {{ if ne .SubscriptionType "silver" }}
-        <button type="button" onclick="cancelSubscription()">
-          Cancel Subscription
-        </button>
+        <form action="/api/cancel-subscription" method="post">
+          <button type="submit">
+            Cancel Subscription
+          </button>
+        </form>
         {{end}}
       </div>
 

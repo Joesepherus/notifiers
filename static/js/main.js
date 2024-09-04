@@ -193,23 +193,3 @@ window.onload = function () {
   }
 
 };
-
-async function cancelSubscription() {
-  try {
-    const response = await fetch(`/api/cancel-subscription?subscription_id`, {
-      method: "POST",
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to cancel subscription: ${response.statusText}`);
-    }
-
-    const result = await response.text();
-    console.log(result); // You can display this result in the UI or handle it as needed
-    alert("Subscription canceled successfully.");
-  } catch (error) {
-    console.error("Error:", error);
-    alert(`Error canceling subscription: ${error.message}`);
-  }
-}
-
