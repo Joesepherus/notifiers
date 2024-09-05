@@ -139,22 +139,20 @@ func CheckAlerts(symbol string, currentPrice float64) {
 			log.Printf("Alert triggered for %s: current price %.4f has reached the trigger value %.4f (%s)", symbol, currentPrice, alert.TriggerValue, alert.AlertType)
 
 			statement, err := db.Prepare("UPDATE alerts SET triggered = TRUE, completed_at = ? WHERE id = ?")
-			fmt.Printf("id: ", alert.ID)
-
 			if err != nil {
-				fmt.Printf("Wtf error\n", err)
-				return
+				return err
 			}
+			
 
 			// Current time
 			completedAt := time.Now()
 			_, err = statement.Exec(completedAt, alert.ID)
 			if err != nil {
-				fmt.Printf("Hey error\n", err)
+				fmt.Print("Error updating alert.\n", err)
 				return
+			}
 			} else {
-
-				fmt.Printf("Updated\n")
+				fmt.Print("Alert Updated.\n")
 			}
 			user, err := userService.GetUserById(alert.UserID)
 			if err == nil {
