@@ -7,6 +7,7 @@ import (
 	"tradingalerts/controllers/alertsController"
 	"tradingalerts/controllers/authController"
 	"tradingalerts/middlewares/authMiddleware"
+	"tradingalerts/middlewares/logMiddleware"
 	"tradingalerts/payments/payments"
 	"tradingalerts/utils/subscriptionUtils"
 
@@ -123,28 +124,28 @@ func RestApi() {
 		}
 	}
 
-	http.Handle("/protected", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(protectedHandler)))
+	http.Handle("/protected", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(protectedHandler))))
 
-	http.Handle("/api/add-alert", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(alertsController.AddAlert)))
-	http.Handle("/api/delete-alert", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(alertsController.DeleteAlert)))
+	http.Handle("/api/add-alert", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(alertsController.AddAlert))))
+	http.Handle("/api/delete-alert", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(alertsController.DeleteAlert))))
 
 	// Define the route for getting untriggered alerts
-	http.Handle("/api/alerts", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(alertsController.GetAlerts)))
+	http.Handle("/api/alerts", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(alertsController.GetAlerts))))
 
 	// Authentication routes
-	http.HandleFunc("/api/sign-up", authController.SignUp)
-	http.HandleFunc("/api/login", authController.Login)
-	http.HandleFunc("/api/logout", authController.Logout)
-	http.HandleFunc("/api/reset-password", authController.ResetPassword)
-	http.HandleFunc("/api/set-password", authController.SetPassword)
+	http.Handle("/api/sign-up", authMiddleware.TokenCheckMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(authController.SignUp))))
+	http.Handle("/api/login", authMiddleware.TokenCheckMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(authController.Login))))
+	http.Handle("/api/logout", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(authController.Logout))))
+	http.Handle("/api/reset-password", authMiddleware.TokenCheckMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(authController.ResetPassword))))
+	http.Handle("/api/set-password", authMiddleware.TokenCheckMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(authController.SetPassword))))
 
 	// Stripe routes
-	http.HandleFunc("/api/create-checkout-session", payments.CreateCheckoutSession)
-	http.HandleFunc("/api/customer-by-email", payments.HandleGetCustomerByEmail)
-	http.Handle("/api/cancel-subscription", authMiddleware.TokenAuthMiddleware(http.HandlerFunc(payments.CancelSubscription)))
+	http.Handle("/api/create-checkout-session", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CreateCheckoutSession))))
+	http.Handle("/api/customer-by-email", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(payments.HandleGetCustomerByEmail))))
+	http.Handle("/api/cancel-subscription", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CancelSubscription))))
 	http.HandleFunc("/webhook", payments.HandleWebhook)
 
-	http.Handle("/", authMiddleware.TokenCheckMiddleware(http.HandlerFunc(pageHandler)))
+	http.Handle("/", authMiddleware.TokenCheckMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(pageHandler))))
 
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))

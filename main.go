@@ -16,6 +16,7 @@ import (
 	// "tradingalerts/loadTest"
 	"tradingalerts/payments/payments"
 	"tradingalerts/services/alertsService"
+	"tradingalerts/services/loggingService"
 	"tradingalerts/services/userService"
 	"tradingalerts/services/yahooService"
 	"tradingalerts/types/alertsTypes"
@@ -59,6 +60,7 @@ func main() {
 	// Pass the db connection to alertsService
 	alertsService.SetDB(db)
 	userService.SetDB(db)
+	loggingService.SetDB(db)
 
 	// loadTest.SetupDbWithLotsOfAlerts()
 	payments.Setup()

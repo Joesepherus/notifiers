@@ -140,9 +140,8 @@ func CheckAlerts(symbol string, currentPrice float64) {
 
 			statement, err := db.Prepare("UPDATE alerts SET triggered = TRUE, completed_at = ? WHERE id = ?")
 			if err != nil {
-				return err
+				return
 			}
-			
 
 			// Current time
 			completedAt := time.Now()
@@ -151,17 +150,16 @@ func CheckAlerts(symbol string, currentPrice float64) {
 				fmt.Print("Error updating alert.\n", err)
 				return
 			}
-			} else {
-				fmt.Print("Alert Updated.\n")
-			}
-			user, err := userService.GetUserById(alert.UserID)
-			if err == nil {
-				go mail.SendEmail(user.Email, "Alert Triggered", fmt.Sprintf(
-					"Alert triggered for %s: current price %.4f has reached the trigger value %.4f (%s)",
-					symbol, currentPrice, alert.TriggerValue, alert.AlertType,
-				))
+		} else {
+			fmt.Print("Alert Updated.\n")
+		}
+		user, err := userService.GetUserById(alert.UserID)
+		if err == nil {
+			go mail.SendEmail(user.Email, "Alert Triggered", fmt.Sprintf(
+				"Alert triggered for %s: current price %.4f has reached the trigger value %.4f (%s)",
+				symbol, currentPrice, alert.TriggerValue, alert.AlertType,
+			))
 
-			}
 		}
 	}
 }

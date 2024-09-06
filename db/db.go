@@ -38,6 +38,15 @@ func InitDB(dataSourceName string) *sql.DB {
 	);`)
 	statement.Exec()
 
+	statement, _ = DB.Prepare(`CREATE TABLE IF NOT EXISTS logs (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		email TEXT,
+		endpoint TEXT,
+		ip TEXT,
+		timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`)
+	statement.Exec()
+
 	if err != nil {
 		log.Fatalf("Failed to create alerts table: %v", err)
 	}
