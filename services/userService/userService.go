@@ -18,11 +18,11 @@ func SetDB(database *sql.DB) {
 func CreateUser(email, password string) (int, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed hashing password: %v", err)
 	}
-	result, err := db.Exec("INSERT INTO users (email, password) VALUES (?, ?)", email, hashedPassword)
+	result, err := db.Exec("INSERT INTO users (email, password) VALUES (?, ?)", email, string(hashedPassword))
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("failed to insert user: %v", err)
 	}
 	userID, err := result.LastInsertId()
 	if err != nil {
@@ -80,15 +80,9 @@ func GetUsers() ([]*userTypes.User, error) {
 func UpdatePassword(email string, hashedPassword string) error {
 	query := `UPDATE users SET password = ? WHERE email = ?`
 
-	stmt, err := db.Prepare(query)
+	_, err := db.Exec(query, hashedPassword, email)
 	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(hashedPassword, email)
-	if err != nil {
-		return err
+		return fmt.Errorf("failed to update row: %v", err)
 	}
 
 	return nil

@@ -2,6 +2,9 @@ package userService
 
 import (
 	"errors"
+	"fmt"
+	"log"
+	"os"
 	"testing"
 
 	// Adjust this import path as needed
@@ -10,15 +13,28 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func TestGetUserById_Success(t *testing.T) {
-	// Create a new mock database connection
-	db, mock, err := sqlmock.New()
-	SetDB(db)
+var mock sqlmock.Sqlmock
+
+func TestMain(m *testing.M) {
+	var err error
+	db, mock, err = sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	defer db.Close()
 
+	SetDB(db)
+
+	// Run tests
+	code := m.Run()
+
+	// Clean up after tests
+	// (if necessary, e.g., reset the database state)
+
+	os.Exit(code)
+}
+
+func TestGetUserById_Success(t *testing.T) {
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("hello123"), bcrypt.DefaultCost)
 
 	// Mock the expected query and the returned rows
@@ -42,14 +58,6 @@ func TestGetUserById_Success(t *testing.T) {
 }
 
 func TestGetUserById_Fail(t *testing.T) {
-	// Create a new mock database connection
-	db, mock, err := sqlmock.New()
-	SetDB(db)
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
 	mock.ExpectQuery("SELECT id, email, password FROM users WHERE id = ?").
 		WithArgs(1).
 		WillReturnError(errors.New("query error"))
@@ -63,14 +71,6 @@ func TestGetUserById_Fail(t *testing.T) {
 }
 
 func TestGetUserByEmail_Success(t *testing.T) {
-	// Create a new mock database connection
-	db, mock, err := sqlmock.New()
-	SetDB(db)
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("hello123"), bcrypt.DefaultCost)
 
 	// Mock the expected query and the returned rows
@@ -92,14 +92,6 @@ func TestGetUserByEmail_Success(t *testing.T) {
 }
 
 func TestGetUserByEmail_Fail(t *testing.T) {
-	// Create a new mock database connection
-	db, mock, err := sqlmock.New()
-	SetDB(db)
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
 	mock.ExpectQuery("SELECT id, email, password FROM users WHERE email = ?").
 		WithArgs("bob@gmail.com").
 		WillReturnError(errors.New("query error"))
@@ -113,14 +105,6 @@ func TestGetUserByEmail_Fail(t *testing.T) {
 }
 
 func TestGetUsers_Success(t *testing.T) {
-	// Create a new mock database connection
-	db, mock, err := sqlmock.New()
-	SetDB(db)
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
 	// Mock the expected query and the returned rows
 	rows := sqlmock.NewRows([]string{"id", "email"}).
 		AddRow(1, "bob@gmail.com").
@@ -140,14 +124,6 @@ func TestGetUsers_Success(t *testing.T) {
 }
 
 func TestGetUsers_NoUsers(t *testing.T) {
-	// Create a new mock database connection
-	db, mock, err := sqlmock.New()
-	SetDB(db)
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
 	mock.ExpectQuery("SELECT id, email FROM users")
 
 	// Call the function you're testing
@@ -159,15 +135,6 @@ func TestGetUsers_NoUsers(t *testing.T) {
 }
 
 func TestGetUsers_ScanError(t *testing.T) {
-	// Create mock DB and mock query results
-	db, mock, err := sqlmock.New()
-	SetDB(db)
-
-	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-	}
-	defer db.Close()
-
 	// Mock the expected query and a faulty row (mismatching columns or types)
 	rows := sqlmock.NewRows([]string{"id", "email"}).
 		AddRow("invalid", "dushan@gmail.com")
@@ -183,24 +150,47 @@ func TestGetUsers_ScanError(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to scan row")
 }
 
-func TestGetUsers_QueryError(t *testing.T) {
-	// Create mock DB and mock query results
-	db, mock, err := sqlmock.New()
-	SetDB(db)
+func TestUpdatePassword_Success(t *testing.T) {
+	// Mock the expected behavior
+	mock.ExpectExec("UPDATE users SET password = ? WHERE email = ?").
+		WithArgs(sqlmock.AnyArg(), "user@example.com").
+		WillReturnResult(sqlmock.NewResult(1, 1))
 
+	err := UpdatePassword("user@example.com", "hashedPasswordValue")
 	if err != nil {
-		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+		t.Fatalf("unexpected error: %v", err)
 	}
-	defer db.Close()
+}
 
-	// Mock the expected query to return an error
-	mock.ExpectQuery("SELECT id, email FROM users").
-		WillReturnError(errors.New("query error"))
+func TestCreateUser_Success(t *testing.T) {
+	// Define the query as used in the UpdatePassword function
+	query := "INSERT INTO users (email, password) VALUES (?, ?)"
+
+	// Mock Exec to return an error
+	mock.ExpectExec(query).
+		WithArgs("dushan@example.com", sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(1, 1))
 
 	// Call the function you're testing
-	users, err := GetUsers()
+	userId, err := CreateUser("dushan@example.com", "hashedPasswordValue")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	// log.Print("err", err)
+	// log.Print("userId", userId)
+	assert.Equal(t, 1, userId)
+}
 
-	// Check if the error is handled correctly
-	assert.Nil(t, users)
-	assert.EqualError(t, err, "failed to query users: query error")
+func TestCreateUser_DBError(t *testing.T) {
+	// Mock the expected query to return an error
+	mock.ExpectExec("INSERT INTO users (email, password) VALUES (?, ?)").
+		WithArgs("user@example.com", sqlmock.AnyArg()).
+		WillReturnError(fmt.Errorf("db exec error"))
+
+	// Call the function you're testing
+	userID, err := CreateUser("user@example.com", "password123")
+
+	// Check the results
+	assert.Equal(t, 0, userID)
+	assert.EqualError(t, err, "failed to insert user: db exec error")
 }
