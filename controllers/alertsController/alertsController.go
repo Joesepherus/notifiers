@@ -150,7 +150,7 @@ func DeleteAlert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(user.ID, email)
-	log.Printf("canAddAlert", canAddAlert)
+	log.Print("canAddAlert", canAddAlert)
 	subscriptionUtils.UserSubscription[email] = subscriptionUtils.UserAlertInfo{
 		CanAddAlert:      canAddAlert,
 		SubscriptionType: subscriptionType,

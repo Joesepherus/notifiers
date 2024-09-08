@@ -42,9 +42,9 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 			UserSubscription := subscriptionUtils.UserSubscription[email]
 			data["CanAddAlert"] = UserSubscription.CanAddAlert
 			data["SubscirptionType"] = UserSubscription.SubscriptionType
-			log.Printf("canAddAlert", subscriptionUtils.UserSubscription)
-			log.Printf("SubscirptionType", UserSubscription.SubscriptionType)
-			log.Printf("canAddAlert[email]", UserSubscription.CanAddAlert)
+			log.Print("canAddAlert", subscriptionUtils.UserSubscription)
+			log.Print("SubscirptionType", UserSubscription.SubscriptionType)
+			log.Print("canAddAlert[email]", UserSubscription.CanAddAlert)
 		}
 		templateLocation = "./templates/index.html"
 		pageTitle = "Trading Alerts"
@@ -52,9 +52,9 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		UserSubscription := subscriptionUtils.UserSubscription[email]
 		data["CanAddAlert"] = UserSubscription.CanAddAlert
 		data["SubscriptionType"] = UserSubscription.SubscriptionType
-		log.Printf("canAddAlert", subscriptionUtils.UserSubscription)
-		log.Printf("SubscriptionType", UserSubscription.SubscriptionType)
-		log.Printf("canAddAlert[email]", UserSubscription.CanAddAlert)
+		log.Print("canAddAlert", subscriptionUtils.UserSubscription)
+		log.Print("SubscriptionType", UserSubscription.SubscriptionType)
+		log.Print("canAddAlert[email]", UserSubscription.CanAddAlert)
 		templateLocation = "./templates/pricing.html"
 		pageTitle = "Pricing - Trading Alerts"
 	case "/about":

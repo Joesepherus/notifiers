@@ -163,13 +163,13 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 
 	// Check if the token has expired
 	if time.Now().After(tokenData.Expiration) {
-		log.Printf("token has expirted")
+		log.Print("token has expired")
 		delete(authUtils.ResetTokens, token)
 		http.Redirect(w, r, "/token-expired", http.StatusSeeOther)
 		http.Error(w, "Token has expired", http.StatusBadRequest)
 		return
 	}
-	log.Printf("token is valid", tokenData.Expiration, time.Now())
+	log.Print("token is valid", tokenData.Expiration, time.Now())
 
 	// Hash the new password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

@@ -11,7 +11,7 @@ var Templates = map[string]*template.Template{}
 
 // Initialize templates
 func InitTemplates() {
-	log.Printf("Initializing")
+	log.Print("Initializing")
 
 	// Load and parse base template
 	baseTemplate, err := template.ParseFiles("./templates/base.html")
@@ -43,7 +43,7 @@ func InitTemplates() {
 		}
 		Templates[file] = tmpl
 	}
-	log.Printf("templates:", Templates)
+	log.Print("templates:", Templates)
 }
 
 func RenderTemplate(w http.ResponseWriter, templateName string, data map[string]interface{}) {

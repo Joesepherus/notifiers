@@ -68,7 +68,6 @@ func CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 
 // handleWebhook processes Stripe webhook events
 func HandleWebhook(w http.ResponseWriter, r *http.Request) {
-	log.Printf("kokot")
 	const MaxBodyBytes = int64(65536)
 	r.Body = http.MaxBytesReader(w, r.Body, MaxBodyBytes)
 	payload, err := ioutil.ReadAll(r.Body)
@@ -78,7 +77,7 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	event, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), os.Getenv("STRIPE_WEBHOOK_SECRET"))
-	log.Printf("event", event)
+	log.Print("event", event, err)
 
 	// if err != nil {
 	// 	w.WriteHeader(http.StatusBadRequest)
@@ -105,15 +104,15 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 
 		user, err := userService.GetUserByEmail(email)
 		if err != nil {
-			log.Printf("Error finding user.")
+			log.Print("Error finding user.")
 		}
 		canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(user.ID, user.Email)
 		subscriptionUtils.UserSubscription[user.Email] = subscriptionUtils.UserAlertInfo{
 			CanAddAlert:      canAddAlert,
 			SubscriptionType: subscriptionType,
 		}
-		log.Printf("canAddAlert", canAddAlert)
-		log.Printf("subscriptionType", subscriptionType)
+		log.Print("canAddAlert", canAddAlert)
+		log.Print("subscriptionType", subscriptionType)
 
 		// Handle successful payment
 	case "customer.subscription.deleted":
@@ -139,7 +138,7 @@ func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	email := req.Email
-	log.Printf("email", email)
+	log.Print("email", email)
 	// Fetch customer details
 	customer, err := subscriptionUtils.GetCustomerByEmail(email)
 	if err != nil {
