@@ -65,7 +65,7 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Fetch stock data
-	stockData, err := yahooService.GetStockCurrentValue(symbol)
+	stockData, err := yahooService.GetStockCurrentValue(yahooService.YahooBaseURL, symbol)
 	if err != nil {
 		log.Printf("Failed to get stock value for %s: %v", symbol, err)
 		w.Header().Set("Content-Type", "application/json")
