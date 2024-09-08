@@ -9,12 +9,14 @@ import (
 // Define a global template map
 var Templates = map[string]*template.Template{}
 
-// Initialize templates
-func InitTemplates() {
-	log.Print("Initializing")
+var BaseLocation = ""
 
+// Initialize templates
+func InitTemplates(location string) {
+	log.Print("Initializing")
+	BaseLocation = location
 	// Load and parse base template
-	baseTemplate, err := template.ParseFiles("./templates/base.html")
+	baseTemplate, err := template.ParseFiles(BaseLocation + "/base.html")
 	if err != nil {
 		log.Fatalf("Failed to parse base template: %v", err)
 	}
@@ -22,18 +24,18 @@ func InitTemplates() {
 
 	// Parse page-specific templates
 	pageTemplates := []string{
-		"./templates/index.html",
-		"./templates/pricing.html",
-		"./templates/about.html",
-		"./templates/alerts.html",
-		"./templates/profile.html",
-		"./templates/reset-password-sent.html",
-		"./templates/reset-password-success.html",
-		"./templates/subscription-success.html",
-		"./templates/subscription-cancel.html",
-		"./templates/token-expired.html",
-		"./templates/docs.html",
-		"./templates/404.html",
+		BaseLocation + "/index.html",
+		BaseLocation + "/pricing.html",
+		BaseLocation + "/about.html",
+		BaseLocation + "/alerts.html",
+		BaseLocation + "/profile.html",
+		BaseLocation + "/reset-password-sent.html",
+		BaseLocation + "/reset-password-success.html",
+		BaseLocation + "/subscription-success.html",
+		BaseLocation + "/subscription-cancel.html",
+		BaseLocation + "/token-expired.html",
+		BaseLocation + "/docs.html",
+		BaseLocation + "/404.html",
 	}
 
 	for _, file := range pageTemplates {
@@ -43,7 +45,6 @@ func InitTemplates() {
 		}
 		Templates[file] = tmpl
 	}
-	log.Print("templates:", Templates)
 }
 
 func RenderTemplate(w http.ResponseWriter, templateName string, data map[string]interface{}) {

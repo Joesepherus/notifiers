@@ -23,7 +23,7 @@ func protectedHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the protected area!")
 }
 
-func pageHandler(w http.ResponseWriter, r *http.Request) {
+func PageHandler(w http.ResponseWriter, r *http.Request) {
 	var templateLocation, pageTitle string
 
 	data := map[string]interface{}{
@@ -46,7 +46,7 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 			log.Print("SubscirptionType", UserSubscription.SubscriptionType)
 			log.Print("canAddAlert[email]", UserSubscription.CanAddAlert)
 		}
-		templateLocation = "./templates/index.html"
+		templateLocation = templates.BaseLocation + "/index.html"
 		pageTitle = "Trading Alerts"
 	case "/pricing":
 		UserSubscription := subscriptionUtils.UserSubscription[email]
@@ -55,10 +55,10 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Print("canAddAlert", subscriptionUtils.UserSubscription)
 		log.Print("SubscriptionType", UserSubscription.SubscriptionType)
 		log.Print("canAddAlert[email]", UserSubscription.CanAddAlert)
-		templateLocation = "./templates/pricing.html"
+		templateLocation = templates.BaseLocation + "/pricing.html"
 		pageTitle = "Pricing - Trading Alerts"
 	case "/about":
-		templateLocation = "./templates/about.html"
+		templateLocation = templates.BaseLocation + "/about.html"
 		pageTitle = "About - Trading Alerts"
 	case "/alerts":
 		// Fetch alerts and add to data
@@ -75,35 +75,35 @@ func pageHandler(w http.ResponseWriter, r *http.Request) {
 		data["CanAddAlert"] = UserSubscription.CanAddAlert
 		data["SubscriptionType"] = UserSubscription.SubscriptionType
 
-		templateLocation = "./templates/alerts.html"
+		templateLocation = templates.BaseLocation + "/alerts.html"
 		pageTitle = "Alerts - Trading Alerts"
 	case "/profile":
 		UserSubscription := subscriptionUtils.UserSubscription[email]
 		data["CanAddAlert"] = UserSubscription.CanAddAlert
 		data["SubscriptionType"] = UserSubscription.SubscriptionType
 		data["MaxAlerts"] = subscriptionUtils.SUBSCRIPTION_LIMITS[UserSubscription.SubscriptionType]
-		templateLocation = "./templates/profile.html"
+		templateLocation = templates.BaseLocation + "/profile.html"
 		pageTitle = "Profile - Trading Alerts"
 	case "/reset-password-sent":
-		templateLocation = "./templates/reset-password-sent.html"
-		pageTitle = "Reset password - Trading Alerts"
-	case "/reset-password-sucess":
-		templateLocation = "./templates/reset-password-success.html"
-		pageTitle = "Reset password - Trading Alerts"
+		templateLocation = templates.BaseLocation + "/reset-password-sent.html"
+		pageTitle = "Reset Password - Trading Alerts"
+	case "/reset-password-success":
+		templateLocation = templates.BaseLocation + "/reset-password-success.html"
+		pageTitle = "Reset Password Success - Trading Alerts"
 	case "/subscription-success":
-		templateLocation = "./templates/subscription-success.html"
-		pageTitle = "Reset password - Trading Alerts"
+		templateLocation = templates.BaseLocation + "/subscription-success.html"
+		pageTitle = "Subscription Successful - Trading Alerts"
 	case "/subscription-cancel":
-		templateLocation = "./templates/subscription-cancel.html"
-		pageTitle = "Reset password - Trading Alerts"
+		templateLocation = templates.BaseLocation + "/subscription-cancel.html"
+		pageTitle = "Subscription Cancelled - Trading Alerts"
 	case "/token-expired":
-		templateLocation = "./templates/token-expired.html"
-		pageTitle = "Reset password - Trading Alerts"
+		templateLocation = templates.BaseLocation + "/token-expired.html"
+		pageTitle = "Token Expired - Trading Alerts"
 	case "/docs":
-		templateLocation = "./templates/docs.html"
-		pageTitle = "Reset password - Trading Alerts"
+		templateLocation = templates.BaseLocation + "/docs.html"
+		pageTitle = "Documentation - Trading Alerts"
 	default:
-		templateLocation = "./templates/404.html"
+		templateLocation = templates.BaseLocation + "/404.html"
 		pageTitle = "Page not found"
 	}
 
@@ -145,7 +145,7 @@ func RestApi() {
 	http.Handle("/api/cancel-subscription", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CancelSubscription))))
 	http.HandleFunc("/webhook", payments.HandleWebhook)
 
-	http.Handle("/", authMiddleware.TokenCheckMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(pageHandler))))
+	http.Handle("/", authMiddleware.TokenCheckMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(PageHandler))))
 
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))

@@ -52,7 +52,7 @@ func main() {
 		log.Println("Logging initialized")
 	}
 
-	templates.InitTemplates()
+	templates.InitTemplates("./templates")
 	// start a new goroutine for the rest api endpoints
 	go controllers.RestApi()
 	db = database.InitDB("./alerts.db")
