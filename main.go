@@ -101,13 +101,14 @@ func main() {
 				go func(symbol string) {
 					defer wg.Done() // Decrement the wait group counter when the goroutine completes
 
-					stockData, err := yahooService.GetStockCurrentValue(symbol)
+					stockData, err := yahooService.GetStockCurrentValue(yahooService.YahooBaseURL, symbol)
 					if err != nil {
 						log.Printf("Failed to get stock value for %s: %v", symbol, err)
 						return
 					}
 
 					currentPrice := stockData.Chart.Result[0].Meta.RegularMarketPrice
+
 					// fmt.Printf("Current price of %s: %.4f %s\n", stockData.Chart.Result[0].Meta.Symbol, currentPrice, stockData.Chart.Result[0].Meta.Currency)
 
 					// Check and process alerts
