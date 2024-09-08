@@ -60,6 +60,7 @@ func TestGetAlerts_QueryError(t *testing.T) {
 func TestGetAlerts_ScanError(t *testing.T) {
 	// Create mock DB and mock query results
 	db, mock, err := sqlmock.New()
+	SetDB(db)
 
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
