@@ -14,7 +14,7 @@ import (
 	"tradingalerts/utils/subscriptionUtils"
 
 	// "tradingalerts/loadTest"
-	"tradingalerts/payments/payments"
+
 	"tradingalerts/services/alertsService"
 	"tradingalerts/services/loggingService"
 	"tradingalerts/services/userService"
@@ -63,7 +63,6 @@ func main() {
 	loggingService.SetDB(db)
 
 	// loadTest.SetupDbWithLotsOfAlerts()
-	payments.Setup()
 	subscriptionUtils.Setup()
 
 	ticker := time.NewTicker(1 * time.Second)

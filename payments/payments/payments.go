@@ -232,10 +232,3 @@ func CancelSubscription(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte("Subscription canceled successfully."))
 }
-
-func Setup() {
-	// Set your Stripe secret key
-	stripe.Key = os.Getenv("STRIPE_SECRET")
-	// test_createCustomer()
-	// test_getSubscriptionByUserEmail()
-}

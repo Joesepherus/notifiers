@@ -3,6 +3,7 @@ package subscriptionUtils
 import (
 	"fmt"
 	"log"
+	"os"
 	"tradingalerts/services/alertsService"
 	"tradingalerts/services/userService"
 
@@ -69,8 +70,6 @@ func CheckToAddAlert(userID int, email string) (bool, string) {
 	gold_subscription, err := GetSubscriptionByCustomerAndProduct(cust.ID, Gold_productID)
 	diamond_subscription, err2 := GetSubscriptionByCustomerAndProduct(cust.ID, Diamond_productID)
 
-	log.Printf("gold_subscription", gold_subscription)
-	log.Printf("diamond_subscription", diamond_subscription)
 	if err == nil && gold_subscription.Status == "active" {
 		if len(alerts) > SUBSCRIPTION_LIMITS["gold"]-1 {
 			return false, ""
@@ -92,7 +91,13 @@ func CheckToAddAlert(userID int, email string) (bool, string) {
 	return true, "silver"
 }
 
+func SetupKey() {
+	// Set your Stripe secret key
+	stripe.Key = os.Getenv("STRIPE_SECRET")
+}
+
 func Setup() {
+	SetupKey()
 	users, _ := userService.GetUsers()
 	for _, user := range users {
 		canAddAlert, subscriptionType := CheckToAddAlert(user.ID, user.Email)
