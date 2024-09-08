@@ -2,7 +2,6 @@ package userService
 
 import (
 	"errors"
-	"log"
 	"testing"
 
 	// Adjust this import path as needed
@@ -32,7 +31,6 @@ func TestGetUserById_Success(t *testing.T) {
 
 	// Call the function you're testing
 	userById1, err := GetUserById(1)
-	log.Print("userById1", userById1)
 	if err != nil {
 		t.Fatalf("unexpected error when calling GetUserById: %v", err)
 	}
@@ -85,7 +83,6 @@ func TestGetUserByEmail_Success(t *testing.T) {
 
 	// Call the function you're testing
 	userByEmail, err := GetUserByEmail("bob@gmail.com")
-	log.Print("userByEmail", userByEmail)
 
 	// // Check if the function works as expected
 	assert.NoError(t, err)
@@ -113,4 +110,97 @@ func TestGetUserByEmail_Fail(t *testing.T) {
 	// // Check if the function works as expected
 	assert.Nil(t, userByEmail)
 	assert.EqualError(t, err, "failed to query user: query error")
+}
+
+func TestGetUsers_Success(t *testing.T) {
+	// Create a new mock database connection
+	db, mock, err := sqlmock.New()
+	SetDB(db)
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	// Mock the expected query and the returned rows
+	rows := sqlmock.NewRows([]string{"id", "email"}).
+		AddRow(1, "bob@gmail.com").
+		AddRow(2, "dushan@gmail.com")
+
+	mock.ExpectQuery("SELECT id, email FROM users").
+		WillReturnRows(rows)
+
+	// Call the function you're testing
+	users, err := GetUsers()
+
+	// // Check if the function works as expected
+	assert.NoError(t, err)
+	assert.Len(t, users, 2)
+	assert.Equal(t, "bob@gmail.com", users[0].Email)
+	assert.Equal(t, "dushan@gmail.com", users[1].Email)
+}
+
+func TestGetUsers_NoUsers(t *testing.T) {
+	// Create a new mock database connection
+	db, mock, err := sqlmock.New()
+	SetDB(db)
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	mock.ExpectQuery("SELECT id, email FROM users")
+
+	// Call the function you're testing
+	users, err := GetUsers()
+
+	// // Check if the function works as expected
+	assert.Error(t, err)
+	assert.Len(t, users, 0)
+}
+
+func TestGetUsers_ScanError(t *testing.T) {
+	// Create mock DB and mock query results
+	db, mock, err := sqlmock.New()
+	SetDB(db)
+
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	// Mock the expected query and a faulty row (mismatching columns or types)
+	rows := sqlmock.NewRows([]string{"id", "email"}).
+		AddRow("invalid", "dushan@gmail.com")
+
+	mock.ExpectQuery("SELECT id, email FROM users").
+		WillReturnRows(rows)
+
+	// Call the function you're testing
+	users, err := GetUsers()
+
+	// Check if the scanning error is handled correctly
+	assert.Nil(t, users)
+	assert.Contains(t, err.Error(), "failed to scan row")
+}
+
+func TestGetUsers_QueryError(t *testing.T) {
+	// Create mock DB and mock query results
+	db, mock, err := sqlmock.New()
+	SetDB(db)
+
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	// Mock the expected query to return an error
+	mock.ExpectQuery("SELECT id, email FROM users").
+		WillReturnError(errors.New("query error"))
+
+	// Call the function you're testing
+	users, err := GetUsers()
+
+	// Check if the error is handled correctly
+	assert.Nil(t, users)
+	assert.EqualError(t, err, "failed to query users: query error")
 }

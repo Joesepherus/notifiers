@@ -54,7 +54,7 @@ func GetUsers() ([]*userTypes.User, error) {
 	// Prepare the query to select all users
 	rows, err := db.Query("SELECT id, email FROM users")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to query users: %v", err)
 	}
 	defer rows.Close()
 
@@ -64,7 +64,7 @@ func GetUsers() ([]*userTypes.User, error) {
 	for rows.Next() {
 		user := &userTypes.User{}
 		if err := rows.Scan(&user.ID, &user.Email); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to scan row: %v", err)
 		}
 		users = append(users, user)
 	}
