@@ -187,7 +187,7 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 
 	// Invalidate the token
 	delete(authUtils.ResetTokens, token)
-	http.Redirect(w, r, "/reset-password-sucess", http.StatusSeeOther)
+	http.Redirect(w, r, "/reset-password-success", http.StatusSeeOther)
 
 	w.Write([]byte("Password has been reset successfully."))
 }
