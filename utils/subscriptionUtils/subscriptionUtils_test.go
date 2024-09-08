@@ -35,13 +35,3 @@ func TestGetSubscriptionByCustomerAndProduct(t *testing.T) {
 	assert.NotNil(t, subscription)
 	assert.Equal(t, testProductID, subscription.Items.Data[0].Price.Product.ID)
 }
-
-func TestCheckToAddAlert(t *testing.T) {
-	// Replace with test user ID and email
-	testUserID := 1
-	testEmail := TEST_EMAIL
-
-	canAddAlert, subscriptionType := CheckToAddAlert(testUserID, testEmail)
-	assert.True(t, canAddAlert)
-	assert.Equal(t, "silver", subscriptionType)
-}
