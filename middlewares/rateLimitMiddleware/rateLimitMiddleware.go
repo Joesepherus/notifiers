@@ -1,7 +1,7 @@
 package ratelimitmiddleware
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"sync"
 	"time"
@@ -15,7 +15,7 @@ var (
 )
 
 func getClientLimiter(ip string) *rate.Limiter {
-	fmt.Println("clients", clients)
+	log.Println("clients", clients)
 	mu.Lock()
 	defer mu.Unlock()
 
