@@ -24,6 +24,12 @@ func protectedHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func PageHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET") // Specifies the HTTP methods allowed.
+	w.Header().Set("X-Frame-Options", "DENY")                   // Prevents clickjacking
+	w.Header().Set("X-Content-Type-Options", "nosniff")         // Prevents MIME sniffing
+	w.Header().Set("X-XSS-Protection", "1; mode=block")         // Protects against XSS attacks
+	w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
+
 	var templateLocation, pageTitle string
 
 	data := map[string]interface{}{
