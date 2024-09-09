@@ -81,9 +81,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Name:     "token",
 		Value:    token,
 		Path:     "/",
-		HttpOnly: true,      // Prevent JavaScript access
-		Secure:   true,      // Use only on HTTPS
-		MaxAge:   3600 * 24, // Token expires in 1 day
+		HttpOnly: true,                    // Prevent JavaScript access
+		Secure:   true,                    // Use only on HTTPS
+		SameSite: http.SameSiteStrictMode, // prevent CSRF
+		MaxAge:   3600 * 24,               // Token expires in 1 day
 	})
 
 	// Redirect to user dashboard or home page after successful login
