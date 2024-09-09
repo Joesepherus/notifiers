@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"log"
+	"time"
 
 	_ "modernc.org/sqlite"
 )
@@ -50,6 +51,10 @@ func InitDB(dataSourceName string) *sql.DB {
 	if err != nil {
 		log.Fatalf("Failed to create alerts table: %v", err)
 	}
+
+	DB.SetMaxOpenConns(25)
+	DB.SetMaxIdleConns(25)
+	DB.SetConnMaxLifetime(5 * time.Minute)
 
 	return DB
 }
