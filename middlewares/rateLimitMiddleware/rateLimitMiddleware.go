@@ -1,4 +1,4 @@
-package ratelimitmiddleware
+package rateLimitMiddleware
 
 import (
 	"log"

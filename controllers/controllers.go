@@ -10,7 +10,7 @@ import (
 	"tradingalerts/middlewares/authMiddleware"
 	"tradingalerts/middlewares/bodySizeMiddleware"
 	"tradingalerts/middlewares/logMiddleware"
-	ratelimitmiddleware "tradingalerts/middlewares/rateLimitMiddleware"
+	"tradingalerts/middlewares/rateLimitMiddleware"
 	"tradingalerts/payments/payments"
 	"tradingalerts/utils/subscriptionUtils"
 
@@ -141,28 +141,28 @@ func RestApi() {
 		IdleTimeout:  15 * time.Second, // Max time for idle connections
 	}
 
-	http.Handle("/protected", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(protectedHandler))))))
+	http.Handle("/protected", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(protectedHandler))))))
 
-	http.Handle("/api/add-alert", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(alertsController.AddAlert))))))
-	http.Handle("/api/delete-alert", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(alertsController.DeleteAlert))))))
+	http.Handle("/api/add-alert", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(alertsController.AddAlert))))))
+	http.Handle("/api/delete-alert", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(alertsController.DeleteAlert))))))
 
 	// Define the route for getting untriggered alerts
-	http.Handle("/api/alerts", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(alertsController.GetAlerts))))))
+	http.Handle("/api/alerts", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(alertsController.GetAlerts))))))
 
 	// Authentication routes
-	http.Handle("/api/sign-up", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.SignUp))))))
-	http.Handle("/api/login", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.Login))))))
-	http.Handle("/api/logout", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.Logout))))))
-	http.Handle("/api/reset-password", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.ResetPassword))))))
-	http.Handle("/api/set-password", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.SetPassword))))))
+	http.Handle("/api/sign-up", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.SignUp))))))
+	http.Handle("/api/login", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.Login))))))
+	http.Handle("/api/logout", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.Logout))))))
+	http.Handle("/api/reset-password", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.ResetPassword))))))
+	http.Handle("/api/set-password", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.SetPassword))))))
 
 	// Stripe routes
-	http.Handle("/api/create-checkout-session", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CreateCheckoutSession))))))
-	http.Handle("/api/customer-by-email", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(payments.HandleGetCustomerByEmail))))))
-	http.Handle("/api/cancel-subscription", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CancelSubscription))))))
+	http.Handle("/api/create-checkout-session", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CreateCheckoutSession))))))
+	http.Handle("/api/customer-by-email", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(payments.HandleGetCustomerByEmail))))))
+	http.Handle("/api/cancel-subscription", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CancelSubscription))))))
 	http.HandleFunc("/webhook", payments.HandleWebhook)
 
-	http.Handle("/", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(PageHandler))))))
+	http.Handle("/", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(PageHandler))))))
 
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
