@@ -49,7 +49,7 @@ func RateLimitPerClient(next http.Handler) http.Handler {
 
 		limiter := getClientLimiter(ip)
 		if !limiter.Allow() {
-			err := loggingService.LogToDB(email, r.URL.Path, ip)
+			err := loggingService.LogToDB(email, r.URL.Path+" - Too many requests from your IP", ip)
 			if err != nil {
 				log.Printf("Failed to log user action: %v", err)
 			}
