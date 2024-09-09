@@ -8,6 +8,7 @@ import (
 	"tradingalerts/controllers/authController"
 	"tradingalerts/middlewares/authMiddleware"
 	"tradingalerts/middlewares/logMiddleware"
+	ratelimitmiddleware "tradingalerts/middlewares/rateLimitMiddleware"
 	"tradingalerts/payments/payments"
 	"tradingalerts/utils/subscriptionUtils"
 
@@ -151,7 +152,7 @@ func RestApi() {
 	http.Handle("/api/cancel-subscription", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CancelSubscription))))
 	http.HandleFunc("/webhook", payments.HandleWebhook)
 
-	http.Handle("/", authMiddleware.TokenCheckMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(PageHandler))))
+	http.Handle("/", ratelimitmiddleware.RateLimitPerClient(authMiddleware.TokenCheckMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(PageHandler)))))
 
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
