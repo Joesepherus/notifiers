@@ -3,21 +3,10 @@ package logMiddleware
 import (
 	"log"
 	"net/http"
-	"strings"
 	"tradingalerts/middlewares/authMiddleware"
 	"tradingalerts/services/loggingService"
+	"tradingalerts/utils/authUtils"
 )
-
-// Helper function to get the client's real IP address, including proxies
-func getIPAddress(r *http.Request) string {
-	ip := r.RemoteAddr
-	// Check if the request is coming from a proxy and get the real client IP
-	forwardedFor := r.Header.Get("X-Forwarded-For")
-	if forwardedFor != "" {
-		ip = strings.Split(forwardedFor, ",")[0] // Get the first IP in the chain
-	}
-	return ip
-}
 
 // LogMiddleware is used to log the request before passing it to the handler
 func LogMiddleware(next http.Handler) http.Handler {
@@ -29,7 +18,7 @@ func LogMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Capture IP address
-		ip := getIPAddress(r)
+		ip := authUtils.GetIPAddress(r)
 
 		// Log the request to the database
 		err := loggingService.LogToDB(email, r.URL.Path, ip)

@@ -1,6 +1,8 @@
 package authUtils
 
 import (
+	"net/http"
+	"strings"
 	"time"
 	"tradingalerts/types/userTypes"
 
@@ -28,4 +30,15 @@ func GenerateToken(email string) (string, error) {
 func CheckPassword(user *userTypes.User, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	return err == nil
+}
+
+// Helper function to get the client's real IP address, including proxies
+func GetIPAddress(r *http.Request) string {
+	ip := r.RemoteAddr
+	// Check if the request is coming from a proxy and get the real client IP
+	forwardedFor := r.Header.Get("X-Forwarded-For")
+	if forwardedFor != "" {
+		ip = strings.Split(forwardedFor, ",")[0] // Get the first IP in the chain
+	}
+	return ip
 }

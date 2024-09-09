@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	"tradingalerts/utils/authUtils"
 
 	"golang.org/x/time/rate"
 )
@@ -39,7 +40,7 @@ func getClientLimiter(ip string) *rate.Limiter {
 
 func RateLimitPerClient(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ip := r.RemoteAddr // Get client's IP address
+		ip := authUtils.GetIPAddress(r)
 
 		limiter := getClientLimiter(ip)
 		if !limiter.Allow() {
