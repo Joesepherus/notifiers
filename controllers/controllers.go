@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 	"tradingalerts/controllers/alertsController"
 	"tradingalerts/controllers/authController"
 	"tradingalerts/middlewares/authMiddleware"
@@ -30,7 +31,6 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")         // Prevents MIME sniffing
 	w.Header().Set("X-XSS-Protection", "1; mode=block")         // Protects against XSS attacks
 	w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
-
 	var templateLocation, pageTitle string
 
 	data := map[string]interface{}{
@@ -131,6 +131,15 @@ func RestApi() {
 		}
 	}
 
+	// Define the server with timeouts
+	server := &http.Server{
+		Addr:         ":" + strconv.Itoa(port), // Listen on the specified port
+		Handler:      nil,
+		ReadTimeout:  5 * time.Second,  // Max time to read the request
+		WriteTimeout: 10 * time.Second, // Max time to write the response
+		IdleTimeout:  15 * time.Second, // Max time for idle connections
+	}
+
 	http.Handle("/protected", authMiddleware.TokenAuthMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(protectedHandler)))))
 
 	http.Handle("/api/add-alert", authMiddleware.TokenAuthMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(alertsController.AddAlert)))))
@@ -158,5 +167,5 @@ func RestApi() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	log.Printf("Starting server on :%d...\n", port)
-	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), nil))
+	log.Fatal(server.ListenAndServe())
 }
