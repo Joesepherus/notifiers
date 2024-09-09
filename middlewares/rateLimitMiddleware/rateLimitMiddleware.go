@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	"tradingalerts/middlewares/authMiddleware"
+	"tradingalerts/services/loggingService"
 	"tradingalerts/utils/authUtils"
 
 	"golang.org/x/time/rate"
@@ -16,7 +18,6 @@ var (
 )
 
 func getClientLimiter(ip string) *rate.Limiter {
-	log.Println("clients", clients)
 	mu.Lock()
 	defer mu.Unlock()
 
@@ -40,11 +41,18 @@ func getClientLimiter(ip string) *rate.Limiter {
 
 func RateLimitPerClient(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		email, ok := r.Context().Value(authMiddleware.UserEmailKey).(string)
+		if !ok || email == "" {
+			email = "guest" // or handle it based on your requirements
+		}
 		ip := authUtils.GetIPAddress(r)
 
 		limiter := getClientLimiter(ip)
 		if !limiter.Allow() {
-			log.Println("Too many requests from your IP," + ip)
+			err := loggingService.LogToDB(email, r.URL.Path, ip)
+			if err != nil {
+				log.Printf("Failed to log user action: %v", err)
+			}
 			http.Error(w, "Too many requests from your IP, please try again later.", http.StatusTooManyRequests)
 			return
 		}
