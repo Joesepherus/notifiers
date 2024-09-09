@@ -21,6 +21,13 @@ import (
 	"tradingalerts/templates"
 )
 
+// Health check handler
+func healthHandler(w http.ResponseWriter) {
+	// Basic health check response
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}
+
 func protectedHandler(w http.ResponseWriter, r *http.Request) {
 	// This handler will only be called if the token is valid
 	fmt.Fprintf(w, "Welcome to the protected area!")
@@ -110,6 +117,9 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	case "/docs":
 		templateLocation = templates.BaseLocation + "/docs.html"
 		pageTitle = "Documentation - Trading Alerts"
+	case "/health":
+		healthHandler(w)
+		return
 	default:
 		templateLocation = templates.BaseLocation + "/404.html"
 		pageTitle = "Page not found"
