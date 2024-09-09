@@ -152,7 +152,7 @@ func RestApi() {
 	http.Handle("/api/cancel-subscription", authMiddleware.TokenAuthMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CancelSubscription))))
 	http.HandleFunc("/webhook", payments.HandleWebhook)
 
-	http.Handle("/", ratelimitmiddleware.RateLimitPerClient(authMiddleware.TokenCheckMiddleware(logMiddleware.LogMiddleware(http.HandlerFunc(PageHandler)))))
+	http.Handle("/", authMiddleware.TokenCheckMiddleware(ratelimitmiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(PageHandler)))))
 
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
