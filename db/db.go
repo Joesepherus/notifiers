@@ -2,51 +2,93 @@ package db
 
 import (
 	"database/sql"
+	_ "github.com/lib/pq"
 	"log"
 	"time"
-
-	_ "modernc.org/sqlite"
 )
 
 var DB *sql.DB
 
 func InitDB(dataSourceName string) *sql.DB {
-	var err error
-	DB, err = sql.Open("sqlite", dataSourceName)
+	// Connection string format:
+	// host=localhost port=5432 user=username password=password dbname=database_name sslmode=disable
+	connStr := "host=localhost port=3080 user=user password=BVGbfHyDjxWAvkCaeYM4JU59ZnTt8p dbname=postgres sslmode=disable"
+
+	// Establish a connection
+	DB, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatalf("Failed to open database: %v", err)
+		log.Fatal("Unable to connect to the database:", err)
 	}
+
+	err = DB.Ping()
+	if err != nil {
+		log.Fatal("Unable to ping the database:", err)
+	}
+
+	log.Println("Connected to the PostgreSQL database successfully.")
 	DB.SetMaxOpenConns(1)
 
-	statement, _ := DB.Prepare(`CREATE TABLE IF NOT EXISTS alerts (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		symbol TEXT NOT NULL,
-		trigger_value REAL NOT NULL,
-		alert_type TEXT CHECK(alert_type IN ('lower', 'higher')) NOT NULL,
-		triggered BOOLEAN DEFAULT FALSE,
-		user_id INTEGER NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		completed_at TIMESTAMP,
-		FOREIGN KEY (user_id) REFERENCES users(id)
-	);`)
-	statement.Exec()
+	statement, err := DB.Prepare(`
+    CREATE TABLE IF NOT EXISTS alerts (
+        id SERIAL PRIMARY KEY,
+        symbol VARCHAR(10) NOT NULL,
+        trigger_value DECIMAL(10, 2) NOT NULL,
+        alert_type TEXT CHECK (alert_type IN ('lower', 'higher')) NOT NULL,
+        triggered BOOLEAN DEFAULT FALSE,
+        user_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        completed_at TIMESTAMP NULL DEFAULT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+`)
+	if err != nil {
+		log.Fatal("Error preparing alerts table:", err)
+	}
+	_, err = statement.Exec()
+	if err != nil {
+		log.Fatal("Error executing alerts table statement:", err)
+	}
 
-	statement, _ = DB.Prepare(`CREATE TABLE IF NOT EXISTS users (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		email TEXT UNIQUE NOT NULL,
-		password TEXT NOT NULL,
-		created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-	);`)
-	statement.Exec()
+	statement, err = DB.Prepare(`
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+`)
+	if err != nil {
+		log.Fatal("Error preparing users table:", err)
+	}
+	_, err = statement.Exec()
+	if err != nil {
+		log.Fatal("Error executing users table statement:", err)
+	}
 
-	statement, _ = DB.Prepare(`CREATE TABLE IF NOT EXISTS logs (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		email TEXT,
-		endpoint TEXT,
-		ip TEXT,
-		timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-	);`)
-	statement.Exec()
+	statement, err = DB.Prepare(`
+    CREATE TABLE IF NOT EXISTS logs (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255),
+        endpoint VARCHAR(255),
+        ip VARCHAR(45),
+        timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+`)
+	if err != nil {
+		log.Fatal("Error preparing logs table:", err)
+	}
+	_, err = statement.Exec()
+	if err != nil {
+		log.Fatal("Error executing logs table statement:", err)
+	}
+
+	if err != nil {
+		log.Fatal("Error preparing logs table:", err)
+	}
+	_, err = statement.Exec()
+	if err != nil {
+		log.Fatal("Error executing logs table statement:", err)
+	}
 
 	DB.SetMaxOpenConns(50)
 	DB.SetMaxIdleConns(50)

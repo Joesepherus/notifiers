@@ -22,7 +22,7 @@ func SetDB(database *sql.DB) {
 // LogToDB saves a log entry to the SQLite database
 func LogToDB(email, endpoint string, ip string) error {
 	log.Printf("User Email: %s, Endpoint: %s, IP: %s", email, endpoint, ip)
-	_, err := db.Exec("INSERT INTO logs (email, endpoint, ip) VALUES (?, ?, ?)", email, endpoint, ip)
+	_, err := db.Exec("INSERT INTO logs (email, endpoint, ip) VALUES ($1, $2, $3)", email, endpoint, ip)
 	if err != nil {
 		log.Printf("Error logging to DB: %v", err)
 		return err

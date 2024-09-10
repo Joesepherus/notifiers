@@ -17,7 +17,7 @@ func SetDB(database *sql.DB) {
 }
 
 func AddAlert(userID int, symbol string, triggerValue float64, alertType string) error {
-	_, err := db.Exec("INSERT INTO alerts (user_id, symbol, trigger_value, alert_type) VALUES (?, ?, ?, ?)", userID, symbol, triggerValue, alertType)
+	_, err := db.Exec("INSERT INTO alerts (user_id, symbol, trigger_value, alert_type) VALUES ($1, $2, $3, $4)", userID, symbol, triggerValue, alertType)
 	if err != nil {
 		log.Printf("error inserting alerts: %v", err)
 		return nil
@@ -139,7 +139,7 @@ func CheckAlerts(symbol string, currentPrice float64) {
 		if shouldTrigger {
 			log.Printf("Alert triggered for %s: current price %.4f has reached the trigger value %.4f (%s)", symbol, currentPrice, alert.TriggerValue, alert.AlertType)
 
-			statement, err := db.Prepare("UPDATE alerts SET triggered = TRUE, completed_at = ? WHERE id = ?")
+			statement, err := db.Prepare("UPDATE alerts SET triggered = TRUE, completed_at = $1 WHERE id = $2")
 			if err != nil {
 				return
 			}
@@ -169,7 +169,7 @@ func GetAlertsBySymbol(symbol string) ([]alertsTypes.Alert, error) {
 	var alerts []alertsTypes.Alert
 
 	// Query to fetch rows from the database
-	rows, err := db.Query("SELECT id, symbol, trigger_value, alert_type, user_id FROM alerts WHERE symbol = ? AND triggered = FALSE", symbol)
+	rows, err := db.Query("SELECT id, symbol, trigger_value, alert_type, user_id FROM alerts WHERE symbol = $1 AND triggered = FALSE", symbol)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query alerts: %v", err)
 	}
@@ -194,7 +194,7 @@ func GetAlertsBySymbol(symbol string) ([]alertsTypes.Alert, error) {
 
 func DeleteAlertByID(id int) error {
 	// Prepare the SQL statement for deleting the alert by ID
-	stmt, err := db.Prepare("DELETE FROM alerts WHERE id = ?")
+	stmt, err := db.Prepare("DELETE FROM alerts WHERE id = $1")
 	if err != nil {
 		return err
 	}
