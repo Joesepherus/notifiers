@@ -136,7 +136,7 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	data["Title"] = pageTitle
 	data["Content"] = templateLocation
 
-	templates.RenderTemplate(w, templateLocation, data)
+	templates.RenderTemplate(w, r, templateLocation, data)
 }
 
 func RestApi() {

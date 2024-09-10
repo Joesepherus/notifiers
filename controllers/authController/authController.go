@@ -12,27 +12,25 @@ import (
 	"tradingalerts/payments/payments"
 	"tradingalerts/services/userService"
 	"tradingalerts/utils/authUtils"
+	"tradingalerts/utils/errorUtils"
 	"tradingalerts/utils/subscriptionUtils"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func SignUp(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
+	errorUtils.MethodNotAllowed_error(w, r)
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
 	if email == "" || password == "" {
-		http.Error(w, "Email and password are required", http.StatusBadRequest)
+		http.Redirect(w, r, "/error?message=Email+and+password+are+required", http.StatusSeeOther)
 		return
 	}
 
 	userID, err := userService.CreateUser(email, password)
 	if err != nil {
-		http.Error(w, "Error creating user", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Error+creating+user", http.StatusSeeOther)
 		return
 	}
 	payments.CreateCustomer(email)
@@ -45,34 +43,31 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
+	errorUtils.MethodNotAllowed_error(w, r)
 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 
 	if email == "" || password == "" {
-		http.Error(w, "Email and password are required", http.StatusBadRequest)
+		http.Redirect(w, r, "/error?message=Email+and+password+are+required", http.StatusSeeOther)
 		return
 	}
 
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
-        http.Redirect(w,r, "/error?message=Invalid+email+or+password", http.StatusSeeOther)
+		http.Redirect(w, r, "/error?message=Invalid+email+or+password", http.StatusSeeOther)
 		return
 	}
 
 	if !authUtils.CheckPassword(user, password) {
-        http.Redirect(w,r, "/error?message=Invalid+email+or+password", http.StatusSeeOther)
+		http.Redirect(w, r, "/error?message=Invalid+email+or+password", http.StatusSeeOther)
 		return
 	}
 
 	// Generate token
 	token, err := authUtils.GenerateToken(email)
 	if err != nil {
-		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Error+generating+token", http.StatusSeeOther)
 		return
 	}
 
@@ -107,14 +102,11 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func ResetPassword(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
+	errorUtils.MethodNotAllowed_error(w, r)
 	email := r.FormValue("email")
 
 	if email == "" {
-		http.Error(w, "Email is required", http.StatusBadRequest)
+		http.Redirect(w, r, "/error?message=Email+is+required", http.StatusSeeOther)
 		return
 	}
 
@@ -122,7 +114,7 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	tokenBytes := make([]byte, 32)
 	_, err := rand.Read(tokenBytes)
 	if err != nil {
-		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Error+generating+token", http.StatusSeeOther)
 		return
 	}
 	token := base64.URLEncoding.EncodeToString(tokenBytes)
@@ -148,17 +140,13 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func SetPassword(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
+	errorUtils.MethodNotAllowed_error(w, r)
 	token := r.FormValue("token")
 	password := r.FormValue("password")
 
 	tokenData, exists := authUtils.ResetTokens[token]
 	if !exists {
 		http.Redirect(w, r, "/token-expired", http.StatusSeeOther)
-		http.Error(w, "Invalid or expired token", http.StatusBadRequest)
 		return
 	}
 
@@ -167,7 +155,6 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 		log.Print("token has expired")
 		delete(authUtils.ResetTokens, token)
 		http.Redirect(w, r, "/token-expired", http.StatusSeeOther)
-		http.Error(w, "Token has expired", http.StatusBadRequest)
 		return
 	}
 	log.Print("token is valid", tokenData.Expiration, time.Now())
@@ -175,14 +162,14 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 	// Hash the new password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, "Error hashing password", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Error+hashing+password", http.StatusSeeOther)
 		return
 	}
 
 	// Save the new password in your database (pseudo-code)
 	err = userService.UpdatePassword(tokenData.Email, string(hashedPassword))
 	if err != nil {
-		http.Error(w, "Error saving new password", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Error+saving+new+password", http.StatusSeeOther)
 		return
 	}
 

@@ -35,7 +35,7 @@ type CheckoutSessionRequest struct {
 func CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 	var req CheckoutSessionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		http.Redirect(w, r, "/error?message=Invalid+request+payload", http.StatusSeeOther)
 		return
 	}
 
@@ -133,7 +133,7 @@ type GetCustomerByEmailRequest struct {
 func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 	var req GetCustomerByEmailRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		http.Redirect(w, r, "/error?message=Invalid+request+payload", http.StatusSeeOther)
 		return
 	}
 
@@ -142,7 +142,7 @@ func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 	// Fetch customer details
 	customer, err := subscriptionUtils.GetCustomerByEmail(email)
 	if err != nil {
-		http.Error(w, "Customer not found", http.StatusNotFound)
+		http.Redirect(w, r, "/error?message=Customer+not+found", http.StatusSeeOther)
 		return
 	}
 
@@ -151,7 +151,7 @@ func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 
 	// Return the customer details as JSON
 	if err := json.NewEncoder(w).Encode(customer); err != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Failed+to+encode+response", http.StatusSeeOther)
 	}
 }
 
@@ -159,7 +159,7 @@ func test_createCustomer() {
 	newCustomer, err := CreateCustomer("test@gmail.com")
 	if err != nil {
 		log.Printf("Failed to create customer: %v", err)
-        return
+		return
 	}
 
 	// Print the customer ID
@@ -188,38 +188,41 @@ func CancelSubscription(w http.ResponseWriter, r *http.Request) {
 	email, _ := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	cust, err := subscriptionUtils.GetCustomerByEmail(email)
 	if err != nil {
-		log.Printf("Error retrieving customer: %v", err)
+		http.Redirect(w, r, "/error?message=Error+retrieving+customer", http.StatusSeeOther)
+		return
 	}
 	UserSubscription := subscriptionUtils.UserSubscription[email]
 	var subscription *stripe.Subscription
 	if UserSubscription.SubscriptionType == "gold" {
 		subscription, err = subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, subscriptionUtils.Gold_productID)
 		if err != nil {
-			log.Printf("Error retrieving subscription: %v", err)
+			http.Redirect(w, r, "/error?message=Error+retrieving+subscription", http.StatusSeeOther)
+			return
 		}
 	} else if UserSubscription.SubscriptionType == "diamond" {
 		subscription, err = subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, subscriptionUtils.Diamond_productID)
 		if err != nil {
-			log.Printf("Error retrieving subscription: %v", err)
+			http.Redirect(w, r, "/error?message=Error+retrieving+subscription", http.StatusSeeOther)
+			return
 		}
 	}
 
 	// Assuming the subscription ID is passed as a URL parameter
 	subscriptionID := subscription.ID
 	if subscriptionID == "" {
-		http.Error(w, "Subscription ID is required", http.StatusBadRequest)
+		http.Redirect(w, r, "/error?message=Subscription+ID+is+required", http.StatusSeeOther)
 		return
 	}
 
 	params := &stripe.SubscriptionCancelParams{}
 	_, err = sub.Cancel(subscriptionID, params)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Failed to cancel subscription: %v", err), http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Failed+to+cancel+subscription", http.StatusSeeOther)
 		return
 	}
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
-		http.Error(w, "User not found", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=User+not+found", http.StatusSeeOther)
 		return
 	}
 	canAddAlert, subscriptionType := subscriptionUtils.CheckToAddAlert(user.ID, email)

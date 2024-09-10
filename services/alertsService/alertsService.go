@@ -123,7 +123,7 @@ func GetCompletedAlertsByUserID(userID int) ([]alertsTypes.Alert, error) {
 func CheckAlerts(symbol string, currentPrice float64) {
 	alerts, err := GetAlertsBySymbol(symbol)
 	if err != nil {
-		log.Println("Error fetching alerts: %v", err)
+		log.Printf("Error fetching alerts: %v", err)
         return
 	}
 

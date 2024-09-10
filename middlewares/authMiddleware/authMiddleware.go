@@ -18,7 +18,7 @@ func TokenAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie("token")
 		if err != nil {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			http.Redirect(w, r, "/error?message=Unauthorized", http.StatusSeeOther)
 			return
 		}
 
@@ -29,14 +29,14 @@ func TokenAuthMiddleware(next http.Handler) http.Handler {
 			return []byte("your-secret-key"), nil
 		})
 		if err != nil || !token.Valid {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			http.Redirect(w, r, "/error?message=Unauthorized", http.StatusSeeOther)
 			return
 		}
 
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 			exp, ok := claims["exp"].(float64)
 			if !ok || time.Now().Unix() > int64(exp) {
-				http.Error(w, "Token expired", http.StatusUnauthorized)
+				http.Redirect(w, r, "/error?message=Token+expired", http.StatusSeeOther)
 				return
 			}
 		}

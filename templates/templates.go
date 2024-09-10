@@ -19,7 +19,7 @@ func InitTemplates(location string) {
 	baseTemplate, err := template.ParseFiles(BaseLocation + "/base.html")
 	if err != nil {
 		log.Printf("Failed to parse base template: %v", err)
-        return
+		return
 	}
 	Templates["base"] = baseTemplate
 
@@ -44,22 +44,22 @@ func InitTemplates(location string) {
 		tmpl, err := template.Must(baseTemplate.Clone()).ParseFiles(file)
 		if err != nil {
 			log.Printf("Failed to parse page template %s: %v", file, err)
-            return
+			return
 		}
 		Templates[file] = tmpl
 	}
 }
 
-func RenderTemplate(w http.ResponseWriter, templateName string, data map[string]interface{}) {
+func RenderTemplate(w http.ResponseWriter, r *http.Request, templateName string, data map[string]interface{}) {
 	tmpl, ok := Templates[templateName]
 	if !ok {
-		http.Error(w, "Template not found", http.StatusNotFound)
+		http.Redirect(w, r, "/error?message=Template+not+found", http.StatusSeeOther)
 		return
 	}
 
 	err := tmpl.ExecuteTemplate(w, "base.html", data)
 	if err != nil {
-		log.Printf("Failed to execute template: %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Failed+to+execute+template", http.StatusSeeOther)
+		return
 	}
 }

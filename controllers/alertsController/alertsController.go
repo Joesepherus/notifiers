@@ -9,23 +9,21 @@ import (
 	"tradingalerts/services/alertsService"
 	"tradingalerts/services/userService"
 	"tradingalerts/services/yahooService"
+	"tradingalerts/utils/errorUtils"
 	"tradingalerts/utils/subscriptionUtils"
 )
 
 func AddAlert(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
+	errorUtils.MethodNotAllowed_error(w, r)
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
-		http.Error(w, "User not found", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=User+not+found", http.StatusSeeOther)
 		return
 	}
 
 	if !subscriptionUtils.UserSubscription[email].CanAddAlert {
-		http.Error(w, "You have hit limit of 5 active alerts for free tier.", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=You+have+hit+limit+of+active+alerts", http.StatusSeeOther)
 		return
 	}
 
@@ -108,28 +106,26 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAlerts(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-	}
+	errorUtils.MethodNotAllowed_error(w, r)
 	alerts, err := alertsService.GetAlerts()
 	if err != nil {
-		http.Error(w, "Failed to fetch alerts", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Failed+to+fetch+alerts", http.StatusSeeOther)
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(alerts); err != nil {
-		http.Error(w, "Failed to encode alerts", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Failed+to+encode+alerts", http.StatusSeeOther)
+		return
 	}
 }
 
 func DeleteAlert(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-	}
+	errorUtils.MethodNotAllowed_error(w, r)
 
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
-		http.Error(w, "User not found", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=User+not+found", http.StatusSeeOther)
 		return
 	}
 
@@ -138,14 +134,14 @@ func DeleteAlert(w http.ResponseWriter, r *http.Request) {
 	// Convert the ID to an integer
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Invalid alert ID", http.StatusBadRequest)
+		http.Redirect(w, r, "/error?message=Invalid+alert+ID", http.StatusSeeOther)
 		return
 	}
 
 	// Delete the alert by ID (implement your deletion logic here)
 	err = alertsService.DeleteAlertByID(id)
 	if err != nil {
-		http.Error(w, "Failed to delete alert", http.StatusInternalServerError)
+		http.Redirect(w, r, "/error?message=Error+deleting+alert", http.StatusSeeOther)
 		return
 	}
 
