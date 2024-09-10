@@ -18,7 +18,8 @@ func InitTemplates(location string) {
 	// Load and parse base template
 	baseTemplate, err := template.ParseFiles(BaseLocation + "/base.html")
 	if err != nil {
-		log.Fatalf("Failed to parse base template: %v", err)
+		log.Printf("Failed to parse base template: %v", err)
+        return
 	}
 	Templates["base"] = baseTemplate
 
@@ -42,7 +43,8 @@ func InitTemplates(location string) {
 	for _, file := range pageTemplates {
 		tmpl, err := template.Must(baseTemplate.Clone()).ParseFiles(file)
 		if err != nil {
-			log.Fatalf("Failed to parse page template %s: %v", file, err)
+			log.Printf("Failed to parse page template %s: %v", file, err)
+            return
 		}
 		Templates[file] = tmpl
 	}

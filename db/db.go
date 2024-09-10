@@ -48,10 +48,6 @@ func InitDB(dataSourceName string) *sql.DB {
 	);`)
 	statement.Exec()
 
-	if err != nil {
-		log.Fatalf("Failed to create alerts table: %v", err)
-	}
-
 	DB.SetMaxOpenConns(50)
 	DB.SetMaxIdleConns(50)
 	DB.SetConnMaxLifetime(5 * time.Minute)

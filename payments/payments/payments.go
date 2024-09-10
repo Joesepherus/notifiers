@@ -158,7 +158,8 @@ func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 func test_createCustomer() {
 	newCustomer, err := CreateCustomer("test@gmail.com")
 	if err != nil {
-		log.Fatalf("Failed to create customer: %v", err)
+		log.Printf("Failed to create customer: %v", err)
+        return
 	}
 
 	// Print the customer ID
@@ -177,7 +178,7 @@ func test_getSubscriptionByUserEmail() {
 	// Then, get the subscription for the specific product
 	subscription, err := subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, productID)
 	if err != nil {
-		log.Fatalf("Error retrieving subscription: %v", err)
+		log.Printf("Error retrieving subscription: %v", err)
 	}
 
 	fmt.Printf("Subscription ID: %s, Status: %s\n", subscription.ID, subscription.Status)
@@ -194,12 +195,12 @@ func CancelSubscription(w http.ResponseWriter, r *http.Request) {
 	if UserSubscription.SubscriptionType == "gold" {
 		subscription, err = subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, subscriptionUtils.Gold_productID)
 		if err != nil {
-			log.Fatalf("Error retrieving subscription: %v", err)
+			log.Printf("Error retrieving subscription: %v", err)
 		}
 	} else if UserSubscription.SubscriptionType == "diamond" {
 		subscription, err = subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, subscriptionUtils.Diamond_productID)
 		if err != nil {
-			log.Fatalf("Error retrieving subscription: %v", err)
+			log.Printf("Error retrieving subscription: %v", err)
 		}
 	}
 

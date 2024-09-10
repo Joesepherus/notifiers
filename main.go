@@ -37,7 +37,7 @@ func main() {
 		// Open or create the log file
 		file, err := os.OpenFile("tradingalerts.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("failed to open file, %v", err)
 		}
 
 		// Set log output to the file
