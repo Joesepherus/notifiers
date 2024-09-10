@@ -41,7 +41,7 @@ func TestGetUserById_Success(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id", "email", "password"}).
 		AddRow(1, "bob@gmail.com", hashedPassword)
 
-	mock.ExpectQuery("SELECT id, email, password FROM users WHERE id = ?").
+	mock.ExpectQuery("SELECT id, email, password FROM users WHERE id = $1").
 		WithArgs(1).
 		WillReturnRows(rows)
 
@@ -58,7 +58,7 @@ func TestGetUserById_Success(t *testing.T) {
 }
 
 func TestGetUserById_Fail(t *testing.T) {
-	mock.ExpectQuery("SELECT id, email, password FROM users WHERE id = ?").
+	mock.ExpectQuery("SELECT id, email, password FROM users WHERE id = $1").
 		WithArgs(1).
 		WillReturnError(errors.New("query error"))
 
@@ -77,7 +77,7 @@ func TestGetUserByEmail_Success(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id", "email", "password"}).
 		AddRow(1, "bob@gmail.com", hashedPassword)
 
-	mock.ExpectQuery("SELECT id, email, password FROM users WHERE email = ?").
+	mock.ExpectQuery("SELECT id, email, password FROM users WHERE email = $1").
 		WithArgs("bob@gmail.com").
 		WillReturnRows(rows)
 
@@ -92,7 +92,7 @@ func TestGetUserByEmail_Success(t *testing.T) {
 }
 
 func TestGetUserByEmail_Fail(t *testing.T) {
-	mock.ExpectQuery("SELECT id, email, password FROM users WHERE email = ?").
+	mock.ExpectQuery("SELECT id, email, password FROM users WHERE email = $1").
 		WithArgs("bob@gmail.com").
 		WillReturnError(errors.New("query error"))
 
@@ -152,7 +152,7 @@ func TestGetUsers_ScanError(t *testing.T) {
 
 func TestUpdatePassword_Success(t *testing.T) {
 	// Mock the expected behavior
-	mock.ExpectExec("UPDATE users SET password = ? WHERE email = ?").
+	mock.ExpectExec("UPDATE users SET password = $1 WHERE email = $2").
 		WithArgs(sqlmock.AnyArg(), "user@example.com").
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -164,7 +164,7 @@ func TestUpdatePassword_Success(t *testing.T) {
 
 func TestCreateUser_Success(t *testing.T) {
 	// Define the query as used in the UpdatePassword function
-	query := "INSERT INTO users (email, password) VALUES (?, ?)"
+	query := "INSERT INTO users (email, password) VALUES ($1, $2)"
 
 	// Mock Exec to return an error
 	mock.ExpectExec(query).
@@ -183,7 +183,7 @@ func TestCreateUser_Success(t *testing.T) {
 
 func TestCreateUser_DBError(t *testing.T) {
 	// Mock the expected query to return an error
-	mock.ExpectExec("INSERT INTO users (email, password) VALUES (?, ?)").
+	mock.ExpectExec("INSERT INTO users (email, password) VALUES ($1, $2)").
 		WithArgs("user@example.com", sqlmock.AnyArg()).
 		WillReturnError(fmt.Errorf("db exec error"))
 
