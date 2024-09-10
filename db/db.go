@@ -28,7 +28,23 @@ func InitDB(dataSourceName string) *sql.DB {
 	log.Println("Connected to the PostgreSQL database successfully.")
 	DB.SetMaxOpenConns(1)
 
-	statement, err := DB.Prepare(`
+    statement, err := DB.Prepare(`
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+`)
+	if err != nil {
+		log.Fatal("Error preparing users table:", err)
+	}
+	_, err = statement.Exec()
+	if err != nil {
+		log.Fatal("Error executing users table statement:", err)
+	}
+
+	statement, err = DB.Prepare(`
     CREATE TABLE IF NOT EXISTS alerts (
         id SERIAL PRIMARY KEY,
         symbol VARCHAR(10) NOT NULL,
@@ -47,22 +63,6 @@ func InitDB(dataSourceName string) *sql.DB {
 	_, err = statement.Exec()
 	if err != nil {
 		log.Fatal("Error executing alerts table statement:", err)
-	}
-
-	statement, err = DB.Prepare(`
-    CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-`)
-	if err != nil {
-		log.Fatal("Error preparing users table:", err)
-	}
-	_, err = statement.Exec()
-	if err != nil {
-		log.Fatal("Error executing users table statement:", err)
 	}
 
 	statement, err = DB.Prepare(`
