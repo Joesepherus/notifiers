@@ -1,5 +1,6 @@
 .env
 alerts.db
+alerts_test.db
 .DS_Store
 tradingalerts.log
 tradingalerts
