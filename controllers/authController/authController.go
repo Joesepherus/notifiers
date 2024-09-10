@@ -60,12 +60,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
-		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+        http.Redirect(w,r, "/error?message=Invalid+email+or+password", http.StatusSeeOther)
 		return
 	}
 
 	if !authUtils.CheckPassword(user, password) {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+        http.Redirect(w,r, "/error?message=Invalid+email+or+password", http.StatusSeeOther)
 		return
 	}
 

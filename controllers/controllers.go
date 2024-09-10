@@ -120,6 +120,11 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	case "/health":
 		healthHandler(w)
 		return
+    case "/error":
+        templateLocation = templates.BaseLocation + "/error.html"
+        pageTitle = "Error - Trading Alerts"
+        message := r.URL.Query().Get("message")
+        data["Message"] = message
 	default:
 		templateLocation = templates.BaseLocation + "/404.html"
 		pageTitle = "Page not found"

@@ -36,6 +36,7 @@ func InitTemplates(location string) {
 		BaseLocation + "/token-expired.html",
 		BaseLocation + "/docs.html",
 		BaseLocation + "/404.html",
+		BaseLocation + "/error.html",
 	}
 
 	for _, file := range pageTemplates {
