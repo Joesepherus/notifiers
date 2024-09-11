@@ -10,6 +10,7 @@ import (
 	"time"
 	"tradingalerts/mail"
 	"tradingalerts/payments/payments"
+	"tradingalerts/services/loggingService"
 	"tradingalerts/services/userService"
 	"tradingalerts/utils/authUtils"
 	"tradingalerts/utils/errorUtils"
@@ -24,14 +25,16 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	if email == "" || password == "" {
-        log.Println("Error creating user: Email and password are required")
+		log.Println("Error creating user: Email and password are required")
+		loggingService.LogToDB("ERROR", "Error creating user: Email and password are required", r)
 		http.Redirect(w, r, "/error?message=Email+and+password+are+required", http.StatusSeeOther)
 		return
 	}
 
 	userID, err := userService.CreateUser(email, password)
 	if err != nil {
-        log.Println(err)
+		log.Println("Error creating user:", err)
+		loggingService.LogToDB("ERROR", "Error creating user", r)
 		http.Redirect(w, r, "/error?message=Error+creating+user", http.StatusSeeOther)
 		return
 	}
@@ -51,17 +54,23 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	if email == "" || password == "" {
+		log.Println("Email and password are required")
+		loggingService.LogToDB("ERROR", "Email and password are required", r)
 		http.Redirect(w, r, "/error?message=Email+and+password+are+required", http.StatusSeeOther)
 		return
 	}
 
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
+		log.Println("Invalid email or password")
+		loggingService.LogToDB("ERROR", "Invalid email or password", r)
 		http.Redirect(w, r, "/error?message=Invalid+email+or+password", http.StatusSeeOther)
 		return
 	}
 
 	if !authUtils.CheckPassword(user, password) {
+		log.Println("Invalid email or password")
+		loggingService.LogToDB("ERROR", "Invalid email or password", r)
 		http.Redirect(w, r, "/error?message=Invalid+email+or+password", http.StatusSeeOther)
 		return
 	}
@@ -69,6 +78,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Generate token
 	token, err := authUtils.GenerateToken(email)
 	if err != nil {
+		log.Println("Error generating token")
+		loggingService.LogToDB("ERROR", "Error generating token", r)
 		http.Redirect(w, r, "/error?message=Error+generating+token", http.StatusSeeOther)
 		return
 	}
@@ -108,6 +119,8 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	email := r.FormValue("email")
 
 	if email == "" {
+		log.Println("Email is required")
+		loggingService.LogToDB("ERROR", "Email is required", r)
 		http.Redirect(w, r, "/error?message=Email+is+required", http.StatusSeeOther)
 		return
 	}
@@ -116,6 +129,8 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 	tokenBytes := make([]byte, 32)
 	_, err := rand.Read(tokenBytes)
 	if err != nil {
+		log.Println("Error generating token")
+		loggingService.LogToDB("ERROR", "Error generating token", r)
 		http.Redirect(w, r, "/error?message=Error+generating+token", http.StatusSeeOther)
 		return
 	}
@@ -164,6 +179,8 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 	// Hash the new password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
+		log.Println("Error hashing password")
+		loggingService.LogToDB("ERROR", "Error hashing password", r)
 		http.Redirect(w, r, "/error?message=Error+hashing+password", http.StatusSeeOther)
 		return
 	}
@@ -171,6 +188,8 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 	// Save the new password in your database (pseudo-code)
 	err = userService.UpdatePassword(tokenData.Email, string(hashedPassword))
 	if err != nil {
+		log.Println("Error saving new password")
+		loggingService.LogToDB("ERROR", "Error saving new password", r)
 		http.Redirect(w, r, "/error?message=Error+saving+new+password", http.StatusSeeOther)
 		return
 	}

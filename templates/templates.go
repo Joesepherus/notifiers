@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"tradingalerts/services/loggingService"
 )
 
 // Define a global template map
@@ -53,12 +54,16 @@ func InitTemplates(location string) {
 func RenderTemplate(w http.ResponseWriter, r *http.Request, templateName string, data map[string]interface{}) {
 	tmpl, ok := Templates[templateName]
 	if !ok {
+		log.Println("Template not found")
+		loggingService.LogToDB("ERROR", "Template not found", r)
 		http.Redirect(w, r, "/error?message=Template+not+found", http.StatusSeeOther)
 		return
 	}
 
 	err := tmpl.ExecuteTemplate(w, "base.html", data)
 	if err != nil {
+		log.Println("Failed to execute template")
+		loggingService.LogToDB("ERROR", "Failed to execute template", r)
 		http.Redirect(w, r, "/error?message=Failed+to+execute+template", http.StatusSeeOther)
 		return
 	}

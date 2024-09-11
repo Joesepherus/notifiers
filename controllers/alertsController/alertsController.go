@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"tradingalerts/middlewares/authMiddleware"
 	"tradingalerts/services/alertsService"
+	"tradingalerts/services/loggingService"
 	"tradingalerts/services/userService"
 	"tradingalerts/services/yahooService"
 	"tradingalerts/utils/errorUtils"
@@ -18,11 +19,15 @@ func AddAlert(w http.ResponseWriter, r *http.Request) {
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
+		log.Println("User not found")
+		loggingService.LogToDB("ERROR", "User not found", r)
 		http.Redirect(w, r, "/error?message=User+not+found", http.StatusSeeOther)
 		return
 	}
 
 	if !subscriptionUtils.UserSubscription[email].CanAddAlert {
+		log.Println("You have hit limit of active alerts")
+		loggingService.LogToDB("ERROR", "You have hit limit of active alerts", r)
 		http.Redirect(w, r, "/error?message=You+have+hit+limit+of+active+alerts", http.StatusSeeOther)
 		return
 	}
@@ -109,11 +114,15 @@ func GetAlerts(w http.ResponseWriter, r *http.Request) {
 	errorUtils.MethodNotAllowed_error(w, r)
 	alerts, err := alertsService.GetAlerts()
 	if err != nil {
+		log.Println("Failed to fetch alerts")
+		loggingService.LogToDB("ERROR", "Failed to fetch alerts", r)
 		http.Redirect(w, r, "/error?message=Failed+to+fetch+alerts", http.StatusSeeOther)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(alerts); err != nil {
+		log.Println("Failed to encode alerts")
+		loggingService.LogToDB("ERROR", "Failed to encode alerts", r)
 		http.Redirect(w, r, "/error?message=Failed+to+encode+alerts", http.StatusSeeOther)
 		return
 	}
@@ -125,6 +134,8 @@ func DeleteAlert(w http.ResponseWriter, r *http.Request) {
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
+		log.Println("User not found")
+		loggingService.LogToDB("ERROR", "User not found", r)
 		http.Redirect(w, r, "/error?message=User+not+found", http.StatusSeeOther)
 		return
 	}
@@ -134,6 +145,8 @@ func DeleteAlert(w http.ResponseWriter, r *http.Request) {
 	// Convert the ID to an integer
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
+		log.Println("Invalid alert ID")
+		loggingService.LogToDB("ERROR", "Invalid alert ID", r)
 		http.Redirect(w, r, "/error?message=Invalid+alert+ID", http.StatusSeeOther)
 		return
 	}
@@ -141,6 +154,8 @@ func DeleteAlert(w http.ResponseWriter, r *http.Request) {
 	// Delete the alert by ID (implement your deletion logic here)
 	err = alertsService.DeleteAlertByID(id)
 	if err != nil {
+		log.Println("Error deleting alert")
+		loggingService.LogToDB("ERROR", "Error deleting alert", r)
 		http.Redirect(w, r, "/error?message=Error+deleting+alert", http.StatusSeeOther)
 		return
 	}

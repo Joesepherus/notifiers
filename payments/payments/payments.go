@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"tradingalerts/middlewares/authMiddleware"
+	"tradingalerts/services/loggingService"
 	"tradingalerts/services/userService"
 	"tradingalerts/utils/subscriptionUtils"
 
@@ -35,6 +36,8 @@ type CheckoutSessionRequest struct {
 func CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 	var req CheckoutSessionRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		log.Println("Invalid request payload")
+		loggingService.LogToDB("ERROR", "Invalid request payload", r)
 		http.Redirect(w, r, "/error?message=Invalid+request+payload", http.StatusSeeOther)
 		return
 	}
@@ -133,6 +136,8 @@ type GetCustomerByEmailRequest struct {
 func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 	var req GetCustomerByEmailRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		log.Println("Invalid request payload")
+		loggingService.LogToDB("ERROR", "Invalid request payload", r)
 		http.Redirect(w, r, "/error?message=Invalid+request+payload", http.StatusSeeOther)
 		return
 	}
@@ -142,6 +147,8 @@ func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 	// Fetch customer details
 	customer, err := subscriptionUtils.GetCustomerByEmail(email)
 	if err != nil {
+		log.Println("Customer not found")
+		loggingService.LogToDB("ERROR", "Customer not found", r)
 		http.Redirect(w, r, "/error?message=Customer+not+found", http.StatusSeeOther)
 		return
 	}
@@ -151,6 +158,8 @@ func HandleGetCustomerByEmail(w http.ResponseWriter, r *http.Request) {
 
 	// Return the customer details as JSON
 	if err := json.NewEncoder(w).Encode(customer); err != nil {
+		log.Println("Failed to encode response")
+		loggingService.LogToDB("ERROR", "Failed to encode response", r)
 		http.Redirect(w, r, "/error?message=Failed+to+encode+response", http.StatusSeeOther)
 	}
 }
@@ -188,6 +197,8 @@ func CancelSubscription(w http.ResponseWriter, r *http.Request) {
 	email, _ := r.Context().Value(authMiddleware.UserEmailKey).(string)
 	cust, err := subscriptionUtils.GetCustomerByEmail(email)
 	if err != nil {
+		log.Printf("Error retrieving customer")
+		loggingService.LogToDB("ERROR", "Error retrieving customer", r)
 		http.Redirect(w, r, "/error?message=Error+retrieving+customer", http.StatusSeeOther)
 		return
 	}
@@ -196,12 +207,16 @@ func CancelSubscription(w http.ResponseWriter, r *http.Request) {
 	if UserSubscription.SubscriptionType == "gold" {
 		subscription, err = subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, subscriptionUtils.Gold_productID)
 		if err != nil {
+			log.Printf("Error retrieving subscription")
+			loggingService.LogToDB("ERROR", "Error retrieving subscription", r)
 			http.Redirect(w, r, "/error?message=Error+retrieving+subscription", http.StatusSeeOther)
 			return
 		}
 	} else if UserSubscription.SubscriptionType == "diamond" {
 		subscription, err = subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, subscriptionUtils.Diamond_productID)
 		if err != nil {
+		log.Printf("Error retrieving subscription")
+		loggingService.LogToDB("ERROR", "Error retrieving subscription", r)
 			http.Redirect(w, r, "/error?message=Error+retrieving+subscription", http.StatusSeeOther)
 			return
 		}
@@ -210,6 +225,8 @@ func CancelSubscription(w http.ResponseWriter, r *http.Request) {
 	// Assuming the subscription ID is passed as a URL parameter
 	subscriptionID := subscription.ID
 	if subscriptionID == "" {
+		log.Printf("Subscription ID is required")
+		loggingService.LogToDB("ERROR", "Subscription ID is required", r)
 		http.Redirect(w, r, "/error?message=Subscription+ID+is+required", http.StatusSeeOther)
 		return
 	}
@@ -217,11 +234,15 @@ func CancelSubscription(w http.ResponseWriter, r *http.Request) {
 	params := &stripe.SubscriptionCancelParams{}
 	_, err = sub.Cancel(subscriptionID, params)
 	if err != nil {
+		log.Printf("Failed to cancel subscription")
+		loggingService.LogToDB("ERROR", "Failed to cancel subscription", r)
 		http.Redirect(w, r, "/error?message=Failed+to+cancel+subscription", http.StatusSeeOther)
 		return
 	}
 	user, err := userService.GetUserByEmail(email)
 	if err != nil {
+		log.Printf("User not found")
+		loggingService.LogToDB("ERROR", "User not found", r)
 		http.Redirect(w, r, "/error?message=User+not+found", http.StatusSeeOther)
 		return
 	}
