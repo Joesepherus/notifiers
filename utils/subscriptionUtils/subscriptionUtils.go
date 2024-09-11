@@ -25,7 +25,7 @@ type UserAlertInfo struct {
 var UserSubscription = make(map[string]UserAlertInfo)
 
 var SUBSCRIPTION_LIMITS = map[string]int{
-	"silver":  10,
+	"silver":  5,
 	"gold":    100,
 	"diamond": 1000,
 }
@@ -71,7 +71,7 @@ func CheckToAddAlert(userID int, email string) (bool, string) {
 	diamond_subscription, err2 := GetSubscriptionByCustomerAndProduct(cust.ID, Diamond_productID)
 
 	if err == nil && gold_subscription.Status == "active" {
-		if len(alerts) > SUBSCRIPTION_LIMITS["gold"]-1 {
+		if len(alerts) >= SUBSCRIPTION_LIMITS["gold"] {
 			return false, ""
 		} else {
 			return true, "gold"
@@ -79,13 +79,13 @@ func CheckToAddAlert(userID int, email string) (bool, string) {
 	}
 
 	if err2 == nil && diamond_subscription.Status == "active" {
-		if len(alerts) > SUBSCRIPTION_LIMITS["diamond"]-1 {
+		if len(alerts) >= SUBSCRIPTION_LIMITS["diamond"] {
 			return false, ""
 		} else {
 			return true, "diamond"
 		}
 	}
-	if len(alerts) > 4 {
+	if len(alerts) >= SUBSCRIPTION_LIMITS["silver"] {
 		return false, "silver"
 	}
 	return true, "silver"
