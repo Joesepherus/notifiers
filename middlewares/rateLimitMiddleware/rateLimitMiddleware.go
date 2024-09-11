@@ -65,7 +65,7 @@ func RateLimitPerClient(next http.Handler) http.Handler {
 		}
 
 		if !client.limiter.Allow() {
-			loggingService.LogToDB(email, "ERROR", "Too many requests from your IP.", r.URL.Path, ip)
+			loggingService.LogToDB("ERROR", "Too many requests from your IP.", r)
 
 			mu.Lock()
 			client.banUntil = time.Now().Add(5 * time.Minute)
