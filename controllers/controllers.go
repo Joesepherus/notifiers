@@ -17,6 +17,7 @@ import (
 	"os"
 	"strconv"
 	"tradingalerts/services/alertsService"
+	"tradingalerts/services/loggingService"
 	"tradingalerts/services/userService"
 	"tradingalerts/templates"
 )
@@ -77,13 +78,18 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 		pageTitle = "About - Trading Alerts"
 	case "/alerts":
 		// Fetch alerts and add to data
+		if user == nil {
+			log.Println("You need to be logged in")
+			loggingService.LogToDB("ERROR", "You need to be logged in", r)
+			http.Redirect(w, r, "/error?message=You+need+to+be+logged+in", http.StatusSeeOther)
+			return
+		}
 		alerts, err := alertsService.GetAlertsByUserID(user.ID)
-		completed_alerts, err2 := alertsService.GetCompletedAlertsByUserID(user.ID)
-
 		if err == nil {
 			data["Alerts"] = alerts
 		}
-		if err2 == nil {
+		completed_alerts, err := alertsService.GetCompletedAlertsByUserID(user.ID)
+		if err == nil {
 			data["CompletedAlerts"] = completed_alerts
 		}
 		UserSubscription := subscriptionUtils.UserSubscription[email]
@@ -93,6 +99,12 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 		templateLocation = templates.BaseLocation + "/alerts.html"
 		pageTitle = "Alerts - Trading Alerts"
 	case "/profile":
+		if user == nil {
+			log.Println("You need to be logged in")
+			loggingService.LogToDB("ERROR", "You need to be logged in", r)
+			http.Redirect(w, r, "/error?message=You+need+to+be+logged+in", http.StatusSeeOther)
+			return
+		}
 		UserSubscription := subscriptionUtils.UserSubscription[email]
 		data["CanAddAlert"] = UserSubscription.CanAddAlert
 		data["SubscriptionType"] = UserSubscription.SubscriptionType
@@ -120,11 +132,11 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	case "/health":
 		healthHandler(w)
 		return
-    case "/error":
-        templateLocation = templates.BaseLocation + "/error.html"
-        pageTitle = "Error - Trading Alerts"
-        message := r.URL.Query().Get("message")
-        data["Message"] = message
+	case "/error":
+		templateLocation = templates.BaseLocation + "/error.html"
+		pageTitle = "Error - Trading Alerts"
+		message := r.URL.Query().Get("message")
+		data["Message"] = message
 	default:
 		templateLocation = templates.BaseLocation + "/404.html"
 		pageTitle = "Page not found"
