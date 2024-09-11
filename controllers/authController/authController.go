@@ -24,12 +24,14 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	if email == "" || password == "" {
+        log.Println("Error creating user: Email and password are required")
 		http.Redirect(w, r, "/error?message=Email+and+password+are+required", http.StatusSeeOther)
 		return
 	}
 
 	userID, err := userService.CreateUser(email, password)
 	if err != nil {
+        log.Println(err)
 		http.Redirect(w, r, "/error?message=Error+creating+user", http.StatusSeeOther)
 		return
 	}

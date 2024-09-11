@@ -20,11 +20,11 @@ func CreateUser(email, password string) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("failed hashing password: %v", err)
 	}
-	result, err := db.Exec("INSERT INTO users (email, password) VALUES ($1, $2)", email, string(hashedPassword))
+    var userID int
+    err = db.QueryRow("INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id", email, string(hashedPassword)).Scan(&userID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to insert user: %v", err)
 	}
-	userID, err := result.LastInsertId()
 	if err != nil {
 		return 0, err
 	}
