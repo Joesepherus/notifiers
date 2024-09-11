@@ -1,7 +1,6 @@
 package logMiddleware
 
 import (
-	"log"
 	"net/http"
 	"tradingalerts/middlewares/authMiddleware"
 	"tradingalerts/services/loggingService"
@@ -21,10 +20,7 @@ func LogMiddleware(next http.Handler) http.Handler {
 		ip := authUtils.GetIPAddress(r)
 
 		// Log the request to the database
-		err := loggingService.LogToDB(email, r.URL.Path, ip)
-		if err != nil {
-			log.Printf("Failed to log user action: %v", err)
-		}
+		loggingService.LogToDB(email, "INFO", "Accessing page", r.URL.Path, ip)
 
 		// Continue to the next handler
 		next.ServeHTTP(w, r)

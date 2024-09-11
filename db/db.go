@@ -69,6 +69,8 @@ func InitDB(dataSourceName string) *sql.DB {
     CREATE TABLE IF NOT EXISTS logs (
         id SERIAL PRIMARY KEY,
         email VARCHAR(255),
+        type VARCHAR(20),
+        message VARCHAR(1024),
         endpoint VARCHAR(255),
         ip VARCHAR(45),
         timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
