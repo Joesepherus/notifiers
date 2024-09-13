@@ -184,6 +184,14 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Print("token is valid", tokenData.Expiration, time.Now())
 
+	user, err := userService.GetUserByEmail(tokenData.Email)
+	if err != nil || user == nil {
+		log.Println("User does not exist with that email address")
+		loggingService.LogToDB("ERROR", "User does not exist with that email address", r)
+		http.Redirect(w, r, "/error?message=User+does+not+exist+with+that+email+address", http.StatusSeeOther)
+		return
+	}
+
 	// Hash the new password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
