@@ -13,11 +13,11 @@ import (
 
 	"os"
 
-	"github.com/stripe/stripe-go/v74"
-	"github.com/stripe/stripe-go/v74/checkout/session"
-	"github.com/stripe/stripe-go/v74/customer"
-	sub "github.com/stripe/stripe-go/v74/subscription"
-	"github.com/stripe/stripe-go/v74/webhook"
+	"github.com/stripe/stripe-go/v79"
+	"github.com/stripe/stripe-go/v79/checkout/session"
+	"github.com/stripe/stripe-go/v79/customer"
+	sub "github.com/stripe/stripe-go/v79/subscription"
+	"github.com/stripe/stripe-go/v79/webhook"
 )
 
 func CreateCustomer(email string) (*stripe.Customer, error) {
@@ -215,8 +215,8 @@ func CancelSubscription(w http.ResponseWriter, r *http.Request) {
 	} else if UserSubscription.SubscriptionType == "diamond" {
 		subscription, err = subscriptionUtils.GetSubscriptionByCustomerAndProduct(cust.ID, subscriptionUtils.Diamond_productID)
 		if err != nil {
-		log.Printf("Error retrieving subscription")
-		loggingService.LogToDB("ERROR", "Error retrieving subscription", r)
+			log.Printf("Error retrieving subscription")
+			loggingService.LogToDB("ERROR", "Error retrieving subscription", r)
 			http.Redirect(w, r, "/error?message=Error+retrieving+subscription", http.StatusSeeOther)
 			return
 		}

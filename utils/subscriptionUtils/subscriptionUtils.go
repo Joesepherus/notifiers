@@ -7,9 +7,9 @@ import (
 	"tradingalerts/services/alertsService"
 	"tradingalerts/services/userService"
 
-	"github.com/stripe/stripe-go/v74"
-	"github.com/stripe/stripe-go/v74/customer"
-	sub "github.com/stripe/stripe-go/v74/subscription"
+	"github.com/stripe/stripe-go/v79"
+	"github.com/stripe/stripe-go/v79/customer"
+	sub "github.com/stripe/stripe-go/v79/subscription"
 )
 
 // TODO: add logic for when user is subscribed, so he can have
