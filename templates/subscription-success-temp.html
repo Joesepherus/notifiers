@@ -1,0 +1,14 @@
+<!-- templates/404.html -->
+{{ define "content" }}
+<div class="content">
+  <div class="page">
+    <h2>Subscription Success</h2>
+    <p>You havce successfully subscribed to Trading Alerts.</p>
+    <p><a href="/">Back to Home</a></p>
+  </div>
+  <script>
+    // Redirect to the final page with the same-origin request
+    window.location.href = "/subscription-success";
+  </script>
+</div>
+{{ end }}

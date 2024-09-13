@@ -56,8 +56,8 @@ func CreateCheckoutSession(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 		Mode:       stripe.String("subscription"),
-		SuccessURL: stripe.String(os.Getenv("URL") + "/subscription-success"),
-		CancelURL:  stripe.String(os.Getenv("URL") + "/subscription-cancel"),
+		SuccessURL: stripe.String(os.Getenv("URL") + "/subscription-success-temp"),
+		CancelURL:  stripe.String(os.Getenv("URL") + "/subscription-cancel-temp"),
 	}
 
 	s, err := session.New(params)
@@ -81,11 +81,6 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 
 	event, err := webhook.ConstructEvent(payload, r.Header.Get("Stripe-Signature"), os.Getenv("STRIPE_WEBHOOK_SECRET"))
 	log.Print("event", event, err)
-
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	return
-	// }
 
 	switch event.Type {
 	case "invoice.payment_succeeded":

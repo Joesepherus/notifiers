@@ -117,9 +117,15 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 	case "/reset-password-success":
 		templateLocation = templates.BaseLocation + "/reset-password-success.html"
 		pageTitle = "Reset Password Success - Trading Alerts"
+	case "/subscription-success-temp":
+		templateLocation = templates.BaseLocation + "/subscription-success-temp.html"
+		pageTitle = "Subscription Successful - Trading Alerts"
 	case "/subscription-success":
 		templateLocation = templates.BaseLocation + "/subscription-success.html"
 		pageTitle = "Subscription Successful - Trading Alerts"
+	case "/subscription-cancel-temp":
+		templateLocation = templates.BaseLocation + "/subscription-cancel-temp.html"
+		pageTitle = "Subscription Cancelled - Trading Alerts"
 	case "/subscription-cancel":
 		templateLocation = templates.BaseLocation + "/subscription-cancel.html"
 		pageTitle = "Subscription Cancelled - Trading Alerts"
