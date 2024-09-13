@@ -125,9 +125,17 @@ func ResetPassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	user, err := userService.GetUserByEmail(email)
+	if err != nil || user == nil {
+		log.Println("User does not exist with that email address")
+		loggingService.LogToDB("ERROR", "User does not exist with that email address", r)
+		http.Redirect(w, r, "/error?message=User+does+not+exist+with+that+email+address", http.StatusSeeOther)
+		return
+	}
+
 	// Generate a random token
 	tokenBytes := make([]byte, 32)
-	_, err := rand.Read(tokenBytes)
+	_, err = rand.Read(tokenBytes)
 	if err != nil {
 		log.Println("Error generating token")
 		loggingService.LogToDB("ERROR", "Error generating token", r)
