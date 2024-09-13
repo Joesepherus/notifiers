@@ -20,13 +20,10 @@ func CreateUser(email, password string) (int, error) {
 	if err != nil {
 		return 0, fmt.Errorf("failed hashing password: %v", err)
 	}
-    var userID int
-    err = db.QueryRow("INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id", email, string(hashedPassword)).Scan(&userID)
+	var userID int
+	err = db.QueryRow("INSERT INTO users (email, password) VALUES ($1, $2) RETURNING id", email, string(hashedPassword)).Scan(&userID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to insert user: %v", err)
-	}
-	if err != nil {
-		return 0, err
 	}
 	log.Printf("User created with ID: %d and email: %s", userID, email)
 	return int(userID), nil

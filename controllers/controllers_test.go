@@ -137,15 +137,13 @@ func TestPageHandler_Profile(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	// Check the response code
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	if status := rr.Code; status != http.StatusSeeOther {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusSeeOther)
 	}
 
-	// Check the title in the response body
-	body := rr.Body.String()
-	expectedTitle := "Profile - Trading Alerts"
-	if !strings.Contains(body, `<title>`+expectedTitle+`</title>`) {
-		t.Errorf("handler returned unexpected title: got %v", body)
+	expectedLocation := "/error?message=You+need+to+be+logged+in"
+	if rr.Header().Get("Location") != expectedLocation {
+		t.Errorf("handler returned wrong redirect location: got %v want %v", rr.Header().Get("Location"), expectedLocation)
 	}
 }
 
