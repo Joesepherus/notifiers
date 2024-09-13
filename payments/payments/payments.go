@@ -124,7 +124,6 @@ func HandleWebhook(w http.ResponseWriter, r *http.Request) {
 	default:
 		log.Printf("Unhandled event type: %s\n", event.Type)
 	}
-	http.Redirect(w, r, "/", http.StatusSeeOther)
 
 	w.WriteHeader(http.StatusOK)
 }
