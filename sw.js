@@ -29,11 +29,18 @@ self.addEventListener('install', function(event) {
     );
 });
 
-// Fetch event (for offline support)
+// Fetch event (for offline support) with redirect handling
 self.addEventListener('fetch', function(event) {
     event.respondWith(
-        caches.match(event.request).then(function(response) {
-            return response || fetch(event.request);
+        fetch(event.request).then(function(response) {
+            // Check if the response was redirected and handle accordingly
+            if (response.redirected) {
+                return fetch(response.url);
+            }
+            return response;
+        }).catch(function() {
+            // If the request fails, try to serve from cache
+            return caches.match(event.request);
         })
     );
 });
