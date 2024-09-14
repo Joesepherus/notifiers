@@ -204,6 +204,7 @@ func RestApi() {
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.Handle("/sw.js", http.FileServer(http.Dir("./")))
+	http.Handle("/manifest.json", http.FileServer(http.Dir("./")))
 
 	log.Printf("Starting server on :%d...\n", port)
 	log.Fatal(server.ListenAndServe())
@@ -225,7 +226,7 @@ func subscribeHandler(w http.ResponseWriter, r *http.Request) {
 
 // Function to send notifications
 func sendNotification(title, message string) {
-    log.Println("subscriptions", subscriptions)
+	log.Println("subscriptions", subscriptions)
 	for _, sub := range subscriptions {
 		_, err := webpush.SendNotification([]byte(`{"title": "`+title+`", "message": "`+message+`"}`), &sub, &webpush.Options{
 			VAPIDPublicKey:  "BJKWKNBvXlmmrd3yGMlKWOGau4ijiYOp3oP4TGqYbScnFQhK_5qs4x_LPyXltvQARznsg7kz4Wvmef2DluuREao",
