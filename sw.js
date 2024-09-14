@@ -8,7 +8,22 @@ self.addEventListener('install', function(event) {
                 '/index.html',
                 '/manifest.json',
                 '/main.js',
-                '/icon.png'
+                '/icon.png',
+                "/index.html",
+                "/pricing.html",
+                "/about.html",
+                "/alerts.html",
+                "/profile.html",
+                "/reset-password-sent.html",
+                "/reset-password-success.html",
+                "/subscription-success.html",
+                "/subscription-success-temp.html",
+                "/subscription-cancel.html",
+                "/subscription-cancel-temp.html",
+                "/token-expired.html",
+                "/docs.html",
+                "/404.html",
+                "/error.html",
             ]);
         })
     );
