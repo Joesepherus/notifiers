@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -20,6 +21,8 @@ import (
 	"tradingalerts/services/loggingService"
 	"tradingalerts/services/userService"
 	"tradingalerts/templates"
+
+	"github.com/SherClockHolmes/webpush-go"
 )
 
 // Health check handler
@@ -194,12 +197,51 @@ func RestApi() {
 	http.Handle("/api/customer-by-email", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(payments.HandleGetCustomerByEmail))))))
 	http.Handle("/api/cancel-subscription", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CancelSubscription))))))
 	http.HandleFunc("/webhook", payments.HandleWebhook)
-
+	http.HandleFunc("/api/subscribe", subscribeHandler)
+	http.HandleFunc("/api/send-notification", sendNotificationHandler)
 	http.Handle("/", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(PageHandler))))))
 
 	// Serve static files (CSS)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+	http.Handle("/sw.js", http.FileServer(http.Dir("./")))
 
 	log.Printf("Starting server on :%d...\n", port)
 	log.Fatal(server.ListenAndServe())
+}
+
+var subscriptions []webpush.Subscription
+
+// Handle push subscription
+func subscribeHandler(w http.ResponseWriter, r *http.Request) {
+	var sub webpush.Subscription
+	if err := json.NewDecoder(r.Body).Decode(&sub); err != nil {
+		http.Error(w, "Invalid subscription", http.StatusBadRequest)
+		return
+	}
+	subscriptions = append(subscriptions, sub)
+	log.Println("subscriptions", subscriptions)
+	w.WriteHeader(http.StatusOK)
+}
+
+// Function to send notifications
+func sendNotification(title, message string) {
+    log.Println("subscriptions", subscriptions)
+	for _, sub := range subscriptions {
+		_, err := webpush.SendNotification([]byte(`{"title": "`+title+`", "message": "`+message+`"}`), &sub, &webpush.Options{
+			VAPIDPublicKey:  "BJKWKNBvXlmmrd3yGMlKWOGau4ijiYOp3oP4TGqYbScnFQhK_5qs4x_LPyXltvQARznsg7kz4Wvmef2DluuREao",
+			VAPIDPrivateKey: "LMVsE--DA9TTSCcvvKkcCj5Ts9yRMzZHci3UW2sGXrA",
+			TTL:             60,
+		})
+		if err != nil {
+			log.Println("Error sending notification:", err)
+		}
+	}
+}
+
+func sendNotificationHandler(w http.ResponseWriter, r *http.Request) {
+	if len(subscriptions) == 0 {
+		http.Error(w, "No subscriptions found", http.StatusNotFound)
+		return
+	}
+	sendNotification("Hello", "there")
 }
