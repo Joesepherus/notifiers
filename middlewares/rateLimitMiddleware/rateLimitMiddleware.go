@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"sync"
 	"time"
+	"tradingalerts/middlewares/authMiddleware"
+	"tradingalerts/services/loggingService"
+	"tradingalerts/utils/authUtils"
 
 	"golang.org/x/time/rate"
 )
@@ -48,29 +51,29 @@ func getClientLimiter(ip string) *clientData {
 
 func RateLimitPerClient(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// email, ok := r.Context().Value(authMiddleware.UserEmailKey).(string)
-		// if !ok || email == "" {
-		// 	email = "guest" // or handle it based on your requirements
-		// }
-		// ip := authUtils.GetIPAddress(r)
+		email, ok := r.Context().Value(authMiddleware.UserEmailKey).(string)
+		if !ok || email == "" {
+			email = "guest" // or handle it based on your requirements
+		}
+		ip := authUtils.GetIPAddress(r)
 
-		// client := getClientLimiter(ip)
+		client := getClientLimiter(ip)
 
-		// if time.Now().Before(client.banUntil) {
-		// 	http.Error(w, "You are temporarily banned. Please try again later.", http.StatusMethodNotAllowed)
-		// 	return
-		// }
+		if time.Now().Before(client.banUntil) {
+			http.Error(w, "You are temporarily banned. Please try again later.", http.StatusMethodNotAllowed)
+			return
+		}
 
-		// if !client.limiter.Allow() {
-		// 	loggingService.LogToDB("ERROR", "Too many requests from your IP.", r)
+		if !client.limiter.Allow() {
+			loggingService.LogToDB("ERROR", "Too many requests from your IP.", r)
 
-		// 	mu.Lock()
-		// 	client.banUntil = time.Now().Add(5 * time.Minute)
-		// 	mu.Unlock()
+			mu.Lock()
+			client.banUntil = time.Now().Add(5 * time.Minute)
+			mu.Unlock()
 
-		// 	http.Error(w, "Too many requests from your IP, please try again later.", http.StatusTooManyRequests)
-		// 	return
-		// }
+			http.Error(w, "Too many requests from your IP, please try again later.", http.StatusTooManyRequests)
+			return
+		}
 
 		next.ServeHTTP(w, r)
 	})
