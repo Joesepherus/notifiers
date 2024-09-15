@@ -13,7 +13,9 @@ self.addEventListener('install', function(event) {
                 '/static/js/main.js',
                 '/static/img/favicon.ico',
                 '/static/css/styles.css',
-                '/static/img/logo.png'
+                '/static/img/logo.png',
+                '/static/img/apple-touch-icon.png',
+                '/static/img/apple-touch-icon-precomposed.png'
             ];
 
             const dynamicPages = [
