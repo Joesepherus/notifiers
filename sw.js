@@ -44,12 +44,3 @@ self.addEventListener('fetch', function(event) {
         })
     );
 });
-
-// Listen for push notifications
-self.addEventListener('push', function(event) {
-    const data = event.data.json();
-    self.registration.showNotification(data.title, {
-        body: data.message,
-        icon: '/icon.png'
-    });
-});
