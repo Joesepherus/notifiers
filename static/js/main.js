@@ -176,7 +176,6 @@ window.onload = function() {
 
     // Get the value of the 'token' parameter
     const token = urlParams.get("token");
-    console.log("KOKOT")
 
     // Check if the token exists
     if (token) {
@@ -203,44 +202,4 @@ window.onload = function() {
             console.log('Service Worker registration failed:', error);
         });
     }
-
-    const notifyBtn = document.getElementById('notifyBtn');
-    notifyBtn.addEventListener('click', () => {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                subscribeUser();
-            }
-        });
-    });
-
-    function subscribeUser() {
-        navigator.serviceWorker.ready.then(function(registration) {
-            registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array('BJKWKNBvXlmmrd3yGMlKWOGau4ijiYOp3oP4TGqYbScnFQhK_5qs4x_LPyXltvQARznsg7kz4Wvmef2DluuREao')
-            }).then(function(subscription) {
-                console.log('User is subscribed:', subscription);
-
-                // Send the subscription to the server to save it
-                fetch('/api/subscribe', {
-                    method: 'POST',
-                    body: JSON.stringify(subscription),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-            }).catch(function(error) {
-                console.log('Failed to subscribe the user:', error);
-            });
-        });
-    }
-
-    // Utility function to convert the VAPID key
-    function urlBase64ToUint8Array(base64String) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-        const rawData = atob(base64);
-        return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
-    }
-
 }
