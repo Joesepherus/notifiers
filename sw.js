@@ -11,7 +11,7 @@ self.addEventListener('install', function(event) {
             const staticAssets = [
                 '/manifest.json',
                 '/static/js/main.js',
-                '/static/img/logo.ico',
+                '/static/img/favicon.ico',
                 '/static/css/styles.css',
                 '/static/img/logo.png'
             ];
