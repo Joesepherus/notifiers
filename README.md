@@ -116,6 +116,9 @@
   <li><p>✅ You can reset password for an email that's not registered. And you can even click on the link from emial and change password and no error is issued, actually says it reset the password. But when you try to login it says ofc the credentials are invalid.</p></li>
   <li><p>✅ Fix the invoice.success webhook</p></li>
   <li><p>✅ For some reason when you get redirected from the stripe payment wall then you don't see yourself as logged in anymore and have to refresh</p></li>
+  <li><p>✅ Finish PWA and remove the notifications as it doesnt work on iphone and mac either. Its a shame really. Look into other alternatives for sending notifications.</p></li>
+
+
 </ol>
 
 <p></p>
