@@ -110,5 +110,12 @@
     <p>release <strong>Trading Alerts</strong> on the pi</p>
   </li>
   <li><p>finish documentation</p></li>
+  <li><p>✅ Test everything, from registering, to subscribing and creating alerts.</p></li>
+  <li><p>✅ Then promote your app on reddit and send out emails.</p></li>
+  <li><p>✅ Try to make PWA and send notifications to the phone through it.</p></li>
+  <li><p>✅ You can reset password for an email that's not registered. And you can even click on the link from emial and change password and no error is issued, actually says it reset the password. But when you try to login it says ofc the credentials are invalid.</p></li>
+  <li><p>✅ Fix the invoice.success webhook</p></li>
+  <li><p>✅ For some reason when you get redirected from the stripe payment wall then you don't see yourself as logged in anymore and have to refresh</p></li>
 </ol>
+
 <p></p>
