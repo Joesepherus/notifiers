@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 	"tradingalerts/mail"
+	"tradingalerts/middlewares/authMiddleware"
 	"tradingalerts/payments/payments"
 	"tradingalerts/services/loggingService"
 	"tradingalerts/services/userService"
@@ -215,4 +216,22 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/reset-password-success", http.StatusSeeOther)
 
 	w.Write([]byte("Password has been reset successfully."))
+}
+
+func DeleteAccount(w http.ResponseWriter, r *http.Request) {
+   	errorUtils.MethodNotAllowed_error(w, r)
+	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
+
+    err := userService.DeleteAccount(email)
+
+	if err != nil {
+		log.Println("Error deleting account", err)
+		loggingService.LogToDB("ERROR", "Error deleting account", r)
+		http.Redirect(w, r, "/error?message=Error+deleting+account", http.StatusSeeOther)
+		return
+	}
+
+    Logout(w, r)
+
+	w.Write([]byte("Account successfully deleted"))
 }

@@ -188,6 +188,7 @@ func RestApi() {
 	http.Handle("/api/logout", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.Logout))))))
 	http.Handle("/api/reset-password", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.ResetPassword))))))
 	http.Handle("/api/set-password", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.SetPassword))))))
+	http.Handle("/api/delete-account", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.DeleteAccount))))))
 
 	// Stripe routes
 	http.Handle("/api/create-checkout-session", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CreateCheckoutSession))))))

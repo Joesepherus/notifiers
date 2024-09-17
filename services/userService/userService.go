@@ -84,3 +84,14 @@ func UpdatePassword(email string, hashedPassword string) error {
 
 	return nil
 }
+
+func DeleteAccount(email string) error {
+    query := `DELETE from users WHERE email = $1`
+
+	_, err := db.Exec(query, email)
+	if err != nil {
+		return fmt.Errorf("failed to delete row: %v", err)
+	}
+
+    return err
+}
