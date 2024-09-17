@@ -219,19 +219,21 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteAccount(w http.ResponseWriter, r *http.Request) {
-   	errorUtils.MethodNotAllowed_error(w, r)
+	errorUtils.MethodNotAllowed_error(w, r)
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 
-    err := userService.DeleteAccount(email)
+	err := userService.DeleteAccount(email)
 
 	if err != nil {
-		log.Println("Error deleting account", err)
 		loggingService.LogToDB("ERROR", "Error deleting account", r)
 		http.Redirect(w, r, "/error?message=Error+deleting+account", http.StatusSeeOther)
 		return
 	}
 
-    Logout(w, r)
+	loggingService.LogToDB("INFO", "Account deleted succesfully", r)
+	loggingService.LogToDB("INFO", "Logout user with email: "+email, r)
+
+	Logout(w, r)
 
 	w.Write([]byte("Account successfully deleted"))
 }
