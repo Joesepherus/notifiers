@@ -250,3 +250,33 @@ func CancelSubscription(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte("Subscription canceled successfully."))
 }
+
+func DeleteUserAndSubscriptions(email string) error {
+	cust, err := subscriptionUtils.GetCustomerByEmail(email)
+	if err != nil {
+		return fmt.Errorf("error retrieving customer")
+	}
+	customerID := cust.ID
+
+	// Fetch all subscriptions of the customer
+	params := &stripe.SubscriptionListParams{
+		Customer: stripe.String(customerID),
+	}
+	i := sub.List(params)
+
+	// Cancel all subscriptions
+	for i.Next() {
+		subscription := i.Subscription()
+		_, err := sub.Cancel(subscription.ID, nil)
+		if err != nil {
+			return fmt.Errorf("failed to cancel subscription")
+		}
+	}
+
+	// Delete the customer
+	_, err = customer.Del(customerID, nil)
+	if err != nil {
+		return fmt.Errorf("failed to delete customer")
+	}
+	return nil
+}

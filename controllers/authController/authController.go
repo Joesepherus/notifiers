@@ -222,7 +222,15 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 	errorUtils.MethodNotAllowed_error(w, r)
 	email := r.Context().Value(authMiddleware.UserEmailKey).(string)
 
-	err := userService.DeleteAccount(email)
+	err := payments.DeleteUserAndSubscriptions(email)
+
+	if err != nil {
+		loggingService.LogToDB("ERROR", fmt.Sprintf("Error Deleting Account: %v", err), r)
+		http.Redirect(w, r, "/error?message=Error+deleting+account", http.StatusSeeOther)
+		return
+	}
+
+	err = userService.DeleteAccount(email)
 
 	if err != nil {
 		loggingService.LogToDB("ERROR", "Error deleting account", r)
