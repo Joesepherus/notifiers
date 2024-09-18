@@ -262,11 +262,11 @@ func DeleteUserAndSubscriptions(email string) error {
 	params := &stripe.SubscriptionListParams{
 		Customer: stripe.String(customerID),
 	}
-	i := sub.List(params)
+	subscriptions := sub.List(params)
 
 	// Cancel all subscriptions
-	for i.Next() {
-		subscription := i.Subscription()
+	for subscriptions.Next() {
+		subscription := subscriptions.Subscription()
 		_, err := sub.Cancel(subscription.ID, nil)
 		if err != nil {
 			return fmt.Errorf("failed to cancel subscription")

@@ -230,6 +230,8 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	loggingService.LogToDB("INFO", "Stripe account and subscriptions deleted successfuly", r)
+
 	err = userService.DeleteAccount(email)
 
 	if err != nil {
