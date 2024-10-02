@@ -36,8 +36,8 @@ func GetHourlyChange(w http.ResponseWriter, r *http.Request) {
 
 	stockData, err := yahooService.GetStockCurrentValue(yahooService.YahooBaseURL, symbol, "1h", interval)
 	log.Println("price: ", stockData, err)
-	highs := stockData.Chart.Result[0].Indicators.Quote[0].Close
-	lows := stockData.Chart.Result[0].Indicators.Quote[0].Open
+	highs := stockData.Chart.Result[0].Indicators.Quote[0].High
+	lows := stockData.Chart.Result[0].Indicators.Quote[0].Low
 	timestamps := stockData.Chart.Result[0].Timestamp
 	var hourlyData = []stockDataHourly{}
 
