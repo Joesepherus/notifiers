@@ -1,0 +1,64 @@
+{{ define "content" }}
+
+<div class="content">
+  <div class="page">
+    <h2>Price Change</h2>
+    <div class="form-container">
+      <form id="alert-form" action="/api/get-hourly-change" method="post">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="symbol">Symbol</label>
+            <input
+              type="text"
+              id="symbol"
+              name="symbol"
+              placeholder="NVDA"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="interval">Interval</label>
+            <input
+              type="text"
+              id="interval"
+              name="interval"
+              placeholder="30d"
+              required
+            />
+          </div>
+        </div>
+        <div class="form-row">
+          <button type="submit">Get hourly change</button>
+        </div>
+      </form>
+    </div>
+
+    <div>
+      <h1>Price Change Data for {{ .Symbol }}</h1>
+      <p>Interval: {{ .Interval }}</p>
+
+      <div id="price-change-table" class="grid-container-price-change">
+        <div class="grid-header">
+          <div class="grid-item header-item">Hour</div>
+          <div class="grid-item header-item">Filipino Hour</div>
+          <div class="grid-item header-item">Average Change</div>
+          <div class="grid-item header-item">Percentage Change</div>
+        </div>
+        {{range .FormattedData}}
+        <div class="grid-body">
+          <div class="grid-item body-item">{{.Hour}}</div>
+          <div class="grid-item body-item">{{.FilipinoHour}}</div>
+          <div class="grid-item body-item">{{printf "%.5f" .ChangeAverage}}</div>
+          <div class="grid-item body-item">{{printf "%.3f" .PercentageChangeAverage}}%</div>
+        </div>
+  
+        {{else}}
+        <div>Error.</div>
+        {{end}}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{{ end }}

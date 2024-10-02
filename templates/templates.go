@@ -30,6 +30,7 @@ func InitTemplates(location string) {
 		BaseLocation + "/pricing.html",
 		BaseLocation + "/about.html",
 		BaseLocation + "/alerts.html",
+		BaseLocation + "/price-change.html",
 		BaseLocation + "/profile.html",
 		BaseLocation + "/reset-password-sent.html",
 		BaseLocation + "/reset-password-success.html",

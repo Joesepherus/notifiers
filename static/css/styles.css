@@ -594,6 +594,11 @@ button:hover {
   grid-template-columns: repeat(3, 1fr); /* 3 columns of equal width */
 }
 
+#price-change-table .grid-header, #price-change-table .grid-body {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 3 columns of equal width */
+}
+
 .grid-body:nth-child(even) {
   background-color: #f9f9f9;
 }

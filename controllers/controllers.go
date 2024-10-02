@@ -99,6 +99,9 @@ func PageHandler(w http.ResponseWriter, r *http.Request) {
 
 		templateLocation = templates.BaseLocation + "/alerts.html"
 		pageTitle = "Alerts - Trading Alerts"
+	case "/price-change":
+		templateLocation = templates.BaseLocation + "/price-change.html"
+		pageTitle = "Price Change - Trading Alerts"
 	case "/profile":
 		if user == nil {
 			log.Println("You need to be logged in")
