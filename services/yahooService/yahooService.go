@@ -10,8 +10,8 @@ import (
 
 const YahooBaseURL = "https://query1.finance.yahoo.com"
 
-func GetStockCurrentValue(baseURL, symbol string) (*yahooTypes.StockResponse, error) {
-	yahooFinanceUrl := fmt.Sprintf("%s/v8/finance/chart/%s?region=US&lang=en-US&includePrePost=false&interval=2m&useYfid=true&range=1d&corsDomain=finance.yahoo.com&.tsrc=finance", baseURL, symbol)
+func GetStockCurrentValue(baseURL, symbol, interval, rangeData string) (*yahooTypes.StockResponse, error) {
+	yahooFinanceUrl := fmt.Sprintf("%s/v8/finance/chart/%s?region=US&lang=en-US&includePrePost=false&interval=%s&useYfid=true&range=%s&corsDomain=finance.yahoo.com&.tsrc=finance", baseURL, symbol, interval, rangeData)
 
 	resp, err := http.Get(yahooFinanceUrl)
 	if err != nil {

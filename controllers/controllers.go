@@ -7,6 +7,7 @@ import (
 	"time"
 	"tradingalerts/controllers/alertsController"
 	"tradingalerts/controllers/authController"
+	"tradingalerts/controllers/priceChangeController"
 	"tradingalerts/middlewares/authMiddleware"
 	"tradingalerts/middlewares/bodySizeMiddleware"
 	"tradingalerts/middlewares/logMiddleware"
@@ -189,6 +190,7 @@ func RestApi() {
 	http.Handle("/api/reset-password", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.ResetPassword))))))
 	http.Handle("/api/set-password", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.SetPassword))))))
 	http.Handle("/api/delete-account", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(authController.DeleteAccount))))))
+	http.Handle("/api/get-hourly-change", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenCheckMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(priceChangeController.GetHourlyChange))))))
 
 	// Stripe routes
 	http.Handle("/api/create-checkout-session", bodySizeMiddleware.LimitRequestBodySize(authMiddleware.TokenAuthMiddleware(rateLimitMiddleware.RateLimitPerClient(logMiddleware.LogMiddleware(http.HandlerFunc(payments.CreateCheckoutSession))))))

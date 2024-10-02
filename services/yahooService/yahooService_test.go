@@ -10,7 +10,7 @@ import (
 
 func TestGetStockCurrentValue_Success(t *testing.T) {
 	symbol := "AAPL"
-	stockData, err := GetStockCurrentValue(YahooBaseURL, symbol)
+	stockData, err := GetStockCurrentValue(YahooBaseURL, symbol, "2m", "1d")
 
 	retunedSymbol := stockData.Chart.Result[0].Meta.Symbol
 	assert.NoError(t, err)
@@ -18,7 +18,7 @@ func TestGetStockCurrentValue_Success(t *testing.T) {
 }
 
 func TestGetStockCurrentValue_Fail(t *testing.T) {
-	_, err := GetStockCurrentValue(YahooBaseURL, "AAAPL")
+	_, err := GetStockCurrentValue(YahooBaseURL, "AAAPL", "2m", "1d")
 
 	assert.EqualError(t, err, "yahoo API error: Not Found - No data found, symbol may be delisted")
 }
@@ -43,7 +43,7 @@ func TestMockGetStockCurrentValue_Success(t *testing.T) {
 	defer ts.Close()
 
 	// Call the function you want to test with the mock server URL
-	stockData, err := GetStockCurrentValue(ts.URL, "AAPL")
+	stockData, err := GetStockCurrentValue(ts.URL, "AAPL", "2m", "1d")
 
 	// Check the results
 	assert.NoError(t, err)
@@ -69,7 +69,7 @@ func TestMockGetStockCurrentValue_Fail(t *testing.T) {
 	defer ts.Close()
 
 	// Call the function you want to test with the mock server URL
-	_, err := GetStockCurrentValue(ts.URL, "AAAPL")
+	_, err := GetStockCurrentValue(ts.URL, "AAAPL", "2m", "1d")
 
 	// Check the results
 	assert.EqualError(t, err, "yahoo API error: Not Found - No data found, symbol may be delisted")
